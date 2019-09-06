@@ -1,0 +1,5 @@
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Processing request/
+Request finished in 28.9658ms 200 
+Request finished in 28.9782ms 200 
