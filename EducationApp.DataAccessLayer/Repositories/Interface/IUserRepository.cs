@@ -10,8 +10,8 @@ namespace EducationApp.DataAccessLayer.Repositories.Interface
         Task<bool> EditUserAsync(ApplicationUser user);
         Task<bool> AddUserRoleAsync(string roleName);
         Task<bool> CheckUserRoleAsync(string id,string roleName);
-        Task<bool> CheckEmailConfirm(ApplicationUser user);
-        Task<string> GenerateEmailConfirm(ApplicationUser user);
+        Task<bool> CheckEmailConfirmAsync(ApplicationUser user);
+        Task<string> GenerateEmailConfirmAsync(ApplicationUser user);
         Task<bool> SignInAsync(ApplicationUser user,bool isPersitent);
         Task SignOutAsync();
     }

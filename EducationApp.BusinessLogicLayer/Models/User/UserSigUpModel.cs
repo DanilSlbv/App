@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EducationApp.BusinessLogicLayer.Models.User
 {
-    public class UserRegisterModel
+    public class UserSigUpModel
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }

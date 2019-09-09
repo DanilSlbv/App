@@ -76,7 +76,7 @@ namespace EducationApp.DataAccessLayer.Repositories
             }
             return false;
         }
-        public async Task<bool>CheckEmailConfirm(ApplicationUser user)
+        public async Task<bool>CheckEmailConfirmAsync(ApplicationUser user)
         {
             var result = await _userManager.IsEmailConfirmedAsync(user);
             if (result)
@@ -85,11 +85,10 @@ namespace EducationApp.DataAccessLayer.Repositories
             }
             return false;
         }
-        public async Task<string> GenerateEmailConfirm(ApplicationUser user)
+        public async Task<string> GenerateEmailConfirmAsync(ApplicationUser user)
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             return code;
-            
         }
 
         public async Task<bool> SignInAsync(ApplicationUser User, bool isPersitent)

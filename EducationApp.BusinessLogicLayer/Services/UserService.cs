@@ -34,7 +34,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             UserModelItem userModel = new UserModelItem(await _userRepository.GetByIdAsync(id));
             return userModel;
         }
-        public async Task CreateUserAsync(UserRegisterModel userRegisterModel)
+        public async Task SigUpUserAsync(UserSigUpModel userRegisterModel)
         {
             ApplicationUser applicationUser = new ApplicationUser
             {
@@ -43,11 +43,11 @@ namespace EducationApp.BusinessLogicLayer.Services
                 Email = userRegisterModel.Email,
                 Password = userRegisterModel.Password
             };
-            string code = await _userRepository.GenerateEmailConfirm(applicationUser);
+            string code = await _userRepository.GenerateEmailConfirmAsync(applicationUser);
             await _userRepository.CreateAsync(applicationUser);
             EmailHelpers emailHelpers = new EmailHelpers(applicationUser.Email, code);
             await emailHelpers.SendEmail();
-            if (await _userRepository.CheckEmailConfirm(applicationUser))
+            if (await _userRepository.CheckEmailConfirmAsync(applicationUser))
             {
                await _userRepository.SignInAsync(applicationUser,true);
             }
@@ -89,14 +89,14 @@ namespace EducationApp.BusinessLogicLayer.Services
             return false;
         }
 
-        public async Task SigInAsync(UserLoginModel userLoginModel)
+        public async Task SigInAsync(UserSigInModel userLoginModel)
         {
             ApplicationUser applicationUser = new ApplicationUser()
             {
                 Email = userLoginModel.Email,
                 Password = userLoginModel.Password
             };
-            if (await _userRepository.CheckEmailConfirm(applicationUser))
+            if (await _userRepository.CheckEmailConfirmAsync(applicationUser))
             {
                 await _userRepository.SignInAsync(applicationUser, userLoginModel.isPersitent);
             }

@@ -6,6 +6,8 @@ namespace EducationApp.BusinessLogicLayer.Models.Enums
 {
     public enum Status
     {
-
+        None=0,
+        Paid=1,
+        Unpaid=2
     }
 }

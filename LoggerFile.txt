@@ -43,3 +43,132 @@ Request finished in 8.3305ms 200
 Request starting HTTP/1.1 GET http://localhost:44385/accountcontroller/5  
 Processing request/accountcontroller/5
 Request finished in 7.6522ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Processing request/
+Request finished in 61.2831ms 200 
+Request finished in 61.2893ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account  
+Processing request/account
+Request finished in 7.2715ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/sigin  
+Processing request/account/sigin
+Request finished in 7.8313ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/siginAsync  
+Processing request/account/siginAsync
+Request finished in 9.9931ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/SigIn  
+Processing request/account/SigIn
+Request finished in 6.1458ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Processing request/
+Request finished in 37.6808ms 200 
+Request finished in 37.6863ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/SigIn  
+Processing request/account/SigIn
+Request finished in 9.5551ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/api/account/SigIn  
+Processing request/api/account/SigIn
+Request finished in 4.6925ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/SigIn  
+Processing request/account/SigIn
+Request finished in 7.2336ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Processing request/
+Request finished in 78.3654ms 200 
+Request finished in 78.3596ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/SigIn  
+Processing request/account/SigIn
+Request finished in 5.0317ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Processing request/
+Request finished in 32.2836ms 200 
+Request finished in 31.6046ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/SigIn  
+Processing request/account/SigIn
+Request finished in 7.1851ms 200 
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Processing request/
+Request finished in 47.4824ms 200 
+Request finished in 47.4835ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/SigIn  
+Processing request/account/SigIn
+Request finished in 6.8423ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Processing request/
+Request finished in 31.3782ms 200 
+Request finished in 31.38ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Processing request/
+Request finished in 28.5199ms 200 
+Request finished in 28.5162ms 200 
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Processing request/
+Request finished in 60.0877ms 200 
+Request finished in 58.1717ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/api/accountcontroller/sigin  
+Processing request/api/accountcontroller/sigin
+Request finished in 6.1924ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/api/account/sigin  
+Processing request/api/account/sigin
+Request finished in 4.9059ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/sigin  
+Processing request/account/sigin
+Request finished in 5.1571ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Processing request/
+Request finished in 54.3798ms 200 
+Request finished in 52.353ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/get  
+Processing request/account/get
+Request finished in 9.7414ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Processing request/
+Request finished in 30.5584ms 200 
+Request finished in 33.1909ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/get  
+Processing request/account/get
+Request finished in 10.6797ms 200 
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Processing request/
+Request finished in 37.4922ms 200 
+Request finished in 37.4944ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/get  
+Processing request/account/get
+Request finished in 5.2855ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/get  
+Processing request/account/get
+Request finished in 18.0556ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/getUser  
+Processing request/account/getUser
+Request finished in 6.1126ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/getUser  
+Processing request/account/getUser
+Request finished in 4.1842ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/getUser  
+Processing request/account/getUser
+Request finished in 3.7677ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/getUser  
+Processing request/account/getUser
+Request finished in 3.9486ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/getUser  
+Processing request/account/getUser
+Request finished in 4.0347ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/getUser  
+Processing request/account/getUser
+Request finished in 4.3395ms 200 
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Processing request/
+Request finished in 40.5026ms 200 
+Request finished in 40.5012ms 200 

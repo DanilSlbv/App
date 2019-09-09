@@ -81,7 +81,6 @@ namespace EducationApp.PresentationLayer
             });
 
             services.AddMvc();
-                        
         }
 
        
@@ -94,12 +93,10 @@ namespace EducationApp.PresentationLayer
                 logger.LogInformation("Processing request{0}", context.Request.Path);
             });
 
-            
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-            app.UseMvcWithDefaultRoute();                     
+            app.UseMvc();
         }
     }
 }
