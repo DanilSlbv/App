@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using EducationApp.DataAcessLayer.Entities;
+using EducationApp.DataAccessLayer.Entities;
 namespace EducationApp.DataAcessLayer.AppContext
 {
     public class ApplicationContext : IdentityDbContext<ApplicationUser>

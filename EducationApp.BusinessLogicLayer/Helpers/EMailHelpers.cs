@@ -1,19 +1,40 @@
-﻿using System.Net.Mail;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
-using EducationApp.BusinessLogicLayer.Models.User;
+using System.Threading.Tasks;
+
 namespace EducationApp.BusinessLogicLayer.Helpers
 {
-    public  class EMailHelpers
+    
+    public class EmailHelpers
     {
-        public static string UserEmail { get; set; }
-        public EMailHelpers(string Email)
+
+        private SmtpClient _smtpClient;
+        private string _userEmail;
+        private string _code;
+        private string _from;
+        public EmailHelpers(string userEmail,string code)
         {
-            UserEmail = Email;
+            _smtpClient =new SmtpClient();
+            _userEmail = userEmail;
+            _code = code;
+            _from = "BookStore";
         }
 
-        static MailAddress MailAddressSender = new MailAddress("BookStore@book.com", "BookStore");
-        static MailAddress MailAddressReciever = new MailAddress(UserEmail);
-        static MailMessage mailMessage = new MailMessage(MailAddressSender, MailAddressReciever);
-
+        public async Task SendEmail()
+        {
+            string subject = "BookStore - Confirm the Email";
+            string body = "To Confirm the email please follow the link:" + _code;
+            await _smtpClient.SendMailAsync(new MailMessage(
+                from: _from,
+                to: _userEmail,
+                subject: subject,
+                body: body
+                ));
+           _smtpClient.Dispose();
+        }
     }
 }
+

@@ -2,6 +2,8 @@
 using EducationApp.DataAcessLayer.AppContext;
 using EducationApp.DataAccessLayer.Repositories.Base;
 using EducationApp.DataAccessLayer.Repositories.Interface;
+using System.Threading.Tasks;
+
 namespace EducationApp.DataAccessLayer.Repositories
 {
     public class AuthorRepository:BaseEFRepository<Author>,IAuthorRepository
@@ -10,10 +12,6 @@ namespace EducationApp.DataAccessLayer.Repositories
         {
 
         }
-        public void Update(Author author)
-        {
-            _dbSet.Update(author);
-            _context.SaveChanges();
-        }
+        
     }
 }

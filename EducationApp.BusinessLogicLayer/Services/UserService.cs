@@ -4,6 +4,7 @@ using EducationApp.BusinessLogicLayer.Models.User;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Repositories.Interface;
 using EducationApp.DataAccessLayer.Entities;
+using EducationApp.BusinessLogicLayer.Helpers;
 
 namespace EducationApp.BusinessLogicLayer.Services
 {
@@ -17,30 +18,23 @@ namespace EducationApp.BusinessLogicLayer.Services
         }
 
 
-        public async Task<List<UserModel>> GetAllUsersAsync()
+        public async Task<List<UserModelItem>> GetAllUsersAsync()
         {
-            List<ApplicationUser> applicationUsers = await _userRepository.GetAllUsersAsync();
-            List<UserModel> usersModel = null;
-
+            List<ApplicationUser> applicationUsers = await _userRepository.GetAllAsync();
+            UserModel userModel = new UserModel();
             foreach (var i in applicationUsers)
             {
-                usersModel.Add(new UserModel { Email = i.Email, FirstName = i.FirstName, LastName = i.LastName });
+                userModel.Items.Add(new UserModelItem(i));
             }
-            return usersModel;
+            return userModel.Items;
         }
 
-        public async Task<UserModel> GetUserByIdAsync(string id)
+        public async Task<UserModelItem> GetUserByIdAsync(string id)
         {
-            var user = await _userRepository.GetUserByIdAsync(id);
-            UserModel userModel = new UserModel
-            {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email
-            };
+            UserModelItem userModel = new UserModelItem(await _userRepository.GetByIdAsync(id));
             return userModel;
         }
-        public async Task<bool> SignUpAsync(UserRegisterModel userRegisterModel)
+        public async Task CreateUserAsync(UserRegisterModel userRegisterModel)
         {
             ApplicationUser applicationUser = new ApplicationUser
             {
@@ -49,21 +43,19 @@ namespace EducationApp.BusinessLogicLayer.Services
                 Email = userRegisterModel.Email,
                 Password = userRegisterModel.Password
             };
-            bool result = await _userRepository.SignUpAsync(applicationUser, applicationUser.Password);
-            if (result)
+            string code = await _userRepository.GenerateEmailConfirm(applicationUser);
+            await _userRepository.CreateAsync(applicationUser);
+            EmailHelpers emailHelpers = new EmailHelpers(applicationUser.Email, code);
+            await emailHelpers.SendEmail();
+            if (await _userRepository.CheckEmailConfirm(applicationUser))
             {
-                return true;
+               await _userRepository.SignInAsync(applicationUser,true);
             }
-            else
-            {
-                return false;
-            }
-            
         }
 
-        public async Task<bool> DeleteUserAsync(string id)
+        public async Task DeleteUserAsync(string id)
         {
-            return await _userRepository.DeleteUserAsync(id);
+             await _userRepository.DeleteAsync(id);
         }
 
         public async Task<bool> EditUserAsync(UserEditModel userEditModel)
@@ -77,35 +69,37 @@ namespace EducationApp.BusinessLogicLayer.Services
             return await _userRepository.EditUserAsync(applicationUser);
         }
 
-        public async Task<bool> AddUserRoleAsync(string RoleName)
+        public async Task<bool> AddUserRoleAsync(string roleName)
         {
-           bool result= await _userRepository.AddUserRoleAsync(RoleName);
+           bool result= await _userRepository.AddUserRoleAsync(roleName);
             if (result)
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
-        public async Task<bool> CheckUserRoleAsync(string Userid, string RoleName)
+        public async Task<bool> CheckUserRoleAsync(string userId, string roleName)
         {
-           bool result= await CheckUserRoleAsync(Userid, RoleName);
+           bool result= await CheckUserRoleAsync(userId, roleName);
             if (result)
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
-        public async Task SigInAsync(string UserId,bool IsPersient)
+        public async Task SigInAsync(UserLoginModel userLoginModel)
         {
-            await _userRepository.SignInAsync(UserId, IsPersient);
+            ApplicationUser applicationUser = new ApplicationUser()
+            {
+                Email = userLoginModel.Email,
+                Password = userLoginModel.Password
+            };
+            if (await _userRepository.CheckEmailConfirm(applicationUser))
+            {
+                await _userRepository.SignInAsync(applicationUser, userLoginModel.isPersitent);
+            }
         }
 
         public async Task SignOutAsycn()

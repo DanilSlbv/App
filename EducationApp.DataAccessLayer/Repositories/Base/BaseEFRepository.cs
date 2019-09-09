@@ -4,6 +4,7 @@ using EducationApp.DataAccessLayer.Repositories.Interface;
 using EducationApp.DataAcessLayer.AppContext;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace EducationApp.DataAccessLayer.Repositories.Base
 {
@@ -17,18 +18,19 @@ namespace EducationApp.DataAccessLayer.Repositories.Base
             _dbSet = _context.Set<TEntity>();
         }
 
-        public async void Create(TEntity item)
+        public async Task CreateAsync(TEntity item)
         {
-            _dbSet.Add(item);
-            await _context.SaveChangesAsync();
+                await _dbSet.AddAsync(item);
+                await _context.SaveChangesAsync();
         }
 
-        public async Task<List<TEntity>> GetAll()=> await _dbSet.ToListAsync();
+        public async Task<List<TEntity>> GetAllAsync()=> await _dbSet.ToListAsync();
 
-        public async Task<TEntity> GetById(int id)=>await  _dbSet.FindAsync(id);
+        public async Task<TEntity> GetByIdAsync(string id)=>await  _dbSet.FindAsync(id);
 
-        public async void Delete(TEntity item)
+        public async Task DeleteAsync(string id)
         {
+            TEntity item = await GetByIdAsync(id);
             _dbSet.Remove(item);
             await _context.SaveChangesAsync();
         }

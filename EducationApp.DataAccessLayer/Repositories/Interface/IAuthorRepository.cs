@@ -1,9 +1,9 @@
 ﻿using EducationApp.DataAccessLayer.Entities;
+using System.Threading.Tasks;
 
 namespace EducationApp.DataAccessLayer.Repositories.Interface
 {
-    interface IAuthorRepository : IBaseEFRepository<Author>
+    public interface IAuthorRepository : IBaseEFRepository<Author>
     {
-        void Update(Author Author);
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {
-    class AuthorInPrintingEditionRepository
+    public class AuthorInPrintingEditionRepository
     {
     }
 }

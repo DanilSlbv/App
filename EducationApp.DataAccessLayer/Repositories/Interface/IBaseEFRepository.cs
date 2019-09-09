@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace EducationApp.DataAccessLayer.Repositories.Interface
 {
-    interface IBaseEFRepository<TEntity> where TEntity:class
+    public interface IBaseEFRepository<TEntity> where TEntity:class
     {
-        void Create(TEntity item);
-        Task<List<TEntity>> GetAll();
-        Task<TEntity> GetById(int id);
-        void DeleteByItem(TEntity item);
+        Task CreateAsync(TEntity item);
+        Task<List<TEntity>> GetAllAsync();
+        Task<TEntity> GetByIdAsync(string id);
+        Task DeleteAsync(string id);
     }
 }

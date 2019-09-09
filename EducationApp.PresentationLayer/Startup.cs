@@ -1,6 +1,7 @@
 using System;
 using System.IO;
-using System.Threading.Tasks;
+using System.Net.Mail;
+using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,9 +10,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using EducationApp.DataAccessLayer.Repositories;
+using EducationApp.DataAccessLayer.Repositories.Interface;
 using EducationApp.DataAcessLayer.AppContext;
 using EducationApp.BusinessLogicLayer.Common;
 using EducationApp.DataAccessLayer.Entities;
+
 
 namespace EducationApp.PresentationLayer
 {
@@ -28,11 +32,28 @@ namespace EducationApp.PresentationLayer
       
         public void ConfigureServices(IServiceCollection services)
         {
+            string connection = "Server=(localdb)\\MSSQLLocalDB; Database=EducationStoreDb; Trusted_Connection=True; MultipleActiveResultSets=True";
+            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString(connection)));
 
-            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddScoped<IUserRepository, UserRepository>();
+
+            services.AddScoped<SmtpClient>((serviceProvider) => {
+                var config = serviceProvider.GetRequiredService<IConfiguration>();
+                return new SmtpClient()
+                {
+                    Host = config.GetValue<string>("Email:Smpt:Host:"),
+                    Port = config.GetValue<int>("Email:Smpt:Port:"),
+                    Credentials = new NetworkCredential(
+                        config.GetValue<string>("Email:Smpt:Username:"),
+                        config.GetValue<string>("Email:Smpt:Password:")
+                       )
+                };
+            });
+
 
             services.Configure<IdentityOptions>(options =>
             {
@@ -59,6 +80,7 @@ namespace EducationApp.PresentationLayer
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.AddMvc();
                         
         }
 
@@ -72,11 +94,12 @@ namespace EducationApp.PresentationLayer
                 logger.LogInformation("Processing request{0}", context.Request.Path);
             });
 
+            
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-                                 
+            app.UseMvcWithDefaultRoute();                     
         }
     }
 }

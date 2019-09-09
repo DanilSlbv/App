@@ -5,17 +5,14 @@ using System.Collections.Generic;
 
 namespace EducationApp.DataAccessLayer.Repositories.Interface
 {
-    public interface IUserRepository
+    public interface IUserRepository:IBaseEFRepository<ApplicationUser>
     {
-        Task<List<ApplicationUser>> GetAllUsersAsync();
-        Task<ApplicationUser> GetUserByIdAsync(string id);
-        Task<bool> SignUpAsync(ApplicationUser User,string password);
-        Task<bool> EditUserAsync(ApplicationUser User);
-        Task<bool> DeleteUserAsync(string id);
-        Task<bool> AddUserRoleAsync(string RoleName);
-        Task<bool> CheckUserRoleAsync(string id,string RoleName);
-        Task SignInAsync(ApplicationUser User,bool isPersitent);
+        Task<bool> EditUserAsync(ApplicationUser user);
+        Task<bool> AddUserRoleAsync(string roleName);
+        Task<bool> CheckUserRoleAsync(string id,string roleName);
+        Task<bool> CheckEmailConfirm(ApplicationUser user);
+        Task<string> GenerateEmailConfirm(ApplicationUser user);
+        Task<bool> SignInAsync(ApplicationUser user,bool isPersitent);
         Task SignOutAsync();
-        Task SignInAsync(string userId, bool isPersient);
     }
 }

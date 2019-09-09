@@ -20,14 +20,14 @@ namespace EducationApp.DataAccessLayer.Repositories
             _roleManager = roleManager;
         }
 
-        public async Task<List<ApplicationUser>> GetAllUsersAsync()
+        public async Task<List<ApplicationUser>> GetAllAsync()
         {
             return await _userManager.Users.ToListAsync();
         }
 
-        public async Task<ApplicationUser> GetUserByIdAsync(string id)
+        public async Task<ApplicationUser> GetByIdAsync(string id)
         {
-            ApplicationUser user =await _userManager.FindByIdAsync(id);
+            var user =await _userManager.FindByIdAsync(id);
             if (user == null)
             {
                 return null;             
@@ -35,84 +35,72 @@ namespace EducationApp.DataAccessLayer.Repositories
             return user;
         }
 
-        public async Task<bool> SignUpAsync(ApplicationUser User,string password)
+        public async Task CreateAsync(ApplicationUser user)
         {
-            var result = await _userManager.CreateAsync(User, password);
-            if(result.Succeeded)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            await _userManager.CreateAsync(user, user.Password);
         }
         
-        public async Task<bool> DeleteUserAsync(string id)
+        public async Task DeleteAsync(string id)
         {
-            var User= await _userManager.FindByIdAsync(id);
-            if (User != null)
-            {
-                var result = await  _userManager.DeleteAsync(User);
+            ApplicationUser applicationUser = await GetByIdAsync(id);
+            await _userManager.DeleteAsync(applicationUser);
+        }
+
+        public async  Task<bool> EditUserAsync(ApplicationUser editUser)
+        {
+                var result = await _userManager.UpdateAsync(editUser);
                 if (result.Succeeded)
                 {
                     return true;
                 }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
                 return false;
-            }
         }
 
-        public async  Task<bool> EditUserAsync(ApplicationUser EditUser)
-        {
-                var result = await _userManager.UpdateAsync(EditUser);
-                if (result.Succeeded)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-        }
-
-        public async Task<bool> AddUserRoleAsync(string RoleName)
+        public async Task<bool> AddUserRoleAsync(string roleName)
         { 
-            var result=await _roleManager.CreateAsync(new IdentityRole(RoleName));
+            var result=await _roleManager.CreateAsync(new IdentityRole(roleName));
             if(result.Succeeded)
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
-        public async Task<bool> CheckUserRoleAsync(string Userid,string RoleName)
+        public async Task<bool> CheckUserRoleAsync(string userid,string roleName)
         {
-            ApplicationUser applicationUser = await GetUserByIdAsync(Userid);
-            bool result = await _userManager.IsInRoleAsync(applicationUser, RoleName);
+            ApplicationUser applicationUser = await GetByIdAsync(userid);
+            bool result = await _userManager.IsInRoleAsync(applicationUser, roleName);
             if (result)
             {
                 return true;
             }
-            else
+            return false;
+        }
+        public async Task<bool>CheckEmailConfirm(ApplicationUser user)
+        {
+            var result = await _userManager.IsEmailConfirmedAsync(user);
+            if (result)
             {
-                return false;
+                return true;
             }
+            return false;
+        }
+        public async Task<string> GenerateEmailConfirm(ApplicationUser user)
+        {
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            return code;
+            
         }
 
-        public async Task SignInAsync(string UserId, bool isPersitent)
+        public async Task<bool> SignInAsync(ApplicationUser User, bool isPersitent)
         {
-            ApplicationUser applicationUser = await GetUserByIdAsync(UserId);
-            await _signInManager.SignInAsync(applicationUser, isPersitent);
+            var result = await _signInManager.PasswordSignInAsync(User.Email, User.Password, isPersitent, false);
+            if (result.Succeeded)
+            {
+                await _signInManager.SignInAsync(User, isPersitent);
+                return true;
+            }
+            return false;
         }
 
         public async Task SignOutAsync()

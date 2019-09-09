@@ -3,3 +3,43 @@ Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
 Processing request/
 Request finished in 28.9658ms 200 
 Request finished in 28.9782ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Processing request/
+Request finished in 80.1939ms 200 
+Request finished in 80.1899ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Processing request/
+Request finished in 55.693ms 200 
+Request finished in 55.6989ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/Base/5  
+Processing request/Base/5
+Request finished in 8.003ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Processing request/
+Request finished in 49.0823ms 200 
+Request finished in 49.18ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/5  
+Processing request/account/5
+Request finished in 7.6938ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/base/5  
+Processing request/base/5
+Request finished in 7.8947ms 200 
+Application startup exception
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Request finished in 12.1184ms 500 
+Connection processing ended abnormally.
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Request starting HTTP/1.1 GET http://localhost:44385/  
+Processing request/
+Request finished in 35.7827ms 200 
+Request finished in 35.7779ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/account/5  
+Processing request/account/5
+Request finished in 8.3305ms 200 
+Request starting HTTP/1.1 GET http://localhost:44385/accountcontroller/5  
+Processing request/accountcontroller/5
+Request finished in 7.6522ms 200 
