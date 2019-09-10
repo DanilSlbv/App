@@ -6,30 +6,28 @@ using System.Threading.Tasks;
 
 namespace EducationApp.PresentationLayer.Controllers.Base
 {
-    public class BaseController:Controller
+
+    public class BaseController: Controller
     {
-        public IEnumerable<string> Get()
+        [HttpGet]
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            return Ok("Get");
         }
-
-        public string Get(int id)
+        [HttpPost]
+        public async Task<IActionResult> Post()
         {
-            return "value";
+            return Ok("Post");
         }
-
-        public void Post([FromBody]string value)
+        [HttpPut]
+        public async Task<IActionResult> Put()
         {
-
+            return Ok("Put");
         }
-
-        public void Put(int id, [FromBody]string value)
+        [HttpDelete]
+        public async Task<IActionResult> Delete(string id)
         {
+            return Ok("Delete");
         }
-
-        public void Delete(int id)
-        {
-        }
-
     }
 }

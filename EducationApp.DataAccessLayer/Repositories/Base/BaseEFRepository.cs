@@ -18,12 +18,6 @@ namespace EducationApp.DataAccessLayer.Repositories.Base
             _dbSet = _context.Set<TEntity>();
         }
 
-        public async Task CreateAsync(TEntity item)
-        {
-                await _dbSet.AddAsync(item);
-                await _context.SaveChangesAsync();
-        }
-
         public async Task<List<TEntity>> GetAllAsync()=> await _dbSet.ToListAsync();
 
         public async Task<TEntity> GetByIdAsync(string id)=>await  _dbSet.FindAsync(id);

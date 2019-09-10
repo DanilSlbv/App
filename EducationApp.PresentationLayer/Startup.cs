@@ -15,7 +15,8 @@ using EducationApp.DataAccessLayer.Repositories.Interface;
 using EducationApp.DataAcessLayer.AppContext;
 using EducationApp.BusinessLogicLayer.Common;
 using EducationApp.DataAccessLayer.Entities;
-
+using EducationApp.BusinessLogicLayer.Services.Interfaces;
+using EducationApp.BusinessLogicLayer.Services;
 
 namespace EducationApp.PresentationLayer
 {
@@ -32,27 +33,14 @@ namespace EducationApp.PresentationLayer
       
         public void ConfigureServices(IServiceCollection services)
         {
-            string connection = "Server=(localdb)\\MSSQLLocalDB; Database=EducationStoreDb; Trusted_Connection=True; MultipleActiveResultSets=True";
-            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString(connection)));
+            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationContext>()
                 .AddDefaultTokenProviders();
 
             services.AddScoped<IUserRepository, UserRepository>();
-
-            services.AddScoped<SmtpClient>((serviceProvider) => {
-                var config = serviceProvider.GetRequiredService<IConfiguration>();
-                return new SmtpClient()
-                {
-                    Host = config.GetValue<string>("Email:Smpt:Host:"),
-                    Port = config.GetValue<int>("Email:Smpt:Port:"),
-                    Credentials = new NetworkCredential(
-                        config.GetValue<string>("Email:Smpt:Username:"),
-                        config.GetValue<string>("Email:Smpt:Password:")
-                       )
-                };
-            });
+            services.AddScoped<IUserService, UserService>();
 
 
             services.Configure<IdentityOptions>(options =>
@@ -79,24 +67,29 @@ namespace EducationApp.PresentationLayer
                 options.CheckConsentNeeded = context => true;
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
-
             services.AddMvc();
         }
 
        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute(
+                    name: "default",
+                    template: "{controller=Home}/{action=Index}/{id?}");
+            });
+            app.UseMvcWithDefaultRoute();
+            app.UseAuthentication();
+
             loggerFactory.AddFile(Path.Combine("C:\\Users\\Anuitex-78\\source\\repos\\EducationApp", "LoggerFile.txt"));
             var logger = loggerFactory.CreateLogger("Error");
             app.Run(async (context) =>
             {
                 logger.LogInformation("Processing request{0}", context.Request.Path);
             });
-
-            app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseCookiePolicy();
-            app.UseMvc();
         }
     }
 }

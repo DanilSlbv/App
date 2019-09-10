@@ -34,10 +34,15 @@ namespace EducationApp.DataAccessLayer.Repositories
             }
             return user;
         }
-
-        public async Task CreateAsync(ApplicationUser user)
+        
+        public async Task<bool> CreateAsync(ApplicationUser user,string password)
         {
-            await _userManager.CreateAsync(user, user.Password);
+           var result= await _userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                return true;
+            }
+            return false;
         }
         
         public async Task DeleteAsync(string id)
@@ -91,9 +96,9 @@ namespace EducationApp.DataAccessLayer.Repositories
             return code;
         }
 
-        public async Task<bool> SignInAsync(ApplicationUser User, bool isPersitent)
+        public async Task<bool> SignInAsync(ApplicationUser User,string password, bool isPersitent)
         {
-            var result = await _signInManager.PasswordSignInAsync(User.Email, User.Password, isPersitent, false);
+            var result = await _signInManager.PasswordSignInAsync(User.Email, password, isPersitent, false);
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(User, isPersitent);

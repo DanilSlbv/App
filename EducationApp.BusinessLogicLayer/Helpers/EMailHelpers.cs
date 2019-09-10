@@ -7,31 +7,40 @@ using System.Threading.Tasks;
 using EducationApp.BusinessLogicLayer.Common;
 namespace EducationApp.BusinessLogicLayer.Helpers
 {
-    
+
     public class EmailHelpers
     {
-
-        private SmtpClient _smtpClient;
         private string _userEmail;
-        private string _code;
-        public EmailHelpers(string userEmail,string code)
+        private string _link;
+        public EmailHelpers(string userEmail,string link)
         {
-            _smtpClient =new SmtpClient();
             _userEmail = userEmail;
-            _code = code;
-           
+            _link = link;
         }
-
-        public async Task SendEmail()
+        public async Task<string> SendEmailAsync()
         {
-
-            await _smtpClient.SendMailAsync(new MailMessage(
-                from: Constants.EmailHelper.EmailFromWho,
-                to: _userEmail,
-                subject: Constants.EmailHelper.EmailSubject,
-                body: Constants.EmailHelper.EmailBody + _code
-                ));
-           _smtpClient.Dispose();
+           
+                var credentials = new NetworkCredential("storebooksender@gmail.com", "Qwerty987456");
+            var mail = new MailMessage()
+            {
+                From = new MailAddress("BookStore@book.com"),
+                Subject = Constants.EmailHelper.EmailSubject,
+                Body = Constants.EmailHelper.EmailBody + _link
+                };
+                mail.IsBodyHtml = true;
+                mail.To.Add(new MailAddress(_userEmail));
+                var Clien = new SmtpClient()
+                {
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    EnableSsl = true,
+                    Credentials = credentials
+                };
+                await Clien.SendMailAsync(mail);
+                return "EmailSend";
+            
         }
     }
 }

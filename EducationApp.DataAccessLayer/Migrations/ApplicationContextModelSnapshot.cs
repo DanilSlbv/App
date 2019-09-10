@@ -19,7 +19,7 @@ namespace EducationApp.DataAccessLayer.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("EducationApp.DataAcessLayer.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -48,8 +48,6 @@ namespace EducationApp.DataAccessLayer.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256);
 
-                    b.Property<string>("Password");
-
                     b.Property<string>("PasswordHash");
 
                     b.Property<string>("PhoneNumber");
@@ -76,7 +74,7 @@ namespace EducationApp.DataAccessLayer.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("EducationApp.DataAcessLayer.Entities.Author", b =>
+            modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Author", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -91,7 +89,7 @@ namespace EducationApp.DataAccessLayer.Migrations
                     b.ToTable("Authors");
                 });
 
-            modelBuilder.Entity("EducationApp.DataAcessLayer.Entities.AuthorInPrintingEditons", b =>
+            modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.AuthorInPrintingEditons", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -112,7 +110,7 @@ namespace EducationApp.DataAccessLayer.Migrations
                     b.ToTable("AuthorInPrintingEditons");
                 });
 
-            modelBuilder.Entity("EducationApp.DataAcessLayer.Entities.Order", b =>
+            modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -131,7 +129,7 @@ namespace EducationApp.DataAccessLayer.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("EducationApp.DataAcessLayer.Entities.OrderItem", b =>
+            modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.OrderItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -150,7 +148,7 @@ namespace EducationApp.DataAccessLayer.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("EducationApp.DataAcessLayer.Entities.Payment", b =>
+            modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Payment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -165,7 +163,7 @@ namespace EducationApp.DataAccessLayer.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("EducationApp.DataAcessLayer.Entities.PrintingEdition", b =>
+            modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.PrintingEdition", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -296,14 +294,14 @@ namespace EducationApp.DataAccessLayer.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("EducationApp.DataAcessLayer.Entities.AuthorInPrintingEditons", b =>
+            modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.AuthorInPrintingEditons", b =>
                 {
-                    b.HasOne("EducationApp.DataAcessLayer.Entities.Author", "Author")
+                    b.HasOne("EducationApp.DataAccessLayer.Entities.Author", "Author")
                         .WithMany()
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("EducationApp.DataAcessLayer.Entities.PrintingEdition", "PrintingEdition")
+                    b.HasOne("EducationApp.DataAccessLayer.Entities.PrintingEdition", "PrintingEdition")
                         .WithMany()
                         .HasForeignKey("PrintingEditionId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -319,7 +317,7 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("EducationApp.DataAcessLayer.Entities.ApplicationUser")
+                    b.HasOne("EducationApp.DataAccessLayer.Entities.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -327,7 +325,7 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("EducationApp.DataAcessLayer.Entities.ApplicationUser")
+                    b.HasOne("EducationApp.DataAccessLayer.Entities.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -340,7 +338,7 @@ namespace EducationApp.DataAccessLayer.Migrations
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("EducationApp.DataAcessLayer.Entities.ApplicationUser")
+                    b.HasOne("EducationApp.DataAccessLayer.Entities.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -348,7 +346,7 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("EducationApp.DataAcessLayer.Entities.ApplicationUser")
+                    b.HasOne("EducationApp.DataAccessLayer.Entities.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);

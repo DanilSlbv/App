@@ -1,33 +1,66 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-using EducationApp.BusinessLogicLayer.Services.Interfaces;
+﻿using EducationApp.BusinessLogicLayer.Helpers;
 using EducationApp.BusinessLogicLayer.Models.User;
+using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.PresentationLayer.Controllers.Base;
+using EducationApp.PresentationLayer.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
 namespace EducationApp.PresentationLayer.Controllers
 {
-    [Route("api/[controller]/[action]")]
+    [Route("Account")]
     [ApiController]
-    public class AccountController:Controller
+    [AllowAnonymous]
+    public class AccountController : Controller
     {
         private readonly IUserService _userService;
+
         public AccountController(IUserService userService)
         {
             _userService = userService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult>GetUser()
+        [HttpGet("sig")]
+        public async Task<IActionResult> Sig()
         {
-            var User =await  _userService.GetUserByIdAsync("1");
-            return Ok(User);
+            return Content("Sig");
         }
-
         [HttpPost]
-        public async Task<IActionResult> Post(UserSigUpModel userSigInModel)
+        [Route("SigIn")]
+        public async Task<IActionResult> SigIn(UserSigInModel userSigInModel)
         {
-            await _userService.SigUpUserAsync(userSigInModel);
-            return Content("SignUp");
+            var result = await _userService.SigInUserAsync(userSigInModel);
+            if (result)
+            {
+                return Content("SigIn");
+            }
+            return Content("Wrong");
         }
-       
+        [HttpPost]
+        [Route("SigUp")]
+        public async Task<IActionResult> SigUp(UserSigUpModel userSigUpModel)
+        {
+            EmailHelper emailHelper = new EmailHelper();
+            var applicationUser = await _userService.SigUpUserAsync(userSigUpModel);
+            var code = await _userService.GenerateUserEmailConfrimAsync(applicationUser.Id);
+            var link=emailHelper.GetUrl(applicationUser.Id, code);
+            EmailHelpers emailHelpers = new EmailHelpers(applicationUser.Email, link);
+            await emailHelpers.SendEmailAsync();
+            return Ok(applicationUser);
+           
+        }
+        [HttpPost]
+        [Route("SigOut")]
+        public async Task<IActionResult> SigOut()
+        {
+            
+                await _userService.SignOutUserAsycn();
+                return Ok("SigOut");
+           
+        }
     }
 }

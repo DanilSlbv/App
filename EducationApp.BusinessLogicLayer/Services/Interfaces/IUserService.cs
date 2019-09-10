@@ -8,13 +8,14 @@ namespace EducationApp.BusinessLogicLayer.Services.Interfaces
     {
         Task<List<UserModelItem>> GetAllUsersAsync();
         Task<UserModelItem> GetUserByIdAsync(string id);
-        Task SigUpUserAsync(UserSigUpModel userRegisterModel);
+        Task<UserModelItem> SigUpUserAsync(UserSigUpModel userRegisterModel);
+        Task<string> GenerateUserEmailConfrimAsync(string id);
         Task DeleteUserAsync(string id);
         Task<bool> EditUserAsync(UserEditModel userEditModel);
         Task<bool> AddUserRoleAsync(string RoleName);
         Task<bool> CheckUserRoleAsync(string id, string RoleName);
-        Task SigInAsync(UserSigInModel userLoginModel);
-        Task SignOutAsycn();
+        Task<bool> SigInUserAsync(UserSigInModel userLoginModel);
+        Task SignOutUserAsycn();
       
     }
 }

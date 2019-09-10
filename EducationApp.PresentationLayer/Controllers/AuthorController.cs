@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 
 namespace EducationApp.PresentationLayer.Controllers
 {
-    public class UserController
+    public class AuthorController
     {
-
     }
 }
