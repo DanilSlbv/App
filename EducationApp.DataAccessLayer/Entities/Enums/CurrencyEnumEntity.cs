@@ -4,11 +4,14 @@ using System.Text;
 
 namespace EducationApp.DataAccessLayer.Entities.Enums
 {
-    public enum Type
+    public enum CurrencyEnumEntity
     {
         None = 0,
-        Book = 1,
-        Journal = 2,
-        Newspaper = 3
+        USD = 1,
+        EUR = 2,
+        GBP = 3,
+        CHF = 4,
+        JPY = 5,
+        UAH = 6
     }
 }

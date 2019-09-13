@@ -4,10 +4,14 @@ using System.Text;
 
 namespace EducationApp.BusinessLogicLayer.Models.Enums
 {
-    public enum Status
+    public enum CurrencyModel
     {
-        None=0,
-        Paid=1,
-        Unpaid=2
+       None=0,
+       USD=1,
+       EUR=2,
+       GBP=3,
+       CHF=4,
+       JPY=5,
+       UAH=6
     }
 }

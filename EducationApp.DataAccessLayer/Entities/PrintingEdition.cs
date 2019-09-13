@@ -1,4 +1,5 @@
 ﻿using EducationApp.DataAccessLayer.Entities.Base;
+using EducationApp.DataAccessLayer.Entities.Enums;
 
 namespace EducationApp.DataAccessLayer.Entities
 {
@@ -8,9 +9,9 @@ namespace EducationApp.DataAccessLayer.Entities
         public string Description { get; set; }
         public float Price { get; set; }
         public bool IsRemoved { get; set; }
-        public enum Status { }
-        public enum Currency { }
-        public enum Type { }
+        public StatusEnumEntity status { get; set; }
+        public CurrencyEnumEntity currency { get; set; }
+        public TypeEnumEntity type { get; set; }
 
     }
 }

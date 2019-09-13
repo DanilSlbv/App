@@ -11,16 +11,14 @@ namespace EducationApp.BusinessLogicLayer.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-
         public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
         }
 
-
         public async Task<List<UserModelItem>> GetAllUsersAsync()
         {
-            List<ApplicationUser> applicationUsers = await _userRepository.GetAllAsync();
+            List<ApplicationUser> applicationUsers = await _userRepository.GetAllUsersAsync();
             UserModel userModel = new UserModel();
             foreach (var i in applicationUsers)
             {
@@ -28,44 +26,20 @@ namespace EducationApp.BusinessLogicLayer.Services
             }
             return userModel.Items;
         }
-
         public async Task<UserModelItem> GetUserByIdAsync(string id)
         {
-            UserModelItem userModel = new UserModelItem(await _userRepository.GetByIdAsync(id));
+            UserModelItem userModel = new UserModelItem(await _userRepository.GetUserByIdAsync(id));
             return userModel;
         }
-        public async Task<UserModelItem> SigUpUserAsync(UserSigUpModel userRegisterModel)
+        public async Task<UserModelItem> GetUserByEmailAsync(string userEmail)
         {
-            var applicationUser = new ApplicationUser
-            {
-                FirstName = userRegisterModel.FirstName,
-                LastName = userRegisterModel.LastName,
-                Email = userRegisterModel.Email,
-                UserName=userRegisterModel.Email
-            };
-            bool result = await _userRepository.CreateAsync(applicationUser, userRegisterModel.Password);
-            if (result)
-            {
-                return new UserModelItem(applicationUser);
-            }
-            return null;
+            return new UserModelItem(await _userRepository.GetUserByEmailAsync(userEmail));
         }
-        
-        public async Task<string> GenerateUserEmailConfrimAsync(string id)
+        public async Task<bool> DeleteUserAsync(string id)
         {
-            var applicationUser = await _userRepository.GetByIdAsync(id);
-            if(await _userRepository.CheckEmailConfirmAsync(applicationUser))
-            {
-                return null;
-            }
-            return await _userRepository.GenerateEmailConfirmAsync(applicationUser);   
+            var result=await _userRepository.DeleteUserAsync(id);
+            return result;
         }
-
-        public async Task DeleteUserAsync(string id)
-        {
-             await _userRepository.DeleteAsync(id);
-        }
-
         public async Task<bool> EditUserAsync(UserEditModel userEditModel)
         {
             ApplicationUser applicationUser = new ApplicationUser
@@ -76,46 +50,5 @@ namespace EducationApp.BusinessLogicLayer.Services
             };
             return await _userRepository.EditUserAsync(applicationUser);
         }
-
-        public async Task<bool> AddUserRoleAsync(string roleName)
-        {
-           bool result= await _userRepository.AddUserRoleAsync(roleName);
-            if (result)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public async Task<bool> CheckUserRoleAsync(string userId, string roleName)
-        {
-           bool result= await CheckUserRoleAsync(userId, roleName);
-            if (result)
-            {
-                return true;
-            }
-            return false;
-        }
-
-        public async Task<bool> SigInUserAsync(UserSigInModel userLoginModel)
-        {
-            ApplicationUser applicationUser = new ApplicationUser()
-            {
-                Email = userLoginModel.Email,
-                PasswordHash= userLoginModel.Password
-            };
-            if (await _userRepository.CheckEmailConfirmAsync(applicationUser))
-            {
-                await _userRepository.SignInAsync(applicationUser,userLoginModel.Password, userLoginModel.isPersitent);
-                return true;
-            }
-            return false;
-        }
-
-        public async Task SignOutUserAsycn()
-        {
-           await _userRepository.SignOutAsync();
-        }
-
     }
 }

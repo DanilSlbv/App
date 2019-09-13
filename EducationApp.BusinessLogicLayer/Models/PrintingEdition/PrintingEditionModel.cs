@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EducationApp.BusinessLogicLayer.Models.PrintingEdition
 {
-    class PrintingEditionModel:BaseModel
+    public class PrintingEditionModel:BaseModel
     {
         public List<PrintingEditionItemModel> Items { get; set; }
         public PrintingEditionModel()

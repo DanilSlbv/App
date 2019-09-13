@@ -21,12 +21,23 @@ namespace EducationApp.DataAccessLayer.Repositories.Base
         public async Task<List<TEntity>> GetAllAsync()=> await _dbSet.ToListAsync();
 
         public async Task<TEntity> GetByIdAsync(string id)=>await  _dbSet.FindAsync(id);
-
-        public async Task DeleteAsync(string id)
+        public async Task AddItemAsync(TEntity entity)
         {
-            TEntity item = await GetByIdAsync(id);
-            _dbSet.Remove(item);
+            _dbSet.Add(entity);
             await _context.SaveChangesAsync();
         }
+        public async Task EditItemAsync(TEntity entity)
+        {
+            _context.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteItemAsync(string id)
+        {
+            TEntity entity = await GetByIdAsync(id);
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

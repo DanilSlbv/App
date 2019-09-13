@@ -5,5 +5,6 @@ namespace EducationApp.DataAccessLayer.Repositories.Interface
 {
     public interface IAuthorRepository : IBaseEFRepository<Author>
     {
+        Task<Author> GetByNameAsync(string name);
     }
 }

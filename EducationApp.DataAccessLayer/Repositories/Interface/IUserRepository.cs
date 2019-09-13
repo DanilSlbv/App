@@ -1,19 +1,26 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EducationApp.DataAccessLayer.Entities;
-using System.Collections.Generic;
 
 namespace EducationApp.DataAccessLayer.Repositories.Interface
 {
-    public interface IUserRepository:IBaseEFRepository<ApplicationUser>
+    public interface IUserRepository
     {
+        Task<List<ApplicationUser>> GetAllUsersAsync();
+        Task<ApplicationUser> GetUserByIdAsync(string id);
+        Task<ApplicationUser> GetUserByEmailAsync(string userEmail);
         Task<bool> CreateAsync(ApplicationUser user, string password);
+        Task<bool> DeleteUserAsync(string id);
         Task<bool> EditUserAsync(ApplicationUser user);
-        Task<bool> AddUserRoleAsync(string roleName);
-        Task<bool> CheckUserRoleAsync(string id,string roleName);
+        Task<bool> PasswordRecoveryAsync(ApplicationUser applicationUser, string token, string newPassword);
+        Task<bool> AddtoRoleAsync(ApplicationUser applicationUser);
+        Task<bool> ConfrirmEmailAsync(string userid, string token);
         Task<bool> CheckEmailConfirmAsync(ApplicationUser user);
+        Task<string> GeneratePasswordResetTokenAsync(ApplicationUser applicationUser);
         Task<string> GenerateEmailConfirmAsync(ApplicationUser user);
-        Task<bool> SignInAsync(ApplicationUser user,string password,bool isPersitent);
+        Task<bool> SignInAsync(string userEmail,string userPassword,bool isPersitent);
+        Task<bool> CanUserSigInAsync(ApplicationUser applicationUser);
+        Task ConfirmEmailAuthorizationAsync(ApplicationUser applicationUser, bool isPersitent);
         Task SignOutAsync();
     }
 }

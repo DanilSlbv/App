@@ -9,6 +9,8 @@ namespace EducationApp.DataAccessLayer.Repositories.Interface
     {
         Task<List<TEntity>> GetAllAsync();
         Task<TEntity> GetByIdAsync(string id);
-        Task DeleteAsync(string id);
+        Task AddItemAsync(TEntity entity);
+        Task DeleteItemAsync(string id);
+        Task EditItemAsync(TEntity entity);
     }
 }
