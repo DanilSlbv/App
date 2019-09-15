@@ -4,14 +4,16 @@ using EducationApp.DataAcessLayer.AppContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EducationApp.DataAccessLayer.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20190915164819_initalCreate")]
+    partial class initalCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,8 +94,6 @@ namespace EducationApp.DataAccessLayer.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("AuthorId");
-
-                    b.Property<DateTime>("Date");
 
                     b.Property<string>("PrintingEditionId");
 

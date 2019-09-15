@@ -1,6 +1,7 @@
 ﻿using EducationApp.BusinessLogicLayer.Helpers;
 using EducationApp.BusinessLogicLayer.Models.User;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
+using EducationApp.DataAccessLayer.Initialization;
 using EducationApp.PresentationLayer.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -36,7 +37,7 @@ namespace EducationApp.PresentationLayer.Controllers
             {
                 JwtHelper jwtHelper = new JwtHelper();
                 var applicationUser = await _userService.GetUserByEmailAsync(accountSigInModel.Email);
-                object resultToken=await jwtHelper.GenerateJwtToken(accountSigInModel.Email, applicationUser, _configuration);
+                object resultToken=await jwtHelper.GenerateAccessToken(accountSigInModel.Email, applicationUser, _configuration);
                 if (resultToken != null)
                 {
                     return Ok(resultToken);
@@ -52,7 +53,11 @@ namespace EducationApp.PresentationLayer.Controllers
         {
                 var applicationUser = await _accountService.SigUpUserAsync(accountSigInModel);
                 var code = await _accountService.GenerateUserEmailConfrimTokenAsync(applicationUser.Id);
-                var callbackUrl =await GetUrl("ConfirmEmail", applicationUser.Id, code);
+                var callbackUrl =await new EmailConfirmUrl().GetUrl(
+                    "ConfirmEmail", 
+                    applicationUser.Id, 
+                    code, 
+                    HttpContext.Request.Scheme);
                 EmailHelpers emailHelpers = new EmailHelpers(applicationUser.Email, callbackUrl);
                 await emailHelpers.SendEmailAsync();
                 return Ok(applicationUser);
@@ -70,7 +75,11 @@ namespace EducationApp.PresentationLayer.Controllers
                 var recoveryToken = await _accountService.GeneratePasswordResetTokenAsync(accountRecoveryPasswordModel.id);
                 if (recoveryToken != null)
                 {
-                    var callbackUrl = await GetUrl("RecoveryPassword", applicationUser.Id, recoveryToken);
+                    var callbackUrl = await new EmailConfirmUrl().GetUrl(
+                        "RecoveryPassword", 
+                        applicationUser.Id, 
+                        recoveryToken, 
+                        HttpContext.Request.Scheme);
                     EmailHelpers emailHelpers = new EmailHelpers(accountRecoveryPasswordModel.id, callbackUrl);
                     await emailHelpers.SendEmailAsync();
                     return Content("Email Send");
@@ -120,7 +129,7 @@ namespace EducationApp.PresentationLayer.Controllers
             }
             var applicationUser = await _userService.GetUserByIdAsync(userId);
             JwtHelper jwtHelper = new JwtHelper();
-            await jwtHelper.GenerateJwtToken(applicationUser.Email, applicationUser, _configuration);
+            await jwtHelper.GenerateAccessToken(applicationUser.Email, applicationUser, _configuration);
             if(await _accountService.CanSigInAsync(userId))
             {
                 await _accountService.ConfirmEmailAuthorizationAsync(userId);
@@ -129,16 +138,25 @@ namespace EducationApp.PresentationLayer.Controllers
             return Ok(resultCheck);
         }
 
-        
-        public async Task<string> GetUrl(string acionName, string userId, string recoveryToken)
-        {
-            var callbackUrl = Url.Action(
-                                 acionName,
-                                 "Account",
-                                 new { userId = userId, code = recoveryToken },
-                                 protocol: HttpContext.Request.Scheme
-                                 );
-            return callbackUrl;
-        }
+        //[HttpPost]
+        //[Route("refresh")]
+        //public async Task<IActionResult> Refresh(string token, string refreshTooken, string userEmail,)
+        //{
+        //    RefreshToken refreshToken = new RefreshToken();
+        //    var principal = refreshToken.GetPrincipalFromExpiredToken(token);
+        //    JwtHelper jwtHelper = new JwtHelper();
+        //    var newJwtToken = jwtHelper.GenerateAccessToken(userEmail,)
+        //}
+
+        //public async Task<string> GetUrl(string acionName, string userId, string recoveryToken)
+        //{
+        //    var callbackUrl = Url.Action(
+        //                         acionName,
+        //                         "Account",
+        //                         new { userId = userId, code = recoveryToken },
+        //                         protocol: HttpContext.Request.Scheme
+        //                         );
+        //    return callbackUrl;
+        //}
     }
 }

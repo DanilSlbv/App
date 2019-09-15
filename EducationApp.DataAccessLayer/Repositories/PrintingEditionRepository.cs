@@ -36,7 +36,7 @@ namespace EducationApp.DataAccessLayer.Repositories
         }
         public async Task<List<PrintingEdition>>GetItemsByTypeAsync(TypeEnumEntity type)
         {
-            var result = _context.PrintingEditions.Where(x => x.type==type).ToList();
+            var result = _context.PrintingEditions.Where(x => x.Type==type).ToList();
             return result;
         }
         public async Task<List<PrintingEdition>> SortItemsByPriceAscAsync()

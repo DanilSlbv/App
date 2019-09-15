@@ -8,10 +8,5 @@ namespace EducationApp.DataAccessLayer.Entities.Base
     {
         [Key]
         public string Id { get; set; }
-        public DateTime CreationData { get; set; }
-        public BaseModel()
-        {
-            CreationData = DateTime.UtcNow;
-        }
     }
 }

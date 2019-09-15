@@ -9,9 +9,9 @@ namespace EducationApp.DataAccessLayer.Entities
         public string Description { get; set; }
         public float Price { get; set; }
         public bool IsRemoved { get; set; }
-        public StatusEnumEntity status { get; set; }
-        public CurrencyEnumEntity currency { get; set; }
-        public TypeEnumEntity type { get; set; }
+        public StatusEnumEntity Status { get; set; }
+        public CurrencyEnumEntity Currency { get; set; }
+        public TypeEnumEntity Type { get; set; }
 
     }
 }

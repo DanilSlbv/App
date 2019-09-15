@@ -28,9 +28,9 @@ namespace EducationApp.BusinessLogicLayer.Services
                 Description = printingEditionItemModel.Description,
                 Price = printingEditionItemModel.Price,
                 IsRemoved = printingEditionItemModel.IsRemoved,
-                currency = (CurrencyEnumEntity)printingEditionItemModel.currency,
-                status = (StatusEnumEntity)printingEditionItemModel.status,
-                type = (TypeEnumEntity)printingEditionItemModel.type
+                Currency = (CurrencyEnumEntity)printingEditionItemModel.currency,
+                Status = (StatusEnumEntity)printingEditionItemModel.status,
+                Type = (TypeEnumEntity)printingEditionItemModel.type
             };
             await _printingEditionRepository.AddItemAsync(printingEdition);
         }
@@ -49,9 +49,9 @@ namespace EducationApp.BusinessLogicLayer.Services
                 Description = printingEditionItemModel.Description,
                 Price = printingEditionItemModel.Price,
                 IsRemoved = printingEditionItemModel.IsRemoved,
-                currency = (CurrencyEnumEntity)printingEditionItemModel.currency,
-                status = (StatusEnumEntity)printingEditionItemModel.status,
-                type = (TypeEnumEntity)printingEditionItemModel.type
+                Currency = (CurrencyEnumEntity)printingEditionItemModel.currency,
+                Status = (StatusEnumEntity)printingEditionItemModel.status,
+                Type = (TypeEnumEntity)printingEditionItemModel.type
             };
             await _printingEditionRepository.EditItemAsync(printingEdition);
         }

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,9 +14,9 @@ namespace EducationApp.PresentationLayer.Helpers
 {
     public class JwtHelper
     {
-        public async Task<object> GenerateJwtToken(string email, UserModelItem userModelItem, IConfiguration configuration)
+        public async Task<object> GenerateAccessToken(string email, UserModelItem userModelItem, IConfiguration configuration)
         {
-            var claims = new List<Claim>
+            var accessClaims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub,email),
                 new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
@@ -30,12 +31,24 @@ namespace EducationApp.PresentationLayer.Helpers
             var token = new JwtSecurityToken(
                 configuration["JwtIssuer"],
                 configuration["JwtIssuer"],
-                claims,
+                accessClaims,
                 expires: expires,
                 signingCredentials: creds
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public async Task<object> GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var random = RandomNumberGenerator.Create())
+            {
+                random.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
+
+
     }
 }

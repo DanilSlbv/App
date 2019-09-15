@@ -18,9 +18,9 @@ namespace EducationApp.BusinessLogicLayer.Models.PrintingEdition
             Description = printingEdition.Description;
             Price = printingEdition.Price;
             IsRemoved = printingEdition.IsRemoved;
-            status = (StatusModel)printingEdition.status;
-            currency = (CurrencyModel)printingEdition.currency;
-            type = (TypeModel)printingEdition.type;
+            status = (StatusModel)printingEdition.Status;
+            currency = (CurrencyModel)printingEdition.Currency;
+            type = (TypeModel)printingEdition.Type;
         }
     }
 }

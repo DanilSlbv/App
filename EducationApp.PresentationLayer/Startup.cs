@@ -107,12 +107,12 @@ namespace EducationApp.PresentationLayer
                 app.UseAuthentication();
                 app.UseMvc();
                 app.UseMvcWithDefaultRoute();
-            loggerFactory.AddFile(Path.Combine("C:\\Users\\Anuitex-78\\source\\repos\\EducationApp", "LoggerFile.txt"));
-            var logger = loggerFactory.CreateLogger("Error");
-            app.Run(async (context) =>
-            {
-                logger.LogInformation("Processing request{0}", context.Request.Path);
-            });
+            //loggerFactory.AddFile(Path.Combine("C:\\Users\\Anuitex-78\\source\\repos\\EducationApp", "LoggerFile.txt"));
+            //var logger = loggerFactory.CreateLogger("Error");
+            //app.Run(async (context) =>
+            //{
+            //    logger.LogInformation("Processing request{0}", context.Request.Path);
+            //});
         }
     }
 }

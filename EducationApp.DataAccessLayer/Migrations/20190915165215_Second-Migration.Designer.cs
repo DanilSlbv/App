@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EducationApp.DataAccessLayer.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20190910142149_initialcreate")]
-    partial class initialcreate
+    [Migration("20190915165215_Second-Migration")]
+    partial class SecondMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -78,11 +78,8 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Author", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreationData");
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<string>("Name");
 
@@ -93,15 +90,14 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.AuthorInPrintingEditons", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<int>("AuthorId");
+                    b.Property<string>("AuthorId");
 
-                    b.Property<DateTime>("CreationData");
+                    b.Property<DateTime>("Date");
 
-                    b.Property<int>("PrintingEditionId");
+                    b.Property<string>("PrintingEditionId");
 
                     b.HasKey("Id");
 
@@ -114,49 +110,50 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Order", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("CreationData");
+                    b.Property<DateTime>("Date");
 
                     b.Property<string>("Description");
 
-                    b.Property<int>("PaymentId");
+                    b.Property<string>("PaymentId");
 
-                    b.Property<int>("UserId");
+                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PaymentId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.OrderItem", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<double>("Amount");
 
                     b.Property<int>("Count");
 
-                    b.Property<DateTime>("CreationData");
+                    b.Property<int>("Currency");
 
-                    b.Property<int>("PrintingEditionsId");
+                    b.Property<string>("PrintingEditionId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PrintingEditionId");
 
                     b.ToTable("OrderItems");
                 });
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Payment", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("CreationData");
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
 
                     b.Property<int>("TransactionId");
 
@@ -167,11 +164,10 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.PrintingEdition", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("CreationData");
+                    b.Property<int>("Currency");
 
                     b.Property<string>("Description");
 
@@ -180,6 +176,10 @@ namespace EducationApp.DataAccessLayer.Migrations
                     b.Property<string>("Name");
 
                     b.Property<float>("Price");
+
+                    b.Property<int>("Status");
+
+                    b.Property<int>("Type");
 
                     b.HasKey("Id");
 
@@ -300,13 +300,29 @@ namespace EducationApp.DataAccessLayer.Migrations
                 {
                     b.HasOne("EducationApp.DataAccessLayer.Entities.Author", "Author")
                         .WithMany()
-                        .HasForeignKey("AuthorId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("AuthorId");
 
                     b.HasOne("EducationApp.DataAccessLayer.Entities.PrintingEdition", "PrintingEdition")
                         .WithMany()
-                        .HasForeignKey("PrintingEditionId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PrintingEditionId");
+                });
+
+            modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Order", b =>
+                {
+                    b.HasOne("EducationApp.DataAccessLayer.Entities.Payment", "Payment")
+                        .WithMany()
+                        .HasForeignKey("PaymentId");
+
+                    b.HasOne("EducationApp.DataAccessLayer.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.OrderItem", b =>
+                {
+                    b.HasOne("EducationApp.DataAccessLayer.Entities.PrintingEdition", "PrintingEdition")
+                        .WithMany()
+                        .HasForeignKey("PrintingEditionId");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
