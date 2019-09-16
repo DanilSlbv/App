@@ -6,8 +6,7 @@ using EducationApp.DataAccessLayer.Entities;
 
 namespace EducationApp.BusinessLogicLayer.Models.User
 {
-
-    public class UserModelItem
+    public class UserModelItem: BaseModel
     {
         public string Id { get; set; }
         public string FirstName { get; set; }

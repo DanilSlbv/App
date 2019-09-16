@@ -4,7 +4,6 @@ using EducationApp.DataAccessLayer.Entities;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using EducationApp.DataAccessLayer.Initialization;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {
@@ -27,12 +26,7 @@ namespace EducationApp.DataAccessLayer.Repositories
 
         public async Task<ApplicationUser> GetUserByIdAsync(string id)
         {
-            var user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-            {
-                return null;
-            }
-            return user;
+            return  await _userManager.FindByIdAsync(id);
         }
         public async Task<ApplicationUser> GetUserByEmailAsync(string userEmail)
         {
@@ -83,7 +77,7 @@ namespace EducationApp.DataAccessLayer.Repositories
 
         public async Task<bool> AddtoRoleAsync(ApplicationUser applicationUser)
         {
-            var result = await _userManager.AddToRoleAsync(applicationUser, "admin");
+            var result = await _userManager.AddToRoleAsync(applicationUser, "user");
             if (result.Succeeded)
             {
                 return true;

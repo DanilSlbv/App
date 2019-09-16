@@ -15,7 +15,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             _userRepository = userRepository;
         }
 
-        public async Task<UserModelItem> SigUpUserAsync(AccountSigUpModel userRegisterModel)
+        public async Task<UserModelItem> SigUpAsync(AccountSigUpModel userRegisterModel)
         {
             var applicationUser = new ApplicationUser
             {
@@ -72,7 +72,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             return result;
         }
 
-        public async Task<bool> SigInUserAsync(AccountSigInModel accountSigInModel)
+        public async Task<bool> SigInAsync(AccountSigInModel accountSigInModel)
         {
             var applicationUser = await _userRepository.GetUserByEmailAsync(accountSigInModel.Email);
             var checkConfirm = await CheckEmailConfirmAsync(applicationUser.Id);

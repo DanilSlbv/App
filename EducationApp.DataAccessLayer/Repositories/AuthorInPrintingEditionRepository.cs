@@ -8,40 +8,38 @@ using System.Threading.Tasks;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {
-    public class AuthorInPrintingEditionRepository:IAuthorInPrintingEditionRepository
+    public class AuthorInPrintingEditionRepository:IAuthorInPrintingEditionRepository,IBaseEFRepository<AuthorInPrintingEditons>
     {
-        private readonly IBaseEFRepository<AuthorInPrintingEditons> _baseEFRepository;
         private readonly ApplicationContext _context;
-        public AuthorInPrintingEditionRepository(IBaseEFRepository<AuthorInPrintingEditons> baseEFRepository, ApplicationContext context)
+        public AuthorInPrintingEditionRepository(ApplicationContext context)
         {
-            _baseEFRepository = baseEFRepository;
             _context = context;
         }
 
-        public async Task AddItemAsync(AuthorInPrintingEditons entity)
+        public async Task AddAsync(AuthorInPrintingEditons entity)
         {
-             await _baseEFRepository.AddItemAsync(entity);
+             await AddAsync(entity);
         }
 
-        public async Task DeleteItemAsync(string id)
+        public async Task DeleteAsync(string id)
         {
-            await _baseEFRepository.DeleteItemAsync(id);
+            await DeleteAsync(id);
         }
 
-        public async Task EditItemAsync(AuthorInPrintingEditons entity)
+        public async Task EditAsync(AuthorInPrintingEditons entity)
         {
-            await _baseEFRepository.EditItemAsync(entity);
+            await EditAsync(entity);
         }
 
         public async Task<List<AuthorInPrintingEditons>> GetAllAsync()
         {
-            var items = await _baseEFRepository.GetAllAsync();
+            var items = await GetAllAsync();
             return items;
         }
 
         public async Task<AuthorInPrintingEditons> GetByIdAsync(string id)
         {
-            var item = await _baseEFRepository.GetByIdAsync(id);
+            var item = await GetByIdAsync(id);
             return item;
         }
     }

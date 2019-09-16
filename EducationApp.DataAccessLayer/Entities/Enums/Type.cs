@@ -1,6 +1,6 @@
 ﻿namespace EducationApp.DataAccessLayer.Entities.Enums
 {
-    public enum TypeEnumEntity
+    public enum Type
     {
         None = 0,
         Book = 1,

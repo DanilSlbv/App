@@ -3,7 +3,6 @@ using EducationApp.BusinessLogicLayer.Models.PrintingEdition;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,8 +10,8 @@ using System.Threading.Tasks;
 namespace EducationApp.PresentationLayer.Controllers
 {
     [ApiController]
-    [Authorize]
-    [Route("printingedition")]
+    [AllowAnonymous]
+    [Route("/printingedition")]
     public class PrintingEditionController:ControllerBase
     {
         private readonly IPrintingEditionService _printingEditionService;
@@ -20,77 +19,62 @@ namespace EducationApp.PresentationLayer.Controllers
         {
             _printingEditionService = printingEditionService;
         }
-        [HttpGet]
-        [Route("getallitems")]
-        [Authorize(Roles = "admin,user")]
+        [HttpGet("/getallitems")]
         public async Task<IActionResult> GetAllItems()
         {
             var items = await _printingEditionService.GetAllAsync();
             return Ok(items);
         }
-        [HttpGet]
-        [Route("getbyid")]
-        [Authorize(Roles = "admin,user")]
+        [HttpGet("/getbyid")]
         public async Task<IActionResult> GetById(string id)
         {
             var item = await _printingEditionService.GetByIdAsync(id);
             return Ok(item);
         }
-        [HttpGet]
-        [Route("getbyprice")]
-        [Authorize(Roles = "admin,user")]
+        [HttpGet("/getbyprice")]
         public async Task<IActionResult> GetByPriceAsync(float min , float max)
         {
-            var item = await _printingEditionService.GetItemsByPriceAsync(min,max);
+            var item = await _printingEditionService.GetByPriceAsync(min,max);
             return Ok(item);
         }
-        [HttpGet]
-        [Route("getbytype")]
-        [Authorize(Roles = "admin,user")]
-        public async Task<IActionResult> GetByTypeAsync(TypeModel typeModel)
+        [HttpGet("/getbytype")]
+        public async Task<IActionResult> GetByTypeAsync(Type typeModel)
         {
-            var items = await _printingEditionService.GetItemsByTypeAsync(typeModel);
+            var items = await _printingEditionService.GetByTypeAsync(typeModel);
             return Ok(items);
         }
-        [HttpGet]
-        [Route("sortbypriceasc")]
-        [Authorize(Roles = "admin,user")]
-        public async Task<IActionResult> SortByPriceAscAsync()
+        [HttpGet("/sortbypriceasc")]
+        public async Task<IActionResult> SortByPriceAscendingAsync()
         {
-            var items = await _printingEditionService.SortItemsByPriceAscAsync();
+            var items = await _printingEditionService.SortByPriceAscendingAsync();
             return Ok(items);
         }
-        [HttpGet]
-        [Route("sortbypricedesc")]
-        [Authorize(Roles = "admin,user")]
-        public async Task<IActionResult> SortByPriceDescAsync()
+        [HttpGet("/sortbypricedesc")]
+        public async Task<IActionResult> SortByPriceDescendingAsync()
         {
-            var items = await _printingEditionService.SortItemsByPriceDescAsync();
+            var items = await _printingEditionService.SortByPriceDescendingAsync();
             return Ok(items);
         }
-        [HttpPost]
-        [Route("additem")]
+        [HttpPost("/additem")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> AddItem(PrintingEditionItemModel printingEditionItemModel)
         {
-            await _printingEditionService.AddItemAsync(printingEditionItemModel);
-            return Ok("AddItem");
+            await _printingEditionService.AddAsync(printingEditionItemModel);
+            return Ok(true);
         }
-        [HttpPost]
-        [Route("deleteitem")]
+        [HttpPost("/deleteitem/{id}")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteItem(string id)
         {
-            await _printingEditionService.DeleteItemAsync(id);
-            return Ok("DeleteItem");
+            await _printingEditionService.DeleteAsync(id);
+            return Ok(true);
         }
-        [HttpPost]
-        [Route("edititem")]
+        [HttpPost("/edititem")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> EditItem(PrintingEditionItemModel printingEditionItemModel)
         {
-            await _printingEditionService.EditItemAsync(printingEditionItemModel);
-            return Ok("EditItem");
+            await _printingEditionService.EditAsync(printingEditionItemModel);
+            return Ok(true);
         }
     }
 }

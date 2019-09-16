@@ -19,32 +19,32 @@ namespace EducationApp.BusinessLogicLayer.Services
         }
 
 
-        public async Task AddItemAsync(AuthorItemModel entity)
+        public async Task AddAsync(AuthorItemModel entity)
         {
             var author = new Author() { Id = entity.id, Name = entity.Name };
-            await _authorRepository.AddItemAsync(author);
+            await _authorRepository.AddAsync(author);
         }
 
-        public async Task DeleteItemAsync(string id)
+        public async Task DeleteAsync(string id)
         {
-            await _authorRepository.DeleteItemAsync(id);
+            await _authorRepository.DeleteAsync(id);
         }
 
-        public async Task EditItemAsync(AuthorItemModel entity)
+        public async Task EditAsync(AuthorItemModel entity)
         {
             var author = new Author() { Id = entity.id, Name = entity.Name };
-            await _authorRepository.EditItemAsync(author);
+            await _authorRepository.EditAsync(author);
         }
 
-        public async Task<List<AuthorItemModel>> GetAllAsync()
+        public async Task<AuthorModel> GetAllAsync()
         {
             List<Author> authors = await _authorRepository.GetAllAsync();
             var authorModel = new AuthorModel();
-            foreach(var i in authors)
+            foreach(var author in authors)
             {
-                authorModel.Items.Add(new AuthorItemModel(i));
+                authorModel.Items.Add(new AuthorItemModel(author));
             }
-            return authorModel.Items;
+            return authorModel;
         }
 
         public async Task<AuthorItemModel> GetByIdAsync(string id)

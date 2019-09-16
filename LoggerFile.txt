@@ -302,3 +302,180 @@ Request finished in 96.6366ms 500
 Request starting HTTP/1.1 GET http://localhost:44395/  
 Processing request/
 Request finished in 4.8136ms 200 
+Request starting HTTP/1.1 GET http://localhost:50953/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Request finished in 34.1037ms 200 
+Processing request/
+Request finished in 252.9956ms 200 
+Request starting HTTP/1.1 POST http://localhost:50953/account/sigup application/json 119
+Successfully validated the token.
+Route matched with {action = "SigUp", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SigUp(EducationApp.BusinessLogicLayer.Models.User.AccountSigUpModel) on controller EducationApp.PresentationLayer.Controllers.AccountController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.AccountController.SigUp (EducationApp.PresentationLayer) in 252.4512ms
+Connection id "0HLPQL56GGUMD", Request id "0HLPQL56GGUMD:00000002": An unhandled exception was thrown by the application.
+Request finished in 457.5125ms 500 
+Connection id "0HLPQL56GGUMD", Request id "0HLPQL56GGUMD:00000002": the application completed without reading the entire request body.
+Request starting HTTP/1.1 POST http://localhost:50953/account/sigup application/json 119
+Successfully validated the token.
+Route matched with {action = "SigUp", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SigUp(EducationApp.BusinessLogicLayer.Models.User.AccountSigUpModel) on controller EducationApp.PresentationLayer.Controllers.AccountController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.AccountController.SigUp (EducationApp.PresentationLayer) in 8.6522ms
+Connection id "0HLPQL56GGUME", Request id "0HLPQL56GGUME:00000002": An unhandled exception was thrown by the application.
+Request finished in 57.291ms 500 
+Connection id "0HLPQL56GGUME", Request id "0HLPQL56GGUME:00000002": the application completed without reading the entire request body.
+Request starting HTTP/1.1 POST http://localhost:50953/account/sigup application/json 119
+Successfully validated the token.
+Route matched with {action = "SigUp", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SigUp(EducationApp.BusinessLogicLayer.Models.User.AccountSigUpModel) on controller EducationApp.PresentationLayer.Controllers.AccountController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.AccountController.SigUp (EducationApp.PresentationLayer) in 1.5994ms
+Connection id "0HLPQL56GGUMD", Request id "0HLPQL56GGUMD:00000003": An unhandled exception was thrown by the application.
+Request finished in 22.6979ms 500 
+Connection id "0HLPQL56GGUMD", Request id "0HLPQL56GGUMD:00000003": the application completed without reading the entire request body.
+Request starting HTTP/1.1 POST http://localhost:50953/account/sigup application/json 119
+Successfully validated the token.
+Route matched with {action = "SigUp", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SigUp(EducationApp.BusinessLogicLayer.Models.User.AccountSigUpModel) on controller EducationApp.PresentationLayer.Controllers.AccountController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.AccountController.SigUp (EducationApp.PresentationLayer) in 1.0338ms
+Connection id "0HLPQL56GGUME", Request id "0HLPQL56GGUME:00000003": An unhandled exception was thrown by the application.
+Request finished in 19.302ms 500 
+Connection id "0HLPQL56GGUME", Request id "0HLPQL56GGUME:00000003": the application completed without reading the entire request body.
+Request starting HTTP/1.1 POST http://localhost:50953/account/sigup application/json 119
+Successfully validated the token.
+Route matched with {action = "SigUp", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SigUp(EducationApp.BusinessLogicLayer.Models.User.AccountSigUpModel) on controller EducationApp.PresentationLayer.Controllers.AccountController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.AccountController.SigUp (EducationApp.PresentationLayer) in 1.315ms
+Connection id "0HLPQL56GGUMD", Request id "0HLPQL56GGUMD:00000004": An unhandled exception was thrown by the application.
+Request finished in 27.4948ms 500 
+Connection id "0HLPQL56GGUMD", Request id "0HLPQL56GGUMD:00000004": the application completed without reading the entire request body.
+Request starting HTTP/1.1 POST http://localhost:50953/account/sigup application/json 119
+Successfully validated the token.
+Route matched with {action = "SigUp", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SigUp(EducationApp.BusinessLogicLayer.Models.User.AccountSigUpModel) on controller EducationApp.PresentationLayer.Controllers.AccountController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.AccountController.SigUp (EducationApp.PresentationLayer) in 0.6662ms
+Connection id "0HLPQL56GGUME", Request id "0HLPQL56GGUME:00000004": An unhandled exception was thrown by the application.
+Request finished in 20.5459ms 500 
+Connection id "0HLPQL56GGUME", Request id "0HLPQL56GGUME:00000004": the application completed without reading the entire request body.
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Request starting HTTP/1.1 GET http://localhost:50953/  
+Request starting HTTP/1.1 POST http://localhost:50953/account/sigup application/json 119
+Request finished in 32.0225ms 200 
+Successfully validated the token.
+Request finished in 237.322ms 404 
+Route matched with {action = "SigUp", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SigUp(EducationApp.BusinessLogicLayer.Models.User.AccountSigUpModel) on controller EducationApp.PresentationLayer.Controllers.AccountController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.AccountController.SigUp (EducationApp.PresentationLayer) in 184.6152ms
+Connection id "0HLPQL6U7409N", Request id "0HLPQL6U7409N:00000001": An unhandled exception was thrown by the application.
+Request finished in 497.0995ms 500 
+Connection id "0HLPQL6U7409N", Request id "0HLPQL6U7409N:00000001": the application completed without reading the entire request body.
+Request starting HTTP/1.1 POST http://localhost:50953/account/sigup application/json 119
+Successfully validated the token.
+Route matched with {action = "SigUp", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SigUp(EducationApp.BusinessLogicLayer.Models.User.AccountSigUpModel) on controller EducationApp.PresentationLayer.Controllers.AccountController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.AccountController.SigUp (EducationApp.PresentationLayer) in 4.6769ms
+Connection id "0HLPQL6U7409O", Request id "0HLPQL6U7409O:00000002": An unhandled exception was thrown by the application.
+Request finished in 52.0073ms 500 
+Connection id "0HLPQL6U7409O", Request id "0HLPQL6U7409O:00000002": the application completed without reading the entire request body.
+Request starting HTTP/1.1 POST http://localhost:50953/account/sigup application/json 119
+Successfully validated the token.
+Route matched with {action = "SigUp", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SigUp(EducationApp.BusinessLogicLayer.Models.User.AccountSigUpModel) on controller EducationApp.PresentationLayer.Controllers.AccountController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.AccountController.SigUp (EducationApp.PresentationLayer) in 0.8168ms
+Connection id "0HLPQL6U7409M", Request id "0HLPQL6U7409M:00000002": An unhandled exception was thrown by the application.
+Request finished in 21.7979ms 500 
+Connection id "0HLPQL6U7409M", Request id "0HLPQL6U7409M:00000002": the application completed without reading the entire request body.
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Request starting HTTP/1.1 GET http://localhost:50953/  
+Request finished in 102.7142ms 404 
+Request finished in 102.7106ms 404 
+Request starting HTTP/1.1 GET http://localhost:50953/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Request starting HTTP/1.1 POST http://localhost:50953/account/sigup application/json 119
+Request finished in 28.9349ms 200 
+Successfully validated the token.
+Processing request/
+Request finished in 294.4833ms 200 
+Route matched with {action = "SigUp", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SigUp(EducationApp.BusinessLogicLayer.Models.User.AccountSigUpModel) on controller EducationApp.PresentationLayer.Controllers.AccountController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.AccountController.SigUp (EducationApp.PresentationLayer) in 175.5159ms
+Connection id "0HLPQLLIJ2JQ4", Request id "0HLPQLLIJ2JQ4:00000001": An unhandled exception was thrown by the application.
+Request finished in 578.5848ms 500 
+Connection id "0HLPQLLIJ2JQ4", Request id "0HLPQLLIJ2JQ4:00000001": the application completed without reading the entire request body.
+Request starting HTTP/1.1 POST http://localhost:50953/account/sigup application/json 119
+Successfully validated the token.
+Route matched with {action = "SigUp", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SigUp(EducationApp.BusinessLogicLayer.Models.User.AccountSigUpModel) on controller EducationApp.PresentationLayer.Controllers.AccountController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.AccountController.SigUp (EducationApp.PresentationLayer) in 4.8074ms
+Connection id "0HLPQLLIJ2JQ5", Request id "0HLPQLLIJ2JQ5:00000002": An unhandled exception was thrown by the application.
+Request finished in 40.8844ms 500 
+Connection id "0HLPQLLIJ2JQ5", Request id "0HLPQLLIJ2JQ5:00000002": the application completed without reading the entire request body.
+Request starting HTTP/1.1 POST http://localhost:50953/account/sigout application/json 119
+Successfully validated the token.
+Route matched with {action = "SigOut", controller = "Account"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] SigOut() on controller EducationApp.PresentationLayer.Controllers.AccountController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.AccountController.SigOut (EducationApp.PresentationLayer) in 0.8055ms
+Connection id "0HLPQLLIJ2JQ3", Request id "0HLPQLLIJ2JQ3:00000002": An unhandled exception was thrown by the application.
+Request finished in 40.9906ms 500 
+Connection id "0HLPQLLIJ2JQ3", Request id "0HLPQLLIJ2JQ3:00000002": the application completed without reading the entire request body.
+Request starting HTTP/1.1 GET http://localhost:50953/user/getallusers application/json 119
+Successfully validated the token.
+Route matched with {action = "GetAllUsers", controller = "User"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllUsers() on controller EducationApp.PresentationLayer.Controllers.UserController (EducationApp.PresentationLayer).
+Authorization was successful.
+Authorization was successful.
+Executing action method EducationApp.PresentationLayer.Controllers.UserController.GetAllUsers (EducationApp.PresentationLayer) - Validation state: Valid
+Entity Framework Core 2.2.6-servicing-10079 initialized 'ApplicationContext' using provider 'Microsoft.EntityFrameworkCore.SqlServer' with options: None
+Executed DbCommand (10ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT [a].[Id], [a].[AccessFailedCount], [a].[ConcurrencyStamp], [a].[Email], [a].[EmailConfirmed], [a].[FirstName], [a].[LastName], [a].[LockoutEnabled], [a].[LockoutEnd], [a].[NormalizedEmail], [a].[NormalizedUserName], [a].[PasswordHash], [a].[PhoneNumber], [a].[PhoneNumberConfirmed], [a].[SecurityStamp], [a].[TwoFactorEnabled], [a].[UserName]
+FROM [AspNetUsers] AS [a]
+Executed action method EducationApp.PresentationLayer.Controllers.UserController.GetAllUsers (EducationApp.PresentationLayer), returned result Microsoft.AspNetCore.Mvc.OkObjectResult in 454.0482ms.
+Executing ObjectResult, writing value of type 'System.Security.Claims.ClaimsPrincipal'.
+Executed action EducationApp.PresentationLayer.Controllers.UserController.GetAllUsers (EducationApp.PresentationLayer) in 503.0557ms
+Connection id "0HLPQLLIJ2JQ4", Request id "0HLPQLLIJ2JQ4:00000002": An unhandled exception was thrown by the application.
+Request finished in 527.9048ms 500 
+Connection id "0HLPQLLIJ2JQ4", Request id "0HLPQLLIJ2JQ4:00000002": the application completed without reading the entire request body.
+Request starting HTTP/1.1 GET http://localhost:50953/printingedition/getallitems application/json 119
+Successfully validated the token.
+Route matched with {action = "GetAllItems", controller = "PrintingEdition"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllItems() on controller EducationApp.PresentationLayer.Controllers.PrintingEditionController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.PrintingEditionController.GetAllItems (EducationApp.PresentationLayer) in 0.9554ms
+Connection id "0HLPQLLIJ2JQ4", Request id "0HLPQLLIJ2JQ4:00000003": An unhandled exception was thrown by the application.
+Request finished in 42.4821ms 500 
+Connection id "0HLPQLLIJ2JQ4", Request id "0HLPQLLIJ2JQ4:00000003": the application completed without reading the entire request body.
+Request starting HTTP/1.1 GET http://localhost:50953/printingedition/getallitems application/json 119
+Request starting HTTP/1.1 GET http://localhost:50953/  
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Request finished in 31.2316ms 200 
+Successfully validated the token.
+Processing request/
+Request finished in 224.9119ms 200 
+Route matched with {action = "GetAllItems", controller = "PrintingEdition"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllItems() on controller EducationApp.PresentationLayer.Controllers.PrintingEditionController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.PrintingEditionController.GetAllItems (EducationApp.PresentationLayer) in 3.8589ms
+Connection id "0HLPQM05EQIBL", Request id "0HLPQM05EQIBL:00000001": An unhandled exception was thrown by the application.
+Request finished in 297.1363ms 500 
+Connection id "0HLPQM05EQIBL", Request id "0HLPQM05EQIBL:00000001": the application completed without reading the entire request body.
+Request starting HTTP/1.1 GET http://localhost:50953/printingedition/getallitems application/json 119
+Successfully validated the token.
+Route matched with {action = "GetAllItems", controller = "PrintingEdition"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllItems() on controller EducationApp.PresentationLayer.Controllers.PrintingEditionController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.PrintingEditionController.GetAllItems (EducationApp.PresentationLayer) in 0.8883ms
+Connection id "0HLPQM05EQIBN", Request id "0HLPQM05EQIBN:00000002": An unhandled exception was thrown by the application.
+Request finished in 19.7984ms 500 
+Connection id "0HLPQM05EQIBN", Request id "0HLPQM05EQIBN:00000002": the application completed without reading the entire request body.
+Request starting HTTP/1.1 GET http://localhost:50953/printingedition/getallitems application/json 119
+Successfully validated the token.
+Route matched with {action = "GetAllItems", controller = "PrintingEdition"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllItems() on controller EducationApp.PresentationLayer.Controllers.PrintingEditionController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.PrintingEditionController.GetAllItems (EducationApp.PresentationLayer) in 0.7205ms
+Connection id "0HLPQM05EQIBM", Request id "0HLPQM05EQIBM:00000002": An unhandled exception was thrown by the application.
+Request finished in 23.7944ms 500 
+Connection id "0HLPQM05EQIBM", Request id "0HLPQM05EQIBM:00000002": the application completed without reading the entire request body.
+Request starting HTTP/1.1 GET http://localhost:50953/printingedition/getallitems application/json 119
+Successfully validated the token.
+Route matched with {action = "GetAllItems", controller = "PrintingEdition"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllItems() on controller EducationApp.PresentationLayer.Controllers.PrintingEditionController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.PrintingEditionController.GetAllItems (EducationApp.PresentationLayer) in 0.7895ms
+Connection id "0HLPQM05EQIBL", Request id "0HLPQM05EQIBL:00000002": An unhandled exception was thrown by the application.
+Request finished in 15.4241ms 500 
+Connection id "0HLPQM05EQIBL", Request id "0HLPQM05EQIBL:00000002": the application completed without reading the entire request body.
+Request starting HTTP/1.1 DEBUG http://localhost:50953/  0
+Request starting HTTP/1.1 GET http://localhost:50953/  
+Request starting HTTP/1.1 GET http://localhost:50953/printingedition/getallitems application/json 119
+Request finished in 32.2227ms 200 
+Successfully validated the token.
+Processing request/
+Request finished in 246.0621ms 200 
+Route matched with {action = "GetAllItems", controller = "PrintingEdition"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllItems() on controller EducationApp.PresentationLayer.Controllers.PrintingEditionController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.PrintingEditionController.GetAllItems (EducationApp.PresentationLayer) in 3.7987ms
+Connection id "0HLPQM1PQU6F2", Request id "0HLPQM1PQU6F2:00000001": An unhandled exception was thrown by the application.
+Request finished in 319.2318ms 500 
+Connection id "0HLPQM1PQU6F2", Request id "0HLPQM1PQU6F2:00000001": the application completed without reading the entire request body.
+Request starting HTTP/1.1 GET http://localhost:50953/printingedition/getallitems application/json 119
+Successfully validated the token.
+Route matched with {action = "GetAllItems", controller = "PrintingEdition"}. Executing controller action with signature System.Threading.Tasks.Task`1[Microsoft.AspNetCore.Mvc.IActionResult] GetAllItems() on controller EducationApp.PresentationLayer.Controllers.PrintingEditionController (EducationApp.PresentationLayer).
+Executed action EducationApp.PresentationLayer.Controllers.PrintingEditionController.GetAllItems (EducationApp.PresentationLayer) in 1.3332ms
+Connection id "0HLPQM1PQU6F0", Request id "0HLPQM1PQU6F0:00000002": An unhandled exception was thrown by the application.
+Request finished in 23.6581ms 500 
+Connection id "0HLPQM1PQU6F0", Request id "0HLPQM1PQU6F0:00000002": the application completed without reading the entire request body.

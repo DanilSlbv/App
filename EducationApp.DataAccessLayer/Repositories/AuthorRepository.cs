@@ -5,47 +5,46 @@ using EducationApp.DataAccessLayer.Repositories.Interface;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {
-    public class AuthorRepository:IAuthorRepository
+    public class AuthorRepository:IAuthorRepository,IBaseEFRepository<Author>
     {
-        private readonly IBaseEFRepository<Author> _baseEFRepository;
         private readonly ApplicationContext _context;
 
-        public AuthorRepository(ApplicationContext applicationContext, IBaseEFRepository<Author> baseEFRepository)
+        public AuthorRepository(ApplicationContext applicationContext)
         {
             _context = applicationContext;
-            _baseEFRepository = baseEFRepository;
         }
 
-        public async Task AddItemAsync(Author author)
+        public async Task AddAsync(Author author)
         {
-            await _baseEFRepository.AddItemAsync(author);
+            await AddAsync(author);
         }
 
-        public async Task DeleteItemAsync(string id)
+        public async Task DeleteAsync(string id)
         {
-            await _baseEFRepository.DeleteItemAsync(id);
+            await DeleteAsync(id);
         }
 
-        public async Task EditItemAsync(Author author)
+        public async Task EditAsync(Author author)
         {
-            await _baseEFRepository.EditItemAsync(author);
+            await EditAsync(author);
         }
 
         public async Task<List<Author>> GetAllAsync()
         {
-            return await _baseEFRepository.GetAllAsync();
+            return await GetAllAsync();
         }
 
         public async Task<Author> GetByIdAsync(string id)
         {
-            return await _baseEFRepository.GetByIdAsync(id);
+            return await GetByIdAsync(id);
         }
         public async Task<Author> GetByNameAsync(string name)
         {
-            var author =  _context.Authors.FirstOrDefault(x => x.Name == name);
+            var author =await  _context.Authors.FirstOrDefaultAsync(x => x.Name == name);
             return author;
         }
     }

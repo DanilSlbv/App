@@ -1,12 +1,10 @@
-﻿using EducationApp.BusinessLogicLayer.Models.User;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,41 +12,58 @@ namespace EducationApp.PresentationLayer.Helpers
 {
     public class JwtHelper
     {
-        public async Task<object> GenerateAccessToken(string email, UserModelItem userModelItem, IConfiguration configuration)
+        private readonly IConfiguration _configuration;
+        public JwtHelper(IConfiguration configuration)
         {
-            var accessClaims = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub,email),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.NameId,userModelItem.Id),
-                new Claim(ClaimTypes.Role,"admin")
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtKey"]));
+            _configuration = configuration;
+        }
+        public string GenerateToken(List<Claim> claims)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtKey"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddDays(Convert.ToDouble(configuration["JwtExpireDays"]));
-
+            
             var token = new JwtSecurityToken(
-                configuration["JwtIssuer"],
-                configuration["JwtIssuer"],
-                accessClaims,
-                expires: expires,
+                _configuration["JwtIssuer"],
+                _configuration["JwtIssuer"],
+                claims,
+                expires: DateTime.UtcNow.AddMinutes(10),
                 signingCredentials: creds
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-        public async Task<object> GenerateRefreshToken()
+        public bool AddToCookie(IApplicationBuilder applicationBuilder,string accessToken,string refreshToken)
         {
-            var randomNumber = new byte[32];
-            using (var random = RandomNumberGenerator.Create())
+            applicationBuilder.Run(async (context) =>
             {
-                random.GetBytes(randomNumber);
-                return Convert.ToBase64String(randomNumber);
-            }
+                context.Response.Cookies.Append("accessTokenCookie", accessToken);
+                context.Response.Cookies.Append("refreshTokenCookie", refreshToken);
+            });
+            return true;
         }
-
-
+        public string GetAccessTokenFromCookie(IApplicationBuilder applicationBuilder)
+        {
+            string accessToken="";
+            applicationBuilder.Run(async (context) =>
+            {
+                if (context.Request.Cookies.ContainsKey("accessTokenCookie"))
+                {
+                    accessToken = context.Request.Cookies["accessTokenCookie"];
+                }
+            });
+            return accessToken;
+        }
+        public string GetRefreshTokenFromCookie(IApplicationBuilder applicationBuilder)
+        {
+            string refreshToken = "";
+            applicationBuilder.Run(async (context) =>
+            {
+                if (context.Request.Cookies.ContainsKey("refreshTokenCookie"))
+                {
+                    refreshToken = context.Request.Cookies["refreshTokenCookie"];
+                }
+            });
+            return refreshToken;
+        }
     }
 }
