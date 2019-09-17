@@ -65,6 +65,10 @@ namespace EducationApp.PresentationLayer
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
+            }).AddCookie(options=> 
+            {
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
             });
 
 
@@ -88,8 +92,8 @@ namespace EducationApp.PresentationLayer
 
                 services.Configure<CookiePolicyOptions>(options =>
                 {
-                    options.CheckConsentNeeded = context => true;
-                    options.MinimumSameSitePolicy = SameSiteMode.None;
+                    options.MinimumSameSitePolicy = SameSiteMode.Strict;
+                    options.HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.None;
                 });
                 services.AddMvc();
             

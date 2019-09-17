@@ -2,9 +2,7 @@
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Repositories.Interface;
-using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EducationApp.BusinessLogicLayer.Services
@@ -19,9 +17,9 @@ namespace EducationApp.BusinessLogicLayer.Services
         }
 
 
-        public async Task AddAsync(AuthorItemModel entity)
+        public async Task AddAsync(AuthorModelItem authorItemModel)
         {
-            var author = new Author() { Id = entity.id, Name = entity.Name };
+            var author = new Author() { Id = authorItemModel.id, Name = authorItemModel.Name };
             await _authorRepository.AddAsync(author);
         }
 
@@ -30,9 +28,9 @@ namespace EducationApp.BusinessLogicLayer.Services
             await _authorRepository.DeleteAsync(id);
         }
 
-        public async Task EditAsync(AuthorItemModel entity)
+        public async Task EditAsync(AuthorModelItem authorItemModel)
         {
-            var author = new Author() { Id = entity.id, Name = entity.Name };
+            var author = new Author() { Id = authorItemModel.id, Name = authorItemModel.Name };
             await _authorRepository.EditAsync(author);
         }
 
@@ -42,21 +40,21 @@ namespace EducationApp.BusinessLogicLayer.Services
             var authorModel = new AuthorModel();
             foreach(var author in authors)
             {
-                authorModel.Items.Add(new AuthorItemModel(author));
+                authorModel.Items.Add(new AuthorModelItem(author));
             }
             return authorModel;
         }
 
-        public async Task<AuthorItemModel> GetByIdAsync(string id)
+        public async Task<AuthorModelItem> GetByIdAsync(string id)
         {
-            var item =new AuthorItemModel( await _authorRepository.GetByIdAsync(id));
+            var item =new AuthorModelItem( await _authorRepository.GetByIdAsync(id));
             return item;
         }
 
-        public async Task<AuthorItemModel> GetByNameASync(string name)
+        public async Task<AuthorModelItem> GetByNameASync(string name)
         {
-            var item = new AuthorItemModel(await _authorRepository.GetByNameAsync(name));
-            return item;
+            var author = new AuthorModelItem(await _authorRepository.GetByNameAsync(name));
+            return author;
         }
     }
 }

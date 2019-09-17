@@ -6,11 +6,11 @@ using System.Text;
 
 namespace EducationApp.BusinessLogicLayer.Models.Authors
 {
-    public class AuthorItemModel:BaseModel
+    public class AuthorModelItem:BaseModel
     {
         public string id { get; set; }
         public string Name { get; set; }
-        public AuthorItemModel(Author author)
+        public AuthorModelItem(Author author)
         {
             id = author.Id;
             Name = author.Name;

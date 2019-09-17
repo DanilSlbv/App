@@ -8,14 +8,14 @@ namespace EducationApp.BusinessLogicLayer.Services.Interfaces
     public interface IPrintingEditionService
     {
         Task<PrintingEditionModel> GetAllAsync();
-        Task<PrintingEditionItemModel> GetByIdAsync(string id);
+        Task<PrintingEditionModelItem> GetByIdAsync(string id);
         Task<PrintingEditionModel> GetByPriceAsync(float minPrice, float maxPrice);
         Task<PrintingEditionModel> GetByTypeAsync(Type type);
         Task<PrintingEditionModel> SortByPriceAscendingAsync();
         Task<PrintingEditionModel> SortByPriceDescendingAsync();
-        Task AddAsync(PrintingEditionItemModel printingEditionItemModel);
+        Task AddAsync(PrintingEditionModelItem printingEditionItemModel);
         Task DeleteAsync(string id);
-        Task EditAsync(PrintingEditionItemModel printingEditionItemModel);
+        Task EditAsync(PrintingEditionModelItem printingEditionItemModel);
 
     }
 }

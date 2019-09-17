@@ -14,7 +14,6 @@ namespace EducationApp.DataAcessLayer.AppContext
         public DbSet<PrintingEdition> PrintingEditions { get; set; }
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
         {
-
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {

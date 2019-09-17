@@ -2,7 +2,7 @@
 using EducationApp.BusinessLogicLayer.Models.Enums;
 namespace EducationApp.BusinessLogicLayer.Models.PrintingEdition
 {
-    public class PrintingEditionItemModel: BaseModel
+    public class PrintingEditionModelItem: BaseModel
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -12,7 +12,7 @@ namespace EducationApp.BusinessLogicLayer.Models.PrintingEdition
         public Status status { get; set; }
         public Currency currency { get; set; }
         public Type type { get; set; }
-        public PrintingEditionItemModel(EducationApp.DataAccessLayer.Entities.PrintingEdition printingEdition)
+        public PrintingEditionModelItem(EducationApp.DataAccessLayer.Entities.PrintingEdition printingEdition)
         {
             Id = printingEdition.Id;
             Name = printingEdition.Name;

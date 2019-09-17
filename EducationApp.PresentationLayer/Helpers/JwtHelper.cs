@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -31,39 +32,6 @@ namespace EducationApp.PresentationLayer.Helpers
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-        public bool AddToCookie(IApplicationBuilder applicationBuilder,string accessToken,string refreshToken)
-        {
-            applicationBuilder.Run(async (context) =>
-            {
-                context.Response.Cookies.Append("accessTokenCookie", accessToken);
-                context.Response.Cookies.Append("refreshTokenCookie", refreshToken);
-            });
-            return true;
-        }
-        public string GetAccessTokenFromCookie(IApplicationBuilder applicationBuilder)
-        {
-            string accessToken="";
-            applicationBuilder.Run(async (context) =>
-            {
-                if (context.Request.Cookies.ContainsKey("accessTokenCookie"))
-                {
-                    accessToken = context.Request.Cookies["accessTokenCookie"];
-                }
-            });
-            return accessToken;
-        }
-        public string GetRefreshTokenFromCookie(IApplicationBuilder applicationBuilder)
-        {
-            string refreshToken = "";
-            applicationBuilder.Run(async (context) =>
-            {
-                if (context.Request.Cookies.ContainsKey("refreshTokenCookie"))
-                {
-                    refreshToken = context.Request.Cookies["refreshTokenCookie"];
-                }
-            });
-            return refreshToken;
         }
     }
 }

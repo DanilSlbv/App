@@ -3,8 +3,6 @@ using EducationApp.BusinessLogicLayer.Models.PrintingEdition;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace EducationApp.PresentationLayer.Controllers
@@ -57,7 +55,7 @@ namespace EducationApp.PresentationLayer.Controllers
         }
         [HttpPost("/additem")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> AddItem(PrintingEditionItemModel printingEditionItemModel)
+        public async Task<IActionResult> AddItem(PrintingEditionModelItem printingEditionItemModel)
         {
             await _printingEditionService.AddAsync(printingEditionItemModel);
             return Ok(true);
@@ -71,7 +69,7 @@ namespace EducationApp.PresentationLayer.Controllers
         }
         [HttpPost("/edititem")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> EditItem(PrintingEditionItemModel printingEditionItemModel)
+        public async Task<IActionResult> EditItem(PrintingEditionModelItem printingEditionItemModel)
         {
             await _printingEditionService.EditAsync(printingEditionItemModel);
             return Ok(true);

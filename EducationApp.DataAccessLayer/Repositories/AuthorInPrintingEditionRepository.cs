@@ -16,9 +16,9 @@ namespace EducationApp.DataAccessLayer.Repositories
             _context = context;
         }
 
-        public async Task AddAsync(AuthorInPrintingEditons entity)
+        public async Task AddAsync(AuthorInPrintingEditons authorInPrintingEditons)
         {
-             await AddAsync(entity);
+             await AddAsync(authorInPrintingEditons);
         }
 
         public async Task DeleteAsync(string id)
@@ -26,9 +26,9 @@ namespace EducationApp.DataAccessLayer.Repositories
             await DeleteAsync(id);
         }
 
-        public async Task EditAsync(AuthorInPrintingEditons entity)
+        public async Task EditAsync(AuthorInPrintingEditons authorInPrintingEditons)
         {
-            await EditAsync(entity);
+            await EditAsync(authorInPrintingEditons);
         }
 
         public async Task<List<AuthorInPrintingEditons>> GetAllAsync()

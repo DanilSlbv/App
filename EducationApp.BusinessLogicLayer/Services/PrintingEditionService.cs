@@ -3,11 +3,7 @@ using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Repositories.Interface;
 using System.Threading.Tasks;
-using System.Linq;
-using System;
-using EducationApp.BusinessLogicLayer.Models.Enums;
 using System.Collections.Generic;
-using EducationApp.DataAccessLayer.Entities.Enums;
 using Currency = EducationApp.DataAccessLayer.Entities.Enums.Currency;
 using Status = EducationApp.DataAccessLayer.Entities.Enums.Status;
 using Type = EducationApp.DataAccessLayer.Entities.Enums.Type;
@@ -22,7 +18,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             _printingEditionRepository = printingEditionRepository;
         }
 
-        public async Task AddAsync(PrintingEditionItemModel printingEditionItemModel)
+        public async Task AddAsync(PrintingEditionModelItem printingEditionItemModel)
         {
             var printingEdition = new PrintingEdition()
             {
@@ -43,7 +39,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             await _printingEditionRepository.DeleteAsync(id);
         }
 
-        public async Task EditAsync(PrintingEditionItemModel printingEditionItemModel)
+        public async Task EditAsync(PrintingEditionModelItem printingEditionItemModel)
         {
             var printingEdition = new PrintingEdition()
             {
@@ -65,14 +61,14 @@ namespace EducationApp.BusinessLogicLayer.Services
             var printingEditionmodel = new PrintingEditionModel();
             foreach(var edition in printingEditions)
             {
-                printingEditionmodel.Items.Add(new PrintingEditionItemModel(edition));
+                printingEditionmodel.Items.Add(new PrintingEditionModelItem(edition));
             }
             return printingEditionmodel;
         }
 
-        public async Task<PrintingEditionItemModel> GetByIdAsync(string id)
+        public async Task<PrintingEditionModelItem> GetByIdAsync(string id)
         {
-            var printingEditionItemModel = new PrintingEditionItemModel( await _printingEditionRepository.GetByIdAsync(id));
+            var printingEditionItemModel = new PrintingEditionModelItem( await _printingEditionRepository.GetByIdAsync(id));
             return printingEditionItemModel;
         }
 
@@ -82,7 +78,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             var printingEditionModel = new PrintingEditionModel();
             foreach(var edition in printingEditions)
             {
-                printingEditionModel.Items.Add(new PrintingEditionItemModel(edition));
+                printingEditionModel.Items.Add(new PrintingEditionModelItem(edition));
             }
             return printingEditionModel;
         }
@@ -93,7 +89,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             PrintingEditionModel printingEditionModel = new PrintingEditionModel();
             foreach (var edition in printingEditions)
             {
-                printingEditionModel.Items.Add(new PrintingEditionItemModel(edition));
+                printingEditionModel.Items.Add(new PrintingEditionModelItem(edition));
             }
             return printingEditionModel;
         }
@@ -104,7 +100,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             PrintingEditionModel printingEditionModel = new PrintingEditionModel();
             foreach (var edition in printingEditions)
             {
-                printingEditionModel.Items.Add(new PrintingEditionItemModel(edition));
+                printingEditionModel.Items.Add(new PrintingEditionModelItem(edition));
             }
             return printingEditionModel;
         }
@@ -115,7 +111,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             PrintingEditionModel printingEditionModel = new PrintingEditionModel();
             foreach (var printingEdition in printingEditions)
             {
-                printingEditionModel.Items.Add(new PrintingEditionItemModel(printingEdition));
+                printingEditionModel.Items.Add(new PrintingEditionModelItem(printingEdition));
             }
             return printingEditionModel;
         }

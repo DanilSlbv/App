@@ -39,7 +39,7 @@ namespace EducationApp.PresentationLayer.Controllers
         }
         [HttpPost("addauthor")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> AddAuthor(AuthorItemModel authorItemModel)
+        public async Task<IActionResult> AddAuthor(AuthorModelItem authorItemModel)
         {
             await _authorService.AddAsync(authorItemModel);
             return Ok(true);
@@ -53,7 +53,7 @@ namespace EducationApp.PresentationLayer.Controllers
         }
         [HttpPost("editauthor")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> EditAuthor(AuthorItemModel authorItemModel)
+        public async Task<IActionResult> EditAuthor(AuthorModelItem authorItemModel)
         {
             await _authorService.EditAsync(authorItemModel);
             return Ok(true);

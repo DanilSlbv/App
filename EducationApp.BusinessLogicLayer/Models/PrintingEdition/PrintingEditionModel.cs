@@ -7,10 +7,10 @@ namespace EducationApp.BusinessLogicLayer.Models.PrintingEdition
 {
     public class PrintingEditionModel:BaseModel
     {
-        public List<PrintingEditionItemModel> Items { get; set; }
+        public List<PrintingEditionModelItem> Items { get; set; }
         public PrintingEditionModel()
         {
-            Items = new List<PrintingEditionItemModel>();
+            Items = new List<PrintingEditionModelItem>();
         }
     }
 }
