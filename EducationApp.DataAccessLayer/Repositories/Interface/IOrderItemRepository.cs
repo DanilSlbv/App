@@ -4,7 +4,8 @@ using System.Text;
 
 namespace EducationApp.DataAccessLayer.Repositories.Interface
 {
-    public interface IOrderItemRepository
+    public interface IOrderItemRepository:IBaseEFRepository<OrderItemRepository>
     {
+
     }
 }

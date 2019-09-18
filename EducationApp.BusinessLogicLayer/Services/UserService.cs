@@ -4,7 +4,6 @@ using EducationApp.BusinessLogicLayer.Models.User;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Repositories.Interface;
 using EducationApp.DataAccessLayer.Entities;
-using EducationApp.BusinessLogicLayer.Helpers;
 
 namespace EducationApp.BusinessLogicLayer.Services
 {
@@ -42,13 +41,15 @@ namespace EducationApp.BusinessLogicLayer.Services
         }
         public async Task<bool> EditAsync(UserEditModel userEditModel)
         {
-            ApplicationUser applicationUser = new ApplicationUser
+            var applicationUser = await _userRepository.GetUserByIdAsync(userEditModel.Id);
+            if (applicationUser != null)
             {
-                FirstName = userEditModel.FirstName,
-                LastName = userEditModel.LastName,
-                Email = userEditModel.Email
-            };
-            return await _userRepository.EditUserAsync(applicationUser);
+                applicationUser.FirstName = userEditModel.FirstName;
+                applicationUser.LastName = userEditModel.LastName;
+                applicationUser.Email = userEditModel.Email;
+                return await _userRepository.EditUserAsync(applicationUser);
+            }
+            return false;
         }
     }
 }

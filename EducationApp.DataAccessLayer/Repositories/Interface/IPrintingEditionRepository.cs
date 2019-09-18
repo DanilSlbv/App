@@ -12,6 +12,7 @@ namespace EducationApp.DataAccessLayer.Repositories.Interface
     {
         Task<List<PrintingEdition>> GetByPriceAsync(float minPrice, float maxPrice);
         Task<List<PrintingEdition>> GetByTypeAsync(Type type);
+        Task<PrintingEdition> GetByNameAsync(string name);
         Task<List<PrintingEdition>> SortByPriceAscendingAsync();
         Task<List<PrintingEdition>> SortByPriceDescendingAsync();
     }

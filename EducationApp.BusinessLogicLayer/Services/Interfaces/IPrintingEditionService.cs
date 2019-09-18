@@ -13,9 +13,9 @@ namespace EducationApp.BusinessLogicLayer.Services.Interfaces
         Task<PrintingEditionModel> GetByTypeAsync(Type type);
         Task<PrintingEditionModel> SortByPriceAscendingAsync();
         Task<PrintingEditionModel> SortByPriceDescendingAsync();
-        Task AddAsync(PrintingEditionModelItem printingEditionItemModel);
+        Task AddAsync(AddPrintingEditionModelItem addPrintingEditionModelItem);
         Task DeleteAsync(string id);
-        Task EditAsync(PrintingEditionModelItem printingEditionItemModel);
+        Task EditAsync(EditPrintingEditionModelItem editPrintingEditionModelItem);
 
     }
 }

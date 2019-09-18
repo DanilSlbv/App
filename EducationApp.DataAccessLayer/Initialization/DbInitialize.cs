@@ -25,9 +25,12 @@ namespace EducationApp.DataAccessLayer.Initialization
             _services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(_configuration.GetConnectionString("DefaultConnection")));
             _services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationContext>()
-                .AddDefaultTokenProviders()
-                .AddEntityFrameworkStores<ApplicationContext>();
+                .AddDefaultTokenProviders();
+
             _services.AddScoped<IUserRepository, UserRepository>();
+            _services.AddScoped<IPrintingEditionRepository, PrintingEditionRepository>();
+            _services.AddScoped<IAuthorRepository, AuthorRepository>();
+            _services.AddScoped<IAuthorInPrintingEditionRepository, AuthorInPrintingEditionRepository>();
         }
        
     }

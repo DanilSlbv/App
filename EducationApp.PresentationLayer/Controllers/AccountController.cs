@@ -1,4 +1,5 @@
 ﻿using EducationApp.BusinessLogicLayer.Helpers;
+using EducationApp.BusinessLogicLayer.Models.Authorization;
 using EducationApp.BusinessLogicLayer.Models.User;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.PresentationLayer.Helpers;
@@ -7,9 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace EducationApp.PresentationLayer.Controllers
@@ -31,6 +30,7 @@ namespace EducationApp.PresentationLayer.Controllers
             _configuration = configuration;
         }
         
+
         [HttpPost("sigin")]
         public async Task<IActionResult> SigIn(AccountSigInModel accountSigInModel)
         {
@@ -105,6 +105,10 @@ namespace EducationApp.PresentationLayer.Controllers
         [HttpGet]
         public async Task<IActionResult> ConfirmEmail(string userId,string code)
         {
+            TokenClaims tokenClaims = new TokenClaims();
+            JwtHelper jwtHelper = new JwtHelper(_configuration);
+            var applicationUser = await _userService.GetByIdAsync(userId);
+            var userRole = await _accountService.GetRoleAsync(applicationUser.Email);
             if (!await _accountService.ConfirmEmailAsync(userId, code))
             {
                 return Ok(false);
@@ -113,53 +117,30 @@ namespace EducationApp.PresentationLayer.Controllers
             {
                 return Ok(false);
             }
-            UserModelItem userModelItem =await _userService.GetByIdAsync(userId);
-            var accessClaim = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Sub,userModelItem.Email),
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.NameId,userModelItem.Id),
-                new Claim(ClaimTypes.Role,"user")
-            };
-            var refreshClaim = new List<Claim>
-            {
-                new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.NameId,userId)
-            };
-            JwtHelper jwtHelper = new JwtHelper(_configuration);
-            var accessToken = jwtHelper.GenerateToken(accessClaim);
-            var refreshToken = jwtHelper.GenerateToken(refreshClaim);
+            
+            var accessToken = jwtHelper.GenerateAccessToken(tokenClaims.accessToken(userId, userRole[0], applicationUser.Email));
+            var refreshToken = jwtHelper.GenerateRefreshToken(tokenClaims.rereshToken(userId));
+            RemoveCookie("accessTokenCookie");
+            RemoveCookie("refreshTokenCookie");
             AddToCookie("accessTokenCookie", accessToken);
             AddToCookie("refreshTokenCookie", refreshToken);
             return Ok(accessToken + " " + refreshToken);
         }
 
         [HttpPost("refresh")]
-        public IActionResult Refresh(string userId, string userEmail)
+        public async Task<IActionResult> Refresh(string userId, string userEmail)
         {
-            try
-            {
+                TokenClaims tokenClaims = new TokenClaims();
                 JwtHelper jwtHelper = new JwtHelper(_configuration);
+                var userRole = await _accountService.GetRoleAsync(userEmail);
                 var accessToken = ReadAccessTokenCookie();
                 var refreshToken = ReadRefreshTokenCookie();
                 if (refreshToken == null)
                 {
                     RemoveCookie("accessTokenCookie");
                     RemoveCookie("refreshTokenCookie");
-                    var accessClaim = new List<Claim>
-                    {
-                    new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.NameIdentifier,userId),
-                    new Claim(ClaimTypes.Role,"user"),
-                    new Claim(ClaimTypes.Name,userEmail)
-                    };
-                    var refreshClaim = new List<Claim>
-                    {
-                    new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
-                    new Claim(ClaimTypes.NameIdentifier,userId)
-                    };
-                    var newAccessToken = jwtHelper.GenerateToken(accessClaim);
-                    var newRefreshToken = jwtHelper.GenerateToken(refreshClaim);
+                    var newAccessToken = jwtHelper.GenerateAccessToken(tokenClaims.accessToken(userId,userRole[0],userEmail));
+                    var newRefreshToken = jwtHelper.GenerateRefreshToken(tokenClaims.rereshToken(userId));
                     AddToCookie("accessTokenCookie", newAccessToken);
                     AddToCookie("refreshTokenCookie", newRefreshToken);
                     return Ok(newAccessToken + " " + newRefreshToken);
@@ -167,20 +148,11 @@ namespace EducationApp.PresentationLayer.Controllers
                 if (accessToken == null)
                 {
                     JwtSecurityToken refreshTokenReader = new JwtSecurityTokenHandler().ReadJwtToken(refreshToken);
-                    JwtSecurityToken newAccessToken = new JwtSecurityToken(issuer: refreshTokenReader.Issuer,
-                            audience: refreshTokenReader.Issuer,
-                            claims: refreshTokenReader.Claims,
-                            expires: DateTime.UtcNow.AddMinutes(10),
-                            signingCredentials: refreshTokenReader.SigningCredentials);
+                    var newAccessToken = jwtHelper.GenerateAccessToken(tokenClaims.accessToken(userId, userRole[0], userEmail));
                     var newToken = newAccessToken.ToString();
                     AddToCookie("accessTokenCookie", newToken);
                 }
                 return Ok(true);
-            }
-            catch(Exception ex)
-            {
-                return  Ok(ex);
-            }
         }
 
 
@@ -211,6 +183,7 @@ namespace EducationApp.PresentationLayer.Controllers
             string refreshCookieValue = Request.Cookies["refreshTokenCookie"];
             return refreshCookieValue;
         }
+        [HttpGet("remove/{cookieName}")]
         public void RemoveCookie(string cookieName)
         {
             Response.Cookies.Delete(cookieName);

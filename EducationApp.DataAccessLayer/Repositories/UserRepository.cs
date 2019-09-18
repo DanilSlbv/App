@@ -18,7 +18,7 @@ namespace EducationApp.DataAccessLayer.Repositories
             _signInManager = signInManager;
             _roleManager = roleManager;
          }
-
+        
         public async Task<List<ApplicationUser>> GetAllUsersAsync()
         {
             return await _userManager.Users.ToListAsync();
@@ -84,7 +84,14 @@ namespace EducationApp.DataAccessLayer.Repositories
             }
             return false;
         }
-
+        public async Task<IList<string>> GetRoleAsync(ApplicationUser applicationUser)
+        {
+           return await _userManager.GetRolesAsync(applicationUser);
+        }
+        public async Task<bool> CheckIsInRoleAsync(ApplicationUser applicationUser,string roleName)
+        {
+            return await _userManager.IsInRoleAsync(applicationUser,roleName);
+        }
         public async Task<bool> ConfrirmEmailAsync(string userid, string token)
         {
             ApplicationUser applicationUser = await GetUserByIdAsync(userid);

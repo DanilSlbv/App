@@ -11,8 +11,8 @@ namespace EducationApp.BusinessLogicLayer.Services.Interfaces
         Task<AuthorModel> GetAllAsync();
         Task<AuthorModelItem> GetByIdAsync(string id);
         Task<AuthorModelItem> GetByNameASync(string name);
-        Task AddAsync(AuthorModelItem entity);
+        Task AddAsync(AddAuthorModelItem addAuthorModelItem);
         Task DeleteAsync(string id);
-        Task EditAsync(AuthorModelItem entity);
+        Task EditAsync(EditAuthorModelItem editAuthorModelItem);
     }
 }

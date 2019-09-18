@@ -17,9 +17,9 @@ namespace EducationApp.BusinessLogicLayer.Services
         }
 
 
-        public async Task AddAsync(AuthorModelItem authorItemModel)
+        public async Task AddAsync(AddAuthorModelItem addAuthorModelItem)
         {
-            var author = new Author() { Id = authorItemModel.id, Name = authorItemModel.Name };
+            var author = new Author() { Name = addAuthorModelItem.Name };
             await _authorRepository.AddAsync(author);
         }
 
@@ -28,10 +28,14 @@ namespace EducationApp.BusinessLogicLayer.Services
             await _authorRepository.DeleteAsync(id);
         }
 
-        public async Task EditAsync(AuthorModelItem authorItemModel)
+        public async Task EditAsync(EditAuthorModelItem editAuthorModelItem)
         {
-            var author = new Author() { Id = authorItemModel.id, Name = authorItemModel.Name };
-            await _authorRepository.EditAsync(author);
+            var author = await _authorRepository.GetByIdAsync(editAuthorModelItem.id);
+            if (author != null)
+            {
+                author.Name = editAuthorModelItem.Name;
+                await _authorRepository.EditAsync(author);
+            }
         }
 
         public async Task<AuthorModel> GetAllAsync()

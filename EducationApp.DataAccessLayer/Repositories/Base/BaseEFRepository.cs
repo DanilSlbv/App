@@ -19,7 +19,7 @@ namespace EducationApp.DataAccessLayer.Repositories.Base
             _dbSet = _context.Set<TEntity>();
         }
 
-        public async Task<List<TEntity>> GetAllAsync()=> await _dbSet.ToListAsync();
+        public async Task<List<TEntity>> GetAllAsync()=> await _dbSet.AsNoTracking().ToListAsync();
 
         public async Task<TEntity> GetByIdAsync(string id)=>await  _dbSet.FindAsync(id);
 

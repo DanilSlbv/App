@@ -5,42 +5,15 @@ using System.Text;
 using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAcessLayer.AppContext;
 using System.Threading.Tasks;
+using EducationApp.DataAccessLayer.Repositories.Base;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {
-    public class AuthorInPrintingEditionRepository:IAuthorInPrintingEditionRepository,IBaseEFRepository<AuthorInPrintingEditons>
+    public class AuthorInPrintingEditionRepository:BaseEFRepository<AuthorInPrintingEditons>,IAuthorInPrintingEditionRepository
     {
-        private readonly ApplicationContext _context;
-        public AuthorInPrintingEditionRepository(ApplicationContext context)
+        public AuthorInPrintingEditionRepository(ApplicationContext context):base(context)
         {
             _context = context;
-        }
-
-        public async Task AddAsync(AuthorInPrintingEditons authorInPrintingEditons)
-        {
-             await AddAsync(authorInPrintingEditons);
-        }
-
-        public async Task DeleteAsync(string id)
-        {
-            await DeleteAsync(id);
-        }
-
-        public async Task EditAsync(AuthorInPrintingEditons authorInPrintingEditons)
-        {
-            await EditAsync(authorInPrintingEditons);
-        }
-
-        public async Task<List<AuthorInPrintingEditons>> GetAllAsync()
-        {
-            var items = await GetAllAsync();
-            return items;
-        }
-
-        public async Task<AuthorInPrintingEditons> GetByIdAsync(string id)
-        {
-            var item = await GetByIdAsync(id);
-            return item;
         }
     }
 }

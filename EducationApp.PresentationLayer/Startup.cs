@@ -11,11 +11,8 @@ using EducationApp.BusinessLogicLayer.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using EducationApp.DataAcessLayer.AppContext;
-using Microsoft.EntityFrameworkCore;
-using EducationApp.DataAccessLayer.Entities;
-using EducationApp.DataAccessLayer.Repositories.Interface;
-using EducationApp.DataAccessLayer.Repositories;
+using EducationApp.DataAccessLayer.Initialization;
+using EducationApp.BusinessLogicLayer.Models.Authorization;
 
 namespace EducationApp.PresentationLayer
 {
@@ -30,18 +27,22 @@ namespace EducationApp.PresentationLayer
              
         public void ConfigureServices(IServiceCollection services)
         {
+            DbInitialize dbInitialize = new DbInitialize(Configuration,services);
+            dbInitialize.Initialize();
 
-            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationContext>()
-                .AddDefaultTokenProviders()
-                .AddEntityFrameworkStores<ApplicationContext>();
-
-            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserService, UserService>();
-                services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IAccountService, BusinessLogicLayer.Services.AccountService>();
+            services.AddScoped<IPrintingEditionService,PrintingEditionService>();
+            services.AddScoped<IAuthorService,AuthorService>();
 
+            services.AddScoped<IAccountService, BusinessLogicLayer.Services.AccountService>();
 
+            //services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
+
+            AuthTokenProviderOptions authTokenProviderOptions = new AuthTokenProviderOptions();
+            authTokenProviderOptions.JwtIssuer= Configuration["JwtIssuer"];
+            authTokenProviderOptions.JwtKey = Configuration["JwtKey"];
+            services.AddSingleton(authTokenProviderOptions);
 
             services.AddAuthentication(options =>
             {
@@ -54,13 +55,13 @@ namespace EducationApp.PresentationLayer
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authTokenProviderOptions.JwtKey)),
 
                     ValidateIssuer = true,
-                    ValidIssuer = Configuration["JwtIssuer"],
+                    ValidIssuer = authTokenProviderOptions.JwtIssuer,
 
                     ValidateAudience = true,
-                    ValidAudience = Configuration["JwtIssuer"],
+                    ValidAudience = authTokenProviderOptions.JwtIssuer,
 
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
@@ -70,7 +71,10 @@ namespace EducationApp.PresentationLayer
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SameSite = SameSiteMode.Lax;
             });
-
+            //services.AddAuthorization(options => { 
+            //     options.AddPolicy("admin", policy=>policy.RequireRole("admin"));
+            //     options.AddPolicy("user", policy=>policy.RequireRole("user"));
+            // });
 
                 services.Configure<IdentityOptions>(options =>
                 {
@@ -96,7 +100,6 @@ namespace EducationApp.PresentationLayer
                     options.HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.None;
                 });
                 services.AddMvc();
-            
         }
 
        
@@ -110,10 +113,12 @@ namespace EducationApp.PresentationLayer
             {
                 app.UseHsts();
             }
+            app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseCookiePolicy();
+
             app.UseAuthentication();
-            app.UseMvcWithDefaultRoute();
+            app.UseMvc();
             //loggerFactory.AddFile(Path.Combine("C:\\Users\\Anuitex-78\\source\\repos\\EducationApp", "LoggerFile.txt"));
             //var logger = loggerFactory.CreateLogger("Error");
             //app.Run(async (context) =>

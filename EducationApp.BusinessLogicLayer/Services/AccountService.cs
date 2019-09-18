@@ -2,6 +2,7 @@
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Repositories.Interface;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EducationApp.BusinessLogicLayer.Services
@@ -97,6 +98,17 @@ namespace EducationApp.BusinessLogicLayer.Services
             await _userRepository.ConfirmEmailAuthorizationAsync(applicationUser, true);
         }
 
+        public async Task<IList<string>> GetRoleAsync(string userEmail)
+        {
+            var applicationUser = await _userRepository.GetUserByEmailAsync(userEmail);
+            if (applicationUser == null)
+            {
+                return null;
+            }
+            var result = await _userRepository.GetRoleAsync(applicationUser);
+            return result;
+        }
+        
         public async Task SignOutUserAsycn()
         {
             await _userRepository.SignOutAsync();

@@ -13,23 +13,24 @@ namespace EducationApp.BusinessLogicLayer.Services
     public class PrintingEditionService : IPrintingEditionService
     {
         private readonly IPrintingEditionRepository _printingEditionRepository;
-        public PrintingEditionService(IPrintingEditionRepository printingEditionRepository)
+        private readonly IAuthorInPrintingEditionRepository _authorInPrintingEditionRepository;
+        public PrintingEditionService(IPrintingEditionRepository printingEditionRepository,IAuthorInPrintingEditionRepository authorInPrintingEditionRepository)
         {
             _printingEditionRepository = printingEditionRepository;
+            _authorInPrintingEditionRepository = authorInPrintingEditionRepository;
         }
 
-        public async Task AddAsync(PrintingEditionModelItem printingEditionItemModel)
+        public async Task AddAsync(AddPrintingEditionModelItem addPrintingEditionModelItem)
         {
             var printingEdition = new PrintingEdition()
             {
-                Id = printingEditionItemModel.Id,
-                Name = printingEditionItemModel.Name,
-                Description = printingEditionItemModel.Description,
-                Price = printingEditionItemModel.Price,
-                IsRemoved = printingEditionItemModel.IsRemoved,
-                Currency = (Currency)printingEditionItemModel.currency,
-                Status = (Status)printingEditionItemModel.status,
-                Type = (Type)printingEditionItemModel.type
+                Name = addPrintingEditionModelItem.Name,
+                Description = addPrintingEditionModelItem.Description,
+                Price = addPrintingEditionModelItem.Price,
+                IsRemoved = addPrintingEditionModelItem.IsRemoved,
+                Currency = (Currency)addPrintingEditionModelItem.currency,
+                Status = (Status)addPrintingEditionModelItem.status,
+                Type = (Type)addPrintingEditionModelItem.type
             };
             await _printingEditionRepository.AddAsync(printingEdition);
         }
@@ -39,20 +40,20 @@ namespace EducationApp.BusinessLogicLayer.Services
             await _printingEditionRepository.DeleteAsync(id);
         }
 
-        public async Task EditAsync(PrintingEditionModelItem printingEditionItemModel)
+        public async Task EditAsync(EditPrintingEditionModelItem editPrintingEditionModelItem)
         {
-            var printingEdition = new PrintingEdition()
+            var printingEdition = await _printingEditionRepository.GetByIdAsync(editPrintingEditionModelItem.Id);
+            if(printingEdition!=null)
             {
-                Id = printingEditionItemModel.Id,
-                Name = printingEditionItemModel.Name,
-                Description = printingEditionItemModel.Description,
-                Price = printingEditionItemModel.Price,
-                IsRemoved = printingEditionItemModel.IsRemoved,
-                Currency = (Currency)printingEditionItemModel.currency,
-                Status = (Status)printingEditionItemModel.status,
-                Type = (Type)printingEditionItemModel.type
-            };
-            await _printingEditionRepository.EditAsync(printingEdition);
+                printingEdition.Name = editPrintingEditionModelItem.Name;
+                printingEdition.Description = editPrintingEditionModelItem.Description;
+                printingEdition.Price = editPrintingEditionModelItem.Price;
+                printingEdition.IsRemoved = editPrintingEditionModelItem.IsRemoved;
+                printingEdition.Currency = (Currency)editPrintingEditionModelItem.currency;
+                printingEdition.Status = (Status)editPrintingEditionModelItem.status;
+                printingEdition.Type = (Type)editPrintingEditionModelItem.type;
+                await _printingEditionRepository.EditAsync(printingEdition);
+            }; 
         }
 
         public async Task<PrintingEditionModel> GetAllAsync()
@@ -82,6 +83,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             }
             return printingEditionModel;
         }
+
 
         public async Task<PrintingEditionModel> GetByTypeAsync(EducationApp.BusinessLogicLayer.Models.Enums.Type type)
         {

@@ -8,70 +8,69 @@ using System.Threading.Tasks;
 namespace EducationApp.PresentationLayer.Controllers
 {
     [ApiController]
-    [AllowAnonymous]
-    [Route("/printingedition")]
-    public class PrintingEditionController:ControllerBase
+    [Route("printingedition")]
+    public class PrintingEditionController : ControllerBase
     {
         private readonly IPrintingEditionService _printingEditionService;
         public PrintingEditionController(IPrintingEditionService printingEditionService)
         {
             _printingEditionService = printingEditionService;
         }
-        [HttpGet("/getallitems")]
+        [HttpGet("getallitems")]
         public async Task<IActionResult> GetAllItems()
         {
             var items = await _printingEditionService.GetAllAsync();
-            return Ok(items);
+            return Ok(items.Items);
         }
-        [HttpGet("/getbyid")]
+        [HttpGet("getbyid/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
             var item = await _printingEditionService.GetByIdAsync(id);
             return Ok(item);
         }
-        [HttpGet("/getbyprice")]
-        public async Task<IActionResult> GetByPriceAsync(float min , float max)
+        [HttpGet("getbyprice/{minPrice}&{maxPrice}")]
+        public async Task<IActionResult> GetByPriceAsync(float minPrice , float maxPrice)
         {
-            var item = await _printingEditionService.GetByPriceAsync(min,max);
-            return Ok(item);
+            var item = await _printingEditionService.GetByPriceAsync(minPrice,maxPrice);
+            return Ok(item.Items);
         }
-        [HttpGet("/getbytype")]
+        [HttpGet("getbytype/{typeModel}")]
         public async Task<IActionResult> GetByTypeAsync(Type typeModel)
         {
             var items = await _printingEditionService.GetByTypeAsync(typeModel);
             return Ok(items);
         }
-        [HttpGet("/sortbypriceasc")]
+        [HttpGet("sortbypriceasc")]
         public async Task<IActionResult> SortByPriceAscendingAsync()
         {
             var items = await _printingEditionService.SortByPriceAscendingAsync();
-            return Ok(items);
+            return Ok(items.Items);
         }
-        [HttpGet("/sortbypricedesc")]
+        [HttpGet("sortbypricedesc")]
         public async Task<IActionResult> SortByPriceDescendingAsync()
         {
             var items = await _printingEditionService.SortByPriceDescendingAsync();
-            return Ok(items);
+            return Ok(items.Items);
         }
-        [HttpPost("/additem")]
+        [HttpPost("additem")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> AddItem(PrintingEditionModelItem printingEditionItemModel)
+        public async Task<IActionResult> AddItem(AddPrintingEditionModelItem addPrintingEditionModelItem)
         {
-            await _printingEditionService.AddAsync(printingEditionItemModel);
+            await _printingEditionService.AddAsync(addPrintingEditionModelItem);
             return Ok(true);
         }
-        [HttpPost("/deleteitem/{id}")]
-        [Authorize(Roles = "admin")]
+        [HttpPost("deleteitem/{id}")]
+        [Authorize(Roles = "admin,user")]
         public async Task<IActionResult> DeleteItem(string id)
         {
             await _printingEditionService.DeleteAsync(id);
             return Ok(true);
         }
-        [HttpPost("/edititem")]
+        [HttpPost("edititem")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> EditItem(PrintingEditionModelItem printingEditionItemModel)
+        public async Task<IActionResult> EditItem(EditPrintingEditionModelItem editPrintingEditionModelItem)
         {
-            await _printingEditionService.EditAsync(printingEditionItemModel);
+            await _printingEditionService.EditAsync(editPrintingEditionModelItem);
             return Ok(true);
         }
     }

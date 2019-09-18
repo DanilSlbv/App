@@ -18,15 +18,15 @@ namespace EducationApp.PresentationLayer.Controllers
         }
 
         [HttpGet("getallusers")]
-        [Authorize(Roles = "user")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetAllUsers()
         {
             var Users = await _userService.GetAllAsync();
-            return Ok(User);
+            return Ok(Users);
         }
 
         [HttpGet("getuserbyid/{id}")]
-        [Authorize(Roles = "user")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetUserById(string id)
         {
             var User = await _userService.GetByIdAsync(id);
@@ -34,7 +34,7 @@ namespace EducationApp.PresentationLayer.Controllers
         }
 
         [HttpGet("getuserbyemail/{userEmail}")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "user")]
         public async Task<IActionResult> GetUserByEmail(string userEmail)
         {
             var User = await _userService.GetByEmailAsync(userEmail);

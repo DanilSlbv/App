@@ -15,6 +15,7 @@ namespace EducationApp.BusinessLogicLayer.Services.Interfaces
         Task<bool> SigInAsync(AccountSigInModel accountSigInModel);
         Task<bool> CanSigInAsync(string userId);
         Task ConfirmEmailAuthorizationAsync(string userId);
+        Task<IList<string>> GetRoleAsync(string userEmail);
         Task SignOutUserAsycn();
     }
 }

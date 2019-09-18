@@ -4,7 +4,6 @@ namespace EducationApp.BusinessLogicLayer.Models.PrintingEdition
 {
     public class PrintingEditionModelItem: BaseModel
     {
-        public string Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public float Price { get; set; }
@@ -14,7 +13,6 @@ namespace EducationApp.BusinessLogicLayer.Models.PrintingEdition
         public Type type { get; set; }
         public PrintingEditionModelItem(EducationApp.DataAccessLayer.Entities.PrintingEdition printingEdition)
         {
-            Id = printingEdition.Id;
             Name = printingEdition.Name;
             Description = printingEdition.Description;
             Price = printingEdition.Price;
