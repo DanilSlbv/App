@@ -6,10 +6,10 @@ namespace EducationApp.BusinessLogicLayer.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<List<UserModelItem>> GetAllUsersAsync();
-        Task<UserModelItem> GetUserByIdAsync(string id);
-        Task<UserModelItem> GetUserByEmailAsync(string userEmail);
-        Task<bool> DeleteUserAsync(string id);
-        Task<bool> EditUserAsync(UserEditModel userEditModel);
+        Task<List<UserModelItem>> GetAllAsync();
+        Task<UserModelItem> GetByIdAsync(string id);
+        Task<UserModelItem> GetByEmailAsync(string userEmail);
+        Task<bool> DeleteAsync(string id);
+        Task<bool> EditAsync(UserEditModel userEditModel);
     }
 }

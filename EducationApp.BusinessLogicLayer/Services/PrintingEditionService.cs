@@ -3,118 +3,119 @@ using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Repositories.Interface;
 using System.Threading.Tasks;
-using System.Linq;
-using System;
-using EducationApp.BusinessLogicLayer.Models.Enums;
 using System.Collections.Generic;
-using EducationApp.DataAccessLayer.Entities.Enums;
+using Currency = EducationApp.DataAccessLayer.Entities.Enums.Currency;
+using Status = EducationApp.DataAccessLayer.Entities.Enums.Status;
+using Type = EducationApp.DataAccessLayer.Entities.Enums.Type;
 
 namespace EducationApp.BusinessLogicLayer.Services
 {
     public class PrintingEditionService : IPrintingEditionService
     {
         private readonly IPrintingEditionRepository _printingEditionRepository;
-        public PrintingEditionService(IPrintingEditionRepository printingEditionRepository)
+        private readonly IAuthorInPrintingEditionRepository _authorInPrintingEditionRepository;
+        public PrintingEditionService(IPrintingEditionRepository printingEditionRepository,IAuthorInPrintingEditionRepository authorInPrintingEditionRepository)
         {
             _printingEditionRepository = printingEditionRepository;
+            _authorInPrintingEditionRepository = authorInPrintingEditionRepository;
         }
 
-        public async Task AddItemAsync(PrintingEditionItemModel printingEditionItemModel)
+        public async Task AddAsync(AddPrintingEditionModelItem addPrintingEditionModelItem)
         {
             var printingEdition = new PrintingEdition()
             {
-                Id = printingEditionItemModel.Id,
-                Name = printingEditionItemModel.Name,
-                Description = printingEditionItemModel.Description,
-                Price = printingEditionItemModel.Price,
-                IsRemoved = printingEditionItemModel.IsRemoved,
-                Currency = (CurrencyEnumEntity)printingEditionItemModel.currency,
-                Status = (StatusEnumEntity)printingEditionItemModel.status,
-                Type = (TypeEnumEntity)printingEditionItemModel.type
+                Name = addPrintingEditionModelItem.Name,
+                Description = addPrintingEditionModelItem.Description,
+                Price = addPrintingEditionModelItem.Price,
+                IsRemoved = addPrintingEditionModelItem.IsRemoved,
+                Currency = (Currency)addPrintingEditionModelItem.currency,
+                Status = (Status)addPrintingEditionModelItem.status,
+                Type = (Type)addPrintingEditionModelItem.type
             };
-            await _printingEditionRepository.AddItemAsync(printingEdition);
+            await _printingEditionRepository.AddAsync(printingEdition);
         }
 
-        public async Task DeleteItemAsync(string id)
+        public async Task DeleteAsync(string id)
         {
-            await _printingEditionRepository.DeleteItemAsync(id);
+            await _printingEditionRepository.DeleteAsync(id);
         }
 
-        public async Task EditItemAsync(PrintingEditionItemModel printingEditionItemModel)
+        public async Task EditAsync(EditPrintingEditionModelItem editPrintingEditionModelItem)
         {
-            var printingEdition = new PrintingEdition()
+            var printingEdition = await _printingEditionRepository.GetByIdAsync(editPrintingEditionModelItem.Id);
+            if(printingEdition!=null)
             {
-                Id = printingEditionItemModel.Id,
-                Name = printingEditionItemModel.Name,
-                Description = printingEditionItemModel.Description,
-                Price = printingEditionItemModel.Price,
-                IsRemoved = printingEditionItemModel.IsRemoved,
-                Currency = (CurrencyEnumEntity)printingEditionItemModel.currency,
-                Status = (StatusEnumEntity)printingEditionItemModel.status,
-                Type = (TypeEnumEntity)printingEditionItemModel.type
-            };
-            await _printingEditionRepository.EditItemAsync(printingEdition);
+                printingEdition.Name = editPrintingEditionModelItem.Name;
+                printingEdition.Description = editPrintingEditionModelItem.Description;
+                printingEdition.Price = editPrintingEditionModelItem.Price;
+                printingEdition.IsRemoved = editPrintingEditionModelItem.IsRemoved;
+                printingEdition.Currency = (Currency)editPrintingEditionModelItem.currency;
+                printingEdition.Status = (Status)editPrintingEditionModelItem.status;
+                printingEdition.Type = (Type)editPrintingEditionModelItem.type;
+                await _printingEditionRepository.EditAsync(printingEdition);
+            }; 
         }
 
-        public async Task<List<PrintingEditionItemModel>> GetAllAsync()
+        public async Task<PrintingEditionModel> GetAllAsync()
         {
             List<PrintingEdition> printingEditions = await _printingEditionRepository.GetAllAsync();
             var printingEditionmodel = new PrintingEditionModel();
-            foreach(var i in printingEditions)
+            foreach(var edition in printingEditions)
             {
-                printingEditionmodel.Items.Add(new PrintingEditionItemModel(i));
+                printingEditionmodel.Items.Add(new PrintingEditionModelItem(edition));
             }
-            return printingEditionmodel.Items;
+            return printingEditionmodel;
         }
 
-        public async Task<PrintingEditionItemModel> GetByIdAsync(string id)
+        public async Task<PrintingEditionModelItem> GetByIdAsync(string id)
         {
-            var printingEditionItemModel = new PrintingEditionItemModel( await _printingEditionRepository.GetByIdAsync(id));
+            var printingEditionItemModel = new PrintingEditionModelItem( await _printingEditionRepository.GetByIdAsync(id));
             return printingEditionItemModel;
         }
 
-        public async Task<List<PrintingEditionItemModel>> GetItemsByPriceAsync(float min, float max)
+        public async Task<PrintingEditionModel> GetByPriceAsync(float minPrice, float maxPrice)
         {
-            List<PrintingEdition> printingEditions = await _printingEditionRepository.GetItemsByPriceAsync(min, max);
+            List<PrintingEdition> printingEditions = await _printingEditionRepository.GetByPriceAsync(minPrice, maxPrice);
             var printingEditionModel = new PrintingEditionModel();
-            foreach(var i in printingEditions)
+            foreach(var edition in printingEditions)
             {
-                printingEditionModel.Items.Add(new PrintingEditionItemModel(i));
+                printingEditionModel.Items.Add(new PrintingEditionModelItem(edition));
             }
-            return printingEditionModel.Items;
+            return printingEditionModel;
         }
 
-        public async Task<List<PrintingEditionItemModel>> GetItemsByTypeAsync(TypeModel type)
+
+        public async Task<PrintingEditionModel> GetByTypeAsync(EducationApp.BusinessLogicLayer.Models.Enums.Type type)
         {
-            List<PrintingEdition> printingEditions = await _printingEditionRepository.GetItemsByTypeAsync((TypeEnumEntity)type);
+            List<PrintingEdition> printingEditions = await _printingEditionRepository.GetByTypeAsync((Type)type);
             PrintingEditionModel printingEditionModel = new PrintingEditionModel();
-            foreach (var i in printingEditions)
+            foreach (var edition in printingEditions)
             {
-                printingEditionModel.Items.Add(new PrintingEditionItemModel(i));
+                printingEditionModel.Items.Add(new PrintingEditionModelItem(edition));
             }
-            return printingEditionModel.Items;
+            return printingEditionModel;
         }
 
-        public async Task<List<PrintingEditionItemModel>> SortItemsByPriceAscAsync()
+        public async Task<PrintingEditionModel> SortByPriceAscendingAsync()
         {
-            List<PrintingEdition> printingEditions = await _printingEditionRepository.SortItemsByPriceAscAsync();
+            List<PrintingEdition> printingEditions = await _printingEditionRepository.SortByPriceAscendingAsync();
             PrintingEditionModel printingEditionModel = new PrintingEditionModel();
-            foreach (var i in printingEditions)
+            foreach (var edition in printingEditions)
             {
-                printingEditionModel.Items.Add(new PrintingEditionItemModel(i));
+                printingEditionModel.Items.Add(new PrintingEditionModelItem(edition));
             }
-            return printingEditionModel.Items;
+            return printingEditionModel;
         }
 
-        public async Task<List<PrintingEditionItemModel>> SortItemsByPriceDescAsync()
+        public async Task<PrintingEditionModel> SortByPriceDescendingAsync()
         {
-            List<PrintingEdition> printingEditions = await _printingEditionRepository.SortItemsByPriceAscAsync();
+            List<PrintingEdition> printingEditions = await _printingEditionRepository.SortByPriceDescendingAsync();
             PrintingEditionModel printingEditionModel = new PrintingEditionModel();
-            foreach (var i in printingEditions)
+            foreach (var printingEdition in printingEditions)
             {
-                printingEditionModel.Items.Add(new PrintingEditionItemModel(i));
+                printingEditionModel.Items.Add(new PrintingEditionModelItem(printingEdition));
             }
-            return printingEditionModel.Items;
+            return printingEditionModel;
         }
     }
 }

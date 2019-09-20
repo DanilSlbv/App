@@ -1,17 +1,17 @@
-﻿using System;
-using EducationApp.BusinessLogicLayer.Models.User;
-using EducationApp.BusinessLogicLayer.Models.Payments;
+﻿using EducationApp.BusinessLogicLayer.Models.Base;
+using EducationApp.BusinessLogicLayer.Models.Enums;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace EducationApp.BusinessLogicLayer.Models.Orders
 {
-    class OrderModel
+    public class OrderModel:BaseModel
     {
-        public int Id { get; set; }
-        public string Description { get; set; }
-        public int UserId { get; set; }
-        public UserModel User { get; set; }
-        public DateTime Date { get; set; }
-        public int PaymentId { get; set; }
-        public PaymentModel Payment { get; set; }
+        public List<OrderModelItem> Items { get; set; }
+        public OrderModel()
+        {
+            Items = new List<OrderModelItem>();
+        }
     }
 }

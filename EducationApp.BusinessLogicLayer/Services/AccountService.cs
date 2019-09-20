@@ -2,6 +2,7 @@
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Repositories.Interface;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EducationApp.BusinessLogicLayer.Services
@@ -15,7 +16,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             _userRepository = userRepository;
         }
 
-        public async Task<UserModelItem> SigUpUserAsync(AccountSigUpModel userRegisterModel)
+        public async Task<UserModelItem> SigUpAsync(AccountSigUpModel userRegisterModel)
         {
             var applicationUser = new ApplicationUser
             {
@@ -72,7 +73,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             return result;
         }
 
-        public async Task<bool> SigInUserAsync(AccountSigInModel accountSigInModel)
+        public async Task<bool> SigInAsync(AccountSigInModel accountSigInModel)
         {
             var applicationUser = await _userRepository.GetUserByEmailAsync(accountSigInModel.Email);
             var checkConfirm = await CheckEmailConfirmAsync(applicationUser.Id);
@@ -97,6 +98,17 @@ namespace EducationApp.BusinessLogicLayer.Services
             await _userRepository.ConfirmEmailAuthorizationAsync(applicationUser, true);
         }
 
+        public async Task<IList<string>> GetRoleAsync(string userEmail)
+        {
+            var applicationUser = await _userRepository.GetUserByEmailAsync(userEmail);
+            if (applicationUser == null)
+            {
+                return null;
+            }
+            var result = await _userRepository.GetRoleAsync(applicationUser);
+            return result;
+        }
+        
         public async Task SignOutUserAsycn()
         {
             await _userRepository.SignOutAsync();

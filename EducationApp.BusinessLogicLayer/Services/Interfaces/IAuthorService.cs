@@ -8,11 +8,11 @@ namespace EducationApp.BusinessLogicLayer.Services.Interfaces
 {
     public interface IAuthorService
     {
-        Task<List<AuthorItemModel>> GetAllAsync();
-        Task<AuthorItemModel> GetByIdAsync(string id);
-        Task<AuthorItemModel> GetByNameASync(string name);
-        Task AddItemAsync(AuthorItemModel entity);
-        Task DeleteItemAsync(string id);
-        Task EditItemAsync(AuthorItemModel entity);
+        Task<AuthorModel> GetAllAsync();
+        Task<AuthorModelItem> GetByIdAsync(string id);
+        Task<AuthorModelItem> GetByNameASync(string name);
+        Task AddAsync(AddAuthorModelItem addAuthorModelItem);
+        Task DeleteAsync(string id);
+        Task EditAsync(EditAuthorModelItem editAuthorModelItem);
     }
 }

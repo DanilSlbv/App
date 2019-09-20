@@ -1,25 +1,22 @@
 using System;
-using System.IO;
-using System.Net.Mail;
-using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using EducationApp.DataAccessLayer.Repositories;
-using EducationApp.DataAccessLayer.Repositories.Interface;
-using EducationApp.DataAcessLayer.AppContext;
-using EducationApp.BusinessLogicLayer.Common;
-using EducationApp.DataAccessLayer.Entities;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.BusinessLogicLayer.Services;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Stripe;
+using EducationApp.BusinessLogicLayer.Models.Payments;
+using EducationApp.DataAccessLayer.Initialization;
+using EducationApp.BusinessLogicLayer.Models.Authorization;
+using OrderService = EducationApp.BusinessLogicLayer.Services.OrderService;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace EducationApp.PresentationLayer
 {
@@ -31,31 +28,33 @@ namespace EducationApp.PresentationLayer
         }
 
         public IConfiguration Configuration { get; }
-        public TimeSpan TimeSpan { get; private set; }
-
-      
+             
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationContext>()
-                .AddDefaultTokenProviders()
-                .AddEntityFrameworkStores<ApplicationContext>();
-            
-            services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IAccountService, AccountService>();
+            DbInitialize dbInitialize = new DbInitialize(Configuration,services);
+            dbInitialize.Initialize();
 
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAccountService, BusinessLogicLayer.Services.AccountService>();
+            services.AddScoped<IPrintingEditionService,PrintingEditionService>();
+            services.AddScoped<IAuthorService,AuthorService>();
+            services.AddScoped<IOrderService, OrderService>();
+
+            services.Configure<AuthTokenProviderOptions>(option=> 
+            {
+                option.JwtIssuer = Configuration["JwtIssuer"];
+                option.JwtKey = Configuration["JwtKey"];
+            });
 
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = IdentityConstants.ApplicationScheme;
-                options.DefaultChallengeScheme = IdentityConstants.ApplicationScheme;
-                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-            }).AddJwtBearer(options =>
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
             {
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["JwtKey"])),
@@ -69,50 +68,66 @@ namespace EducationApp.PresentationLayer
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
-            });
-
-
-            services.Configure<IdentityOptions>(options =>
+            }).AddCookie(options=> 
             {
-                options.Password.RequireDigit = true;
-                options.Password.RequiredLength = 8;
-                options.Password.RequireUppercase = true;
-
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30.0);
-                options.Lockout.MaxFailedAccessAttempts = 10;
-                options.Lockout.AllowedForNewUsers = true;
-
-                options.User.RequireUniqueEmail = true;
+                options.Cookie.HttpOnly = true;
+                options.Cookie.SameSite = SameSiteMode.Lax;
             });
 
-            services.ConfigureApplicationCookie(options =>
+                services.Configure<IdentityOptions>(options =>
+                {
+                    options.Password.RequireDigit = true;
+                    options.Password.RequiredLength = 8;
+                    options.Password.RequireUppercase = true;
+
+                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30.0);
+                    options.Lockout.MaxFailedAccessAttempts = 10;
+                    options.Lockout.AllowedForNewUsers = true;
+
+                    options.User.RequireUniqueEmail = true;
+                });
+
+                services.ConfigureApplicationCookie(options =>
+                {
+                    options.Cookie.Expiration = TimeSpan.FromDays(100);
+                });
+
+                services.Configure<CookiePolicyOptions>(options =>
+                {
+                    options.MinimumSameSitePolicy = SameSiteMode.Strict;
+                    options.HttpOnly = Microsoft.AspNetCore.CookiePolicy.HttpOnlyPolicy.None;
+                });
+
+            services.AddSwaggerGen(c =>
             {
-                options.Cookie.Expiration = TimeSpan.FromDays(100);
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
             });
+            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
 
-            services.Configure<CookiePolicyOptions>(options =>
-            {
-                
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
-            });
             services.AddMvc();
         }
 
        
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-                app.UseStaticFiles();
-                app.UseCookiePolicy();
-                app.UseAuthentication();
-                app.UseMvc();
-                app.UseMvcWithDefaultRoute();
-            //loggerFactory.AddFile(Path.Combine("C:\\Users\\Anuitex-78\\source\\repos\\EducationApp", "LoggerFile.txt"));
-            //var logger = loggerFactory.CreateLogger("Error");
-            //app.Run(async (context) =>
-            //{
-            //    logger.LogInformation("Processing request{0}", context.Request.Path);
-            //});
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+           
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
+
+            app.UseAuthentication();
+            app.UseMvcWithDefaultRoute();
+
+            StripeConfiguration.ApiKey = Configuration.GetSection("Stripe")["SecretKey"];
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyAPI V1");
+            });
         }
     }
 }

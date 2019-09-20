@@ -8,7 +8,7 @@ namespace EducationApp.PresentationLayer.Controllers
 {
     [Route("author")]
     [ApiController]
-    [Authorize]
+    [AllowAnonymous]
     public class AuthorController:ControllerBase
     {
         private readonly IAuthorService _authorService;
@@ -17,53 +17,46 @@ namespace EducationApp.PresentationLayer.Controllers
             _authorService = authorService;
         }
 
-        [HttpGet]
-        [Route("getallitems")]
-        [Authorize(Roles = "admin,user")]
-        public async Task<IActionResult> GetAllItems()
+        [HttpGet("getall")]
+        public async Task<IActionResult> GetAll()
         {
             var items = await _authorService.GetAllAsync();
             return Ok(items);
         }
-        [HttpGet]
-        [Route("getallitems")]
-        [Authorize(Roles = "admin,user")]
+        [HttpGet("getbyid/{id}")]
         public async Task<IActionResult> GetById(string id)
         {
-            var items = await _authorService.GetByIdAsync(id);
-            return Ok(items);
+            var item = await _authorService.GetByIdAsync(id);
+            return Ok(item);
         }
         [HttpGet]
-        [Route("getallitems")]
+        [Route("getbyname/{name}")]
         [Authorize(Roles = "admin,user")]
         public async Task<IActionResult> GetByName(string name)
         {
-            var items = await _authorService.GetByNameASync(name);
-            return Ok(items);
+            var item = await _authorService.GetByNameASync(name);
+            return Ok(item);
         }
-        [HttpPost]
-        [Route("addauthor")]
-        [Authorize(Roles = "admin,user")]
-        public async Task<IActionResult> AddAuthor(AuthorItemModel authorItemModel)
+        [HttpPost("addauthor")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> AddAuthor(AddAuthorModelItem addAuthorModelItem)
         {
-            await _authorService.AddItemAsync(authorItemModel);
-            return Ok("AddAuthor");
+            await _authorService.AddAsync(addAuthorModelItem);
+            return Ok(true);
         }
-        [HttpPost]
-        [Route("deleteauthor")]
-        [Authorize(Roles = "admin,user")]
+        [HttpPost("deleteauthor/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> DeleteAuthor(string id)
         {
-            await _authorService.DeleteItemAsync(id);
-            return Ok("DeleteAuthor");
+            await _authorService.DeleteAsync(id);
+            return Ok(true);
         }
-        [HttpPost]
-        [Route("editauthor")]
-        [Authorize(Roles = "admin,user")]
-        public async Task<IActionResult> EditAuthor(AuthorItemModel authorItemModel)
+        [HttpPost("editauthor")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> EditAuthor(EditAuthorModelItem editAuthorModelItem)
         {
-            await _authorService.EditItemAsync(authorItemModel);
-            return Ok("EditAuthor");
+            await _authorService.EditAsync(editAuthorModelItem);
+            return Ok(true);
         }
     }
 }

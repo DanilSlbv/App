@@ -7,9 +7,9 @@ namespace EducationApp.DataAccessLayer.Entities
     public class AuthorInPrintingEditons:BaseModel
     {
         public string AuthorId { get; set; }
-        public Author Author { get; set; }
+        public virtual Author Author { get; set; }
         public string PrintingEditionId { get; set; }
-        public  PrintingEdition PrintingEdition { get; set; }
+        public virtual  PrintingEdition PrintingEdition { get; set; }
         public DateTime Date { get; set; }
     }
 }

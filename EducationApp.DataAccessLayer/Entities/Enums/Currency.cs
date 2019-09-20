@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EducationApp.DataAccessLayer.Entities.Enums
 {
-    public enum CurrencyEnumEntity
+    public enum Currency
     {
         None = 0,
         USD = 1,

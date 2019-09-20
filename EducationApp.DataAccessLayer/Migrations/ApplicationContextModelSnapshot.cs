@@ -153,7 +153,7 @@ namespace EducationApp.DataAccessLayer.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("TransactionId");
+                    b.Property<string>("TransactionId");
 
                     b.HasKey("Id");
 

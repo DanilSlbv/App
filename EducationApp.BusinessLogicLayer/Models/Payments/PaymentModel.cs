@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EducationApp.BusinessLogicLayer.Models.Payments
 {
-    class PaymentModel:BaseModel
+    public class PaymentModel:BaseModel
     {
         public List<PaymentItemModel> Items { get; set; }
         public PaymentModel()

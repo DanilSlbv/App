@@ -4,7 +4,7 @@ using System.Text;
 
 namespace EducationApp.BusinessLogicLayer.Models.Enums
 {
-    public enum TypeModel
+    public enum Type
     {
         None=0,
         Book=1,

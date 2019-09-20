@@ -17,30 +17,29 @@ namespace EducationApp.BusinessLogicLayer.Helpers
             _userEmail = userEmail;
             _link = link;
         }
-        public async Task<string> SendEmailAsync()
+        public async Task<bool> SendEmailAsync()
         {
            
-                var credentials = new NetworkCredential("storebooksender@gmail.com", "Qwerty987456");
+            var credentials = new NetworkCredential("storebooksender@gmail.com", "Qwerty987456");
             var mail = new MailMessage()
             {
                 From = new MailAddress("BookStore@book.com"),
                 Subject = Constants.EmailHelper.EmailSubject,
                 Body = Constants.EmailHelper.EmailBody + _link
-                };
-                mail.IsBodyHtml = true;
-                mail.To.Add(new MailAddress(_userEmail));
-                var Clien = new SmtpClient()
-                {
-                    Host = "smtp.gmail.com",
-                    Port = 587,
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    UseDefaultCredentials = false,
-                    EnableSsl = true,
-                    Credentials = credentials
-                };
-                await Clien.SendMailAsync(mail);
-                return "EmailSend";
-            
+            };
+            mail.IsBodyHtml = true;
+            mail.To.Add(new MailAddress(_userEmail));
+            var Clien = new SmtpClient()
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                EnableSsl = true,
+                Credentials = credentials
+            };
+            await Clien.SendMailAsync(mail);
+            return true;
         }
     }
 }

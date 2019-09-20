@@ -1,0 +1,17 @@
+﻿@using Microsoft.Extensions.Options
+@inject IOptions<EducationApp.BusinessLogicLayer.Models.Payments.StripeSettings> Stripe
+
+<form action="Charge" method="POST">
+    <article>
+        <label>1000</label>
+    </article>
+    <script src="https://checkout.stripe.com/v2/checkout.js"
+            class="stripe-button"
+            data-key="@Stripe.Value.PublishableKey"
+            data-locale="auto"
+            data-description="Sample Charge"
+            data-amount="500"
+            >
+    </script>
+</form>
+

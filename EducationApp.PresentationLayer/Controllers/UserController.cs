@@ -16,61 +16,60 @@ namespace EducationApp.PresentationLayer.Controllers
         {
             _userService = userService;
         }
-        [HttpGet]
-        [Authorize(Roles = "user")]
-        [Route("getallusers")]
+
+        [HttpGet("getallusers")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetAllUsers()
         {
-            var Users = await _userService.GetAllUsersAsync();
-            return Ok(User);
+            var Users = await _userService.GetAllAsync();
+            return Ok(Users);
         }
-        [HttpGet]
-        [Authorize(Roles = "user")]
-        [Route("getuserbyid/{id}")]
+
+        [HttpGet("getuserbyid/{id}")]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> GetUserById(string id)
         {
-            var User = await _userService.GetUserByIdAsync(id);
+            var User = await _userService.GetByIdAsync(id);
             return Ok(User);
         }
-        [HttpGet]
-        [Authorize(Roles = "admin")]
-        [Route("getuserbyemail/{userEmail}")]
+
+        [HttpGet("getuserbyemail/{userEmail}")]
+        [Authorize(Roles = "user")]
         public async Task<IActionResult> GetUserByEmail(string userEmail)
         {
-            var User = await _userService.GetUserByEmailAsync(userEmail);
+            var User = await _userService.GetByEmailAsync(userEmail);
             return Ok(User);
         }
-        [HttpGet]
+
+        [HttpGet("edituser/{id}")]
         [Authorize(Roles = "admin,user")]
-        [Route("edituser/{id}")]
         public async Task<IActionResult> EditUser(string id)
         {
-            return Ok(await _userService.GetUserByIdAsync(id));
+            return Ok(await _userService.GetByIdAsync(id));
         }
-        [HttpPost]
 
+        [HttpPost("edituser")]
         [Authorize(Roles = "admin,user")]
-        [Route("edituser")]
         public async Task<IActionResult> EditUser(UserEditModel userEditModel)
         {
-            var result = await _userService.EditUserAsync(userEditModel);
+            var result = await _userService.EditAsync(userEditModel);
             if (result)
             {
-                return Content("UserEdit--Success");
+                return Ok(true);
             }
-            return Content("UserEdit--Error");
+            return Ok(false);
         }
-        [HttpPost]
+
+        [HttpPost("deleteuser/{id}")]
         [Authorize(Roles = "admin")]
-        [Route("deleteuser/{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            var result = await _userService.DeleteUserAsync(id);
+            var result = await _userService.DeleteAsync(id);
             if (result)
             {
-                return Content("UserDelete-Success");
+                return Ok(true);
             }
-            return Content("UserDelete---Error");
+            return Ok(false);
         }
     }
 }

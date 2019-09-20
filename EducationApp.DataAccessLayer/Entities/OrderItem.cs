@@ -6,11 +6,10 @@ namespace EducationApp.DataAccessLayer.Entities
 {
     public class OrderItem:BaseModel
     {
-       
         public double Amount { get; set; }
-        public CurrencyEnumEntity Currency { get; set; }
+        public Currency Currency { get; set; }
         public string PrintingEditionId { get; set; }
-        public PrintingEdition PrintingEdition { get; set; }
+        public virtual PrintingEdition PrintingEdition { get; set; }
         public int Count { get; set; }
     }
 }

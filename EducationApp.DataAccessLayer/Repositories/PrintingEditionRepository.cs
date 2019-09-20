@@ -1,68 +1,48 @@
 ﻿using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Entities.Enums;
+using EducationApp.DataAccessLayer.Repositories.Base;
 using EducationApp.DataAccessLayer.Repositories.Interface;
 using EducationApp.DataAcessLayer.AppContext;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {
-    public class PrintingEditionRepository : IPrintingEditionRepository
+    public class PrintingEditionRepository : BaseEFRepository<PrintingEdition>, IPrintingEditionRepository
     {
-        private readonly IBaseEFRepository<PrintingEdition> _baseEFRepository;
-        private readonly ApplicationContext _context;
-
-        public PrintingEditionRepository(ApplicationContext applicationContext,IBaseEFRepository<PrintingEdition> baseEFRepository)
+        private readonly ApplicationContext _applicationContext;
+        public PrintingEditionRepository(ApplicationContext applicationContext):base(applicationContext)
         {
-            _context = applicationContext;
-            _baseEFRepository = baseEFRepository;
+            _applicationContext = applicationContext;
         }
 
-        public async Task<List<PrintingEdition>> GetAllAsync()
-        {
-            return await _baseEFRepository.GetAllAsync();
-        }
 
-        public async Task<PrintingEdition> GetByIdAsync(string id)
+        public async Task<List<PrintingEdition>> GetByPriceAsync(float minPrice,float maxPrice)
         {
-            return await _baseEFRepository.GetByIdAsync(id);
-        }
-
-        public async Task<List<PrintingEdition>> GetItemsByPriceAsync(float min,float max)
-        {
-            var result =  _context.PrintingEditions.Where(x => x.Price > min && x.Price < max).ToList();
+            var result = await _context.PrintingEditions.Where(x =>x.Price>=minPrice && x.Price<=minPrice).ToListAsync();
             return result;
         }
-        public async Task<List<PrintingEdition>>GetItemsByTypeAsync(TypeEnumEntity type)
+        public async Task<List<PrintingEdition>>GetByTypeAsync(Type type)
         {
-            var result = _context.PrintingEditions.Where(x => x.Type==type).ToList();
+            var result = await _context.PrintingEditions.Where(x => x.Type==type).ToListAsync();
             return result;
         }
-        public async Task<List<PrintingEdition>> SortItemsByPriceAscAsync()
+        public async Task<PrintingEdition> GetByNameAsync(string name)
         {
-            var result = _context.PrintingEditions.OrderBy(x=>x.Price).ToList();
+            var result = await _context.PrintingEditions.FindAsync(name);
             return result;
         }
-        public async Task<List<PrintingEdition>> SortItemsByPriceDescAsync()
+        public async Task<List<PrintingEdition>> SortByPriceAscendingAsync()
         {
-            var result = _context.PrintingEditions.OrderByDescending(x => x.Price).ToList();
+            var result =await _context.PrintingEditions.OrderBy(x=>x.Price).ToListAsync();
             return result;
         }
-
-        public async Task AddItemAsync(PrintingEdition printingEdition)
+        public async Task<List<PrintingEdition>> SortByPriceDescendingAsync()
         {
-             await _context.PrintingEditions.AddAsync(printingEdition);
-        }
-
-        public async Task DeleteItemAsync(string id)
-        {
-            await _baseEFRepository.DeleteItemAsync(id);
-        }
-
-        public async Task EditItemAsync(PrintingEdition printingEdition)
-        {
-            await _baseEFRepository.EditItemAsync(printingEdition);
+            var result =await _context.PrintingEditions.OrderByDescending(x => x.Price).ToListAsync();
+            return result;
         }
     }
 }

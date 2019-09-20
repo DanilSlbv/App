@@ -5,10 +5,10 @@ namespace EducationApp.BusinessLogicLayer.Models.Authors
 {
     public class AuthorModel:BaseModel
     {
-        public List<AuthorItemModel> Items { get; set; }
+        public List<AuthorModelItem> Items { get; set; }
         public AuthorModel()
         {
-            Items = new List<AuthorItemModel>();
+            Items = new List<AuthorModelItem>();
         }
     }
 }

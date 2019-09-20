@@ -4,14 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Type = EducationApp.DataAccessLayer.Entities.Enums.Type;
 
 namespace EducationApp.DataAccessLayer.Repositories.Interface
 {
     public  interface IPrintingEditionRepository:IBaseEFRepository<PrintingEdition>
     {
-        Task<List<PrintingEdition>> GetItemsByPriceAsync(float min, float max);
-        Task<List<PrintingEdition>> GetItemsByTypeAsync(TypeEnumEntity type);
-        Task<List<PrintingEdition>> SortItemsByPriceAscAsync();
-        Task<List<PrintingEdition>> SortItemsByPriceDescAsync();
+        Task<List<PrintingEdition>> GetByPriceAsync(float minPrice, float maxPrice);
+        Task<List<PrintingEdition>> GetByTypeAsync(Type type);
+        Task<PrintingEdition> GetByNameAsync(string name);
+        Task<List<PrintingEdition>> SortByPriceAscendingAsync();
+        Task<List<PrintingEdition>> SortByPriceDescendingAsync();
     }
 }

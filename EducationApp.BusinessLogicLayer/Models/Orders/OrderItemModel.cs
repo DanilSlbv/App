@@ -1,14 +1,14 @@
-﻿using EducationApp.BusinessLogicLayer.Models.PrintingEdition;
+﻿using EducationApp.BusinessLogicLayer.Models.Base;
+using System.Collections.Generic;
 
 namespace EducationApp.BusinessLogicLayer.Models.Orders
 {
-    class OrderItemModel
+    public class OrderItemModel:BaseModel
     {
-        public int Id { get; set; }
-        public double Amount { get; set; }
-        public enum Currency { }
-        public int PrintingEditionsId { get; set; }
-        public PrintingEditionModel PrintingEditons { get; set; }
-        public int Count { get; set; }
+        public List<OrderItemModelItem> Items { get; set; }
+        public OrderItemModel()
+        {
+            Items = new List<OrderItemModelItem>();
+        }
     }
 }
