@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using EducationApp.BusinessLogicLayer.Models.Base;
+﻿using EducationApp.BusinessLogicLayer.Models.Base;
 using EducationApp.DataAccessLayer.Entities;
 
 namespace EducationApp.BusinessLogicLayer.Models.User

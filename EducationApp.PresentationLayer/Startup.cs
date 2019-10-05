@@ -1,3 +1,4 @@
+
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,6 +18,9 @@ using EducationApp.DataAccessLayer.Initialization;
 using EducationApp.BusinessLogicLayer.Models.Authorization;
 using OrderService = EducationApp.BusinessLogicLayer.Services.OrderService;
 using Swashbuckle.AspNetCore.Swagger;
+using EducationApp.BusinessLogicLayer.Common;
+using System.IO;
+using EducationApp.BusinessLogicLayer.Common.Extensions;
 
 namespace EducationApp.PresentationLayer
 {
@@ -26,21 +30,16 @@ namespace EducationApp.PresentationLayer
         {
             Configuration = configuration;
         }
-
+        
         public IConfiguration Configuration { get; }
              
         public void ConfigureServices(IServiceCollection services)
         {
             DbInitialize dbInitialize = new DbInitialize(Configuration,services);
-            dbInitialize.Initialize();
+            RepositoryInit repositoryInit = new RepositoryInit(services);
+            ServicesInit servicesInit = new ServicesInit(services);
 
-            services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IAccountService, BusinessLogicLayer.Services.AccountService>();
-            services.AddScoped<IPrintingEditionService,PrintingEditionService>();
-            services.AddScoped<IAuthorService,AuthorService>();
-            services.AddScoped<IOrderService, OrderService>();
-
-            services.Configure<AuthTokenProviderOptions>(option=> 
+            services.Configure<AuthTokenProviderOptionsModel>(option=> 
             {
                 option.JwtIssuer = Configuration["JwtIssuer"];
                 option.JwtKey = Configuration["JwtKey"];
@@ -71,14 +70,12 @@ namespace EducationApp.PresentationLayer
             }).AddCookie(options=> 
             {
                 options.Cookie.HttpOnly = true;
-                options.Cookie.SameSite = SameSiteMode.Lax;
+                options.Cookie.SameSite = SameSiteMode.None;
             });
 
                 services.Configure<IdentityOptions>(options =>
                 {
-                    options.Password.RequireDigit = true;
-                    options.Password.RequiredLength = 8;
-                    options.Password.RequireUppercase = true;
+                    options.Password.RequiredLength = 6;
 
                     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30.0);
                     options.Lockout.MaxFailedAccessAttempts = 10;
@@ -102,8 +99,8 @@ namespace EducationApp.PresentationLayer
             {
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
             });
-            services.Configure<StripeSettings>(Configuration.GetSection("Stripe"));
-
+            services.Configure<StripeSettingsModel>(Configuration.GetSection("Stripe"));
+            services.AddCors();
             services.AddMvc();
         }
 
@@ -114,11 +111,14 @@ namespace EducationApp.PresentationLayer
             {
                 app.UseDeveloperExceptionPage();
             }
-           
+            app.UseCors(options =>
+            options.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+            
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseCookiePolicy();
-
             app.UseAuthentication();
             app.UseMvcWithDefaultRoute();
 
@@ -127,6 +127,13 @@ namespace EducationApp.PresentationLayer
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyAPI V1");
+            });
+
+            loggerFactory.AddFile(Path.Combine("C:\\Users\\Anuitex-78\\source\\repos\\EducationApp", "LoggerFile.txt"));
+            var logger = loggerFactory.CreateLogger("Error");
+            app.Run(async (context) =>
+            {
+                logger.LogInformation("Processing request{0}", context.Request.Path);
             });
         }
     }

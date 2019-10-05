@@ -9,7 +9,9 @@ namespace EducationApp.DataAccessLayer.Repositories.Interface
 {
     public interface IOrderRepository:IBaseEFRepository<Order>
     {
-        Task<List<Order>> GetUserOrdersAsync(string UserId);
+        Task<List<Order>> GetAllAsync();
+        Task<List<Order>> GetOrdersByUserIdAsync(string UserId);
         Task AddOrder(Order order);
+        Task RemoveAsync(int orderId);
     }
 }

@@ -1,4 +1,5 @@
-﻿using EducationApp.BusinessLogicLayer.Models.Authors;
+﻿using EducationApp.BusinessLogicLayer.Common.Pagination;
+using EducationApp.BusinessLogicLayer.Models.Authors;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +9,6 @@ namespace EducationApp.PresentationLayer.Controllers
 {
     [Route("author")]
     [ApiController]
-    [AllowAnonymous]
     public class AuthorController:ControllerBase
     {
         private readonly IAuthorService _authorService;
@@ -17,18 +17,15 @@ namespace EducationApp.PresentationLayer.Controllers
             _authorService = authorService;
         }
 
-        [HttpGet("getall")]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("authorspage/{page}")]
+        public async Task<IActionResult> GetAllAuthorWithPrintingEdition(int page)
         {
-            var items = await _authorService.GetAllAsync();
-            return Ok(items);
+            var items = await _authorService.GetAuthorsWithPrintingEditions();
+            var itemsWithPagination = new ItemsWithPagination<AuthorInPrintingEditionsModelItem>();
+            var resultItems=itemsWithPagination.GetItems(page,items.Items);
+            return Ok(resultItems);
         }
-        [HttpGet("getbyid/{id}")]
-        public async Task<IActionResult> GetById(string id)
-        {
-            var item = await _authorService.GetByIdAsync(id);
-            return Ok(item);
-        }
+
         [HttpGet]
         [Route("getbyname/{name}")]
         [Authorize(Roles = "admin,user")]
@@ -37,22 +34,21 @@ namespace EducationApp.PresentationLayer.Controllers
             var item = await _authorService.GetByNameASync(name);
             return Ok(item);
         }
-        [HttpPost("addauthor")]
+        [HttpPost("addauthor/{authorname}")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> AddAuthor(AddAuthorModelItem addAuthorModelItem)
+        public async Task<IActionResult> AddAuthor(string authorName)
         {
-            await _authorService.AddAsync(addAuthorModelItem);
+            var result=await _authorService.AddAsync(authorName);
             return Ok(true);
         }
         [HttpPost("deleteauthor/{id}")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> DeleteAuthor(string id)
+        
+        public async Task<IActionResult> DeleteAuthor(int id)
         {
-            await _authorService.DeleteAsync(id);
+            await _authorService.RemoveAsync(id);
             return Ok(true);
         }
         [HttpPost("editauthor")]
-        [Authorize(Roles = "admin")]
         public async Task<IActionResult> EditAuthor(EditAuthorModelItem editAuthorModelItem)
         {
             await _authorService.EditAsync(editAuthorModelItem);

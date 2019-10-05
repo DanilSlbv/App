@@ -7,10 +7,8 @@ namespace EducationApp.DataAccessLayer.Repositories.Interface
 {
     public interface IBaseEFRepository<TEntity> where TEntity:class
     {
-        Task<List<TEntity>> GetAllAsync();
-        Task<TEntity> GetByIdAsync(string id);
+        Task<TEntity> GetByIdAsync(int id);
         Task AddAsync(TEntity entity);
-        Task DeleteAsync(string id);
         Task EditAsync(TEntity entity);
     }
 }

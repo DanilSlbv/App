@@ -1,23 +1,24 @@
 ﻿using EducationApp.BusinessLogicLayer.Models.Authorization;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using EducationApp.BusinessLogicLayer.Common.Extensions;
 
 namespace EducationApp.PresentationLayer.Helpers
 {
     public class JwtHelper
     {
-        private readonly AuthTokenProviderOptions _options;
+        private readonly AuthTokenProviderOptionsModel _options;
         private readonly IAccountService _accountService;
         private readonly IUserService _userService;
-        public JwtHelper(IOptionsMonitor<AuthTokenProviderOptions> options,IAccountService  accountService,IUserService userService)
+        public JwtHelper(IOptionsMonitor<AuthTokenProviderOptionsModel> options,IAccountService  accountService,IUserService userService)
         {
             _options = options.CurrentValue;
             _accountService = accountService;
@@ -75,10 +76,11 @@ namespace EducationApp.PresentationLayer.Helpers
             var jwtSecurityToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
             if (jwtSecurityToken.ValidTo > DateTime.Now)
             {
-                return false;
+                return true;
             }
-            return true;
+            return false;
         }
+
         public ClaimsPrincipal GetClaimsPrincipalFromToken(string token)
         {
             var tokenValidationParameters = new TokenValidationParameters
@@ -100,18 +102,18 @@ namespace EducationApp.PresentationLayer.Helpers
             return principal;
         }
 
-        public async Task<JwtTokens>  Refresh(string refreshToken)
+        public async Task<JwtTokensModel>  Refresh(string refreshToken)
         {
-            ClaimsPrincipal claimsPrincipal = GetClaimsPrincipalFromToken(refreshToken);
-            if (!claimsPrincipal.HasClaim(x => x.Type == ClaimTypes.NameIdentifier))
+            var readRefreshToken= new JwtSecurityTokenHandler().ReadJwtToken(refreshToken);
+            if (readRefreshToken.Claims.First(x => x.Type==Constants.JwtConstants.NameIdentifier).Value==null)
             {
                 return null;
             }
-            if (claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier) == null)
+            if (readRefreshToken.Claims.First(x => x.Type ==Constants.JwtConstants.Jti).Value == null)
             {
                 return null;
             }
-            var userId = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = readRefreshToken.Claims.First(x => x.Type == Constants.JwtConstants.NameIdentifier).Value;
             var user = await _userService.GetByIdAsync(userId);
             var userRole = await _accountService.GetRoleAsync(user.Email);
             if (userRole == null)
@@ -124,7 +126,7 @@ namespace EducationApp.PresentationLayer.Helpers
             {
                 return null;
             }
-            return new JwtTokens() { accessToken = newAccessToken, refreshToken = newRefreshToken };
+            return new JwtTokensModel() { AccessToken = newAccessToken, RefreshToken = newRefreshToken };
         }
     }
 }

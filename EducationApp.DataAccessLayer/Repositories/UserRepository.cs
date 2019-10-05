@@ -4,6 +4,7 @@ using EducationApp.DataAccessLayer.Entities;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {
@@ -17,8 +18,8 @@ namespace EducationApp.DataAccessLayer.Repositories
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
-         }
-        
+        }
+
         public async Task<List<ApplicationUser>> GetAllUsersAsync()
         {
             return await _userManager.Users.ToListAsync();
@@ -35,7 +36,6 @@ namespace EducationApp.DataAccessLayer.Repositories
         }
         public async Task<bool> CreateAsync(ApplicationUser user, string password)
         {
-           
             var result = await _userManager.CreateAsync(user, password);
             if (result.Succeeded)
             {
@@ -65,8 +65,9 @@ namespace EducationApp.DataAccessLayer.Repositories
             return false;
         }
 
-        public async Task<bool> PasswordRecoveryAsync(ApplicationUser applicationUser, string token, string newPassword)
+        public async Task<bool> PasswordRecoveryAsync(ApplicationUser applicationUser,string newPassword)
         {
+            var token = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
             var result = await _userManager.ResetPasswordAsync(applicationUser, token, newPassword);
             if (result.Succeeded)
             {
@@ -112,20 +113,15 @@ namespace EducationApp.DataAccessLayer.Repositories
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             return code;
         }
-        public async Task<string> GeneratePasswordResetTokenAsync(ApplicationUser applicationUser)
-        {
-            var result = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
-            return result;
-        }
 
         public async Task<bool> SignInAsync(string userEmail, string userPassword, bool isPersitent)
         {
-            var result = await _signInManager.PasswordSignInAsync(userEmail, userPassword, isPersitent, false);
-            if (result.Succeeded)
-            {
-                return true;
-            }
-            return false;
+                var result = await _signInManager.PasswordSignInAsync(userEmail, userPassword, isPersitent, false);
+                if (result.Succeeded)
+                {
+                    return true;
+                }
+                return false;
         }
         
         public async Task<bool> CanUserSigInAsync(ApplicationUser applicationUser)

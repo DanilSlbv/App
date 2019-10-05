@@ -3,9 +3,9 @@ using Microsoft.Extensions.Logging;
 
 namespace EducationApp.BusinessLogicLayer.Common
 {
-    class FileLoggerProvider : ILoggerProvider
+    public class FileLoggerProvider : ILoggerProvider
     {
-        private string _filePath;
+        private readonly string _filePath;
 
         public FileLoggerProvider(string filePath)
         {

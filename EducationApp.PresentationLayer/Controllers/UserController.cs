@@ -3,6 +3,7 @@ using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using EducationApp.BusinessLogicLayer.Common.Pagination;
 
 namespace EducationApp.PresentationLayer.Controllers
 {
@@ -17,12 +18,14 @@ namespace EducationApp.PresentationLayer.Controllers
             _userService = userService;
         }
 
-        [HttpGet("getallusers")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> GetAllUsers()
+        [HttpGet("getallusers/{page}")]
+        
+        public async Task<IActionResult> GetAllUsers(int page)
         {
-            var Users = await _userService.GetAllAsync();
-            return Ok(Users);
+            var users = await _userService.GetAllAsync();
+            var itemsWithPagination = new ItemsWithPagination<UserModelItem>();
+            var resultItems = itemsWithPagination.GetItems(page, users.Items);
+            return Ok(resultItems);
         }
 
         [HttpGet("getuserbyid/{id}")]
@@ -37,7 +40,7 @@ namespace EducationApp.PresentationLayer.Controllers
         [Authorize(Roles = "user")]
         public async Task<IActionResult> GetUserByEmail(string userEmail)
         {
-            var User = await _userService.GetByEmailAsync(userEmail);
+            var User = await _userService.GetByEmailAsync(userEmail); 
             return Ok(User);
         }
 
@@ -45,6 +48,7 @@ namespace EducationApp.PresentationLayer.Controllers
         [Authorize(Roles = "admin,user")]
         public async Task<IActionResult> EditUser(string id)
         {
+            
             return Ok(await _userService.GetByIdAsync(id));
         }
 
@@ -60,11 +64,11 @@ namespace EducationApp.PresentationLayer.Controllers
             return Ok(false);
         }
 
-        [HttpPost("deleteuser/{id}")]
+        [HttpPost("deleteuser")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> DeleteUser(string id)
+        public async Task<IActionResult>  RemoveUser(string id)
         {
-            var result = await _userService.DeleteAsync(id);
+            var result = await _userService.RemoveAsync(id);
             if (result)
             {
                 return Ok(true);

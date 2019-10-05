@@ -1,8 +1,7 @@
 ﻿using EducationApp.BusinessLogicLayer.Models.Base;
-using EducationApp.BusinessLogicLayer.Models.Enums;
 using EducationApp.BusinessLogicLayer.Models.PrintingEdition;
 using EducationApp.DataAccessLayer.Entities;
-using System;
+using Currency = EducationApp.BusinessLogicLayer.Models.Enums.Enums.Currency;
 
 namespace EducationApp.BusinessLogicLayer.Models.Orders
 {
@@ -10,7 +9,7 @@ namespace EducationApp.BusinessLogicLayer.Models.Orders
     {
         public double Amount { get; set; }
         public Currency Currency { get; set; }
-        public string PrintingEditionId { get; set; }
+        public int PrintingEditionId { get; set; }
         public PrintingEditionModelItem printingEditionModelItem{ get; set; }
         public int Count { get; set; }
         public OrderItemModelItem(OrderItem order)

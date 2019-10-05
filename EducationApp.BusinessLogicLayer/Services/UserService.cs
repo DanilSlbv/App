@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using EducationApp.BusinessLogicLayer.Models.User;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Repositories.Interface;
-using EducationApp.DataAccessLayer.Entities;
 
 namespace EducationApp.BusinessLogicLayer.Services
 {
@@ -15,27 +14,39 @@ namespace EducationApp.BusinessLogicLayer.Services
             _userRepository = userRepository;
         }
 
-        public async Task<List<UserModelItem>> GetAllAsync()
+        public async Task<UserModel> GetAllAsync()
         {
-            List<ApplicationUser> applicationUsers = await _userRepository.GetAllUsersAsync();
-            UserModel userModel = new UserModel();
+            var applicationUsers = await _userRepository.GetAllUsersAsync();
+            var userModel = new UserModel();
             foreach (var user in applicationUsers)
             {
                 userModel.Items.Add(new UserModelItem(user));
             }
-            return userModel.Items;
+            return userModel;
         }
         public async Task<UserModelItem> GetByIdAsync(string id)
         {
-            UserModelItem userModel = new UserModelItem(await _userRepository.GetUserByIdAsync(id));
-            return userModel;
+            if(id==null)
+            {
+                return null;
+            }
+           var userModel = new UserModelItem(await _userRepository.GetUserByIdAsync(id));
+           return userModel;
         }
         public async Task<UserModelItem> GetByEmailAsync(string userEmail)
         {
+            if (userEmail == null)
+            {
+                return null;
+            }
             return new UserModelItem(await _userRepository.GetUserByEmailAsync(userEmail));
         }
-        public async Task<bool> DeleteAsync(string id)
+        public async Task<bool> RemoveAsync(string id)
         {
+            if(await _userRepository.GetUserByIdAsync(id)==null)
+            {
+                return false;
+            }
             var result=await _userRepository.DeleteUserAsync(id);
             return result;
         }

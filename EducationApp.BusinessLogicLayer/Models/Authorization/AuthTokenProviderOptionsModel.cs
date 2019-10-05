@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EducationApp.BusinessLogicLayer.Models.Authorization
 {
-    public class AuthTokenProviderOptions
+    public class AuthTokenProviderOptionsModel
     {
         public string JwtKey { get; set;}
         public string JwtIssuer { get; set; }

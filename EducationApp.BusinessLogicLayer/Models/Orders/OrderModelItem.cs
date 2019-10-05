@@ -1,9 +1,6 @@
-﻿using EducationApp.BusinessLogicLayer.Models.Enums;
-using EducationApp.BusinessLogicLayer.Models.User;
+﻿using EducationApp.BusinessLogicLayer.Models.User;
 using EducationApp.DataAccessLayer.Entities;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace EducationApp.BusinessLogicLayer.Models.Orders
 {
@@ -12,12 +9,14 @@ namespace EducationApp.BusinessLogicLayer.Models.Orders
         public string Description { get; set; }
         public string UserId { get; set; }
         public UserModel userModel { get; set; }
+        public OrderItemModel orderItemModel{ get; set; }
         public DateTime Date { get; set; }
-        public string PaymentId { get; set; }
+        public int PaymentId { get; set; }
         public OrderModelItem(Order order)
         {
             Description = order.Description;
             UserId = order.UserId;
+            //orderItemModel.Items.Add(new OrderItemModelItem(order));
             Date = order.Date;
             PaymentId = order.PaymentId;
         }

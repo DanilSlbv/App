@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace EducationApp.DataAccessLayer.Entities.Enums
+﻿namespace EducationApp.DataAccessLayer.Entities.Enums
 {
-    public enum Status
+    public partial class Enums
     {
-        None = 0,
-        Paid = 1,
-        Unpaid = 2 
+        public enum Status
+        {
+            None = 0,
+            Paid = 1,
+            Unpaid = 2
+        }
     }
 }

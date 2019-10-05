@@ -5,12 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Common\Intefaces\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="MailKit" Version="2.3.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.2.0" />
+    <PackageReference Include="PasswordGenerator" Version="2.0.1" />
     <PackageReference Include="Stripe.net" Version="29.1.0" />
   </ItemGroup>
 

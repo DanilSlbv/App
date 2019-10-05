@@ -10,18 +10,16 @@ namespace EducationApp.DataAccessLayer.Repositories.Base
 {
     public  class BaseEFRepository<TEntity> : IBaseEFRepository<TEntity> where TEntity:class
     {
-        public ApplicationContext _context;
-        public DbSet<TEntity> _dbSet;
+        public readonly ApplicationContext _context;
+        public readonly DbSet<TEntity> _dbSet;
 
-        public BaseEFRepository(ApplicationContext _context)
+        public BaseEFRepository(ApplicationContext context)
         {
-            this._context= _context;
+            _context= context;
             _dbSet = _context.Set<TEntity>();
         }
 
-        public async Task<List<TEntity>> GetAllAsync()=> await _dbSet.AsNoTracking().ToListAsync();
-
-        public async Task<TEntity> GetByIdAsync(string id)=>await  _dbSet.FindAsync(id);
+        public async Task<TEntity> GetByIdAsync(int id)=>await  _dbSet.FindAsync(id);
 
         public async Task AddAsync(TEntity entity)
         {
@@ -34,13 +32,5 @@ namespace EducationApp.DataAccessLayer.Repositories.Base
             _context.Update(entity);
             await _context.SaveChangesAsync();
         }
-
-        public async Task DeleteAsync(string id)
-        {
-            TEntity entity = await GetByIdAsync(id);
-            _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
-        }
-
     }
 }

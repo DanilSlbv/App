@@ -1,5 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
-namespace EducationApp.BusinessLogicLayer.Common
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace EducationApp.BusinessLogicLayer.Common.Extensions
 {
     public static class FileLoggerExtension
     {

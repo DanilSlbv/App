@@ -76,8 +76,13 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Author", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate");
+
+                    b.Property<bool>("IsRemoved");
 
                     b.Property<string>("Name");
 
@@ -88,14 +93,19 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.AuthorInPrintingEditons", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AuthorId");
+                    b.Property<int>("AuthorId");
+
+                    b.Property<DateTime>("CreationDate");
 
                     b.Property<DateTime>("Date");
 
-                    b.Property<string>("PrintingEditionId");
+                    b.Property<bool>("IsRemoved");
+
+                    b.Property<int>("PrintingEditionId");
 
                     b.HasKey("Id");
 
@@ -108,14 +118,19 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Order", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate");
 
                     b.Property<DateTime>("Date");
 
                     b.Property<string>("Description");
 
-                    b.Property<string>("PaymentId");
+                    b.Property<bool>("IsRemoved");
+
+                    b.Property<int>("PaymentId");
 
                     b.Property<string>("UserId");
 
@@ -130,18 +145,27 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.OrderItem", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<double>("Amount");
 
                     b.Property<int>("Count");
 
+                    b.Property<DateTime>("CreationDate");
+
                     b.Property<int>("Currency");
 
-                    b.Property<string>("PrintingEditionId");
+                    b.Property<bool>("IsRemoved");
+
+                    b.Property<int>("OrderId");
+
+                    b.Property<int>("PrintingEditionId");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("PrintingEditionId");
 
@@ -150,8 +174,13 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Payment", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate");
+
+                    b.Property<bool>("IsRemoved");
 
                     b.Property<string>("TransactionId");
 
@@ -162,8 +191,11 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.PrintingEdition", b =>
                 {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("CreationDate");
 
                     b.Property<int>("Currency");
 
@@ -298,18 +330,21 @@ namespace EducationApp.DataAccessLayer.Migrations
                 {
                     b.HasOne("EducationApp.DataAccessLayer.Entities.Author", "Author")
                         .WithMany()
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EducationApp.DataAccessLayer.Entities.PrintingEdition", "PrintingEdition")
                         .WithMany()
-                        .HasForeignKey("PrintingEditionId");
+                        .HasForeignKey("PrintingEditionId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Order", b =>
                 {
                     b.HasOne("EducationApp.DataAccessLayer.Entities.Payment", "Payment")
                         .WithMany()
-                        .HasForeignKey("PaymentId");
+                        .HasForeignKey("PaymentId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("EducationApp.DataAccessLayer.Entities.ApplicationUser", "User")
                         .WithMany()
@@ -318,9 +353,15 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.OrderItem", b =>
                 {
+                    b.HasOne("EducationApp.DataAccessLayer.Entities.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("EducationApp.DataAccessLayer.Entities.PrintingEdition", "PrintingEdition")
                         .WithMany()
-                        .HasForeignKey("PrintingEditionId");
+                        .HasForeignKey("PrintingEditionId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

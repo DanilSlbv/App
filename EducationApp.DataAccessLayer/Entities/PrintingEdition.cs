@@ -1,6 +1,7 @@
 ﻿using EducationApp.DataAccessLayer.Entities.Base;
-using EducationApp.DataAccessLayer.Entities.Enums;
-
+using Status=EducationApp.DataAccessLayer.Entities.Enums.Enums.Status;
+using Currency=EducationApp.DataAccessLayer.Entities.Enums.Enums.Currency;
+using Type=EducationApp.DataAccessLayer.Entities.Enums.Enums.Type;
 namespace EducationApp.DataAccessLayer.Entities
 {
     public class PrintingEdition:BaseModel
@@ -8,7 +9,6 @@ namespace EducationApp.DataAccessLayer.Entities
         public string Name { get; set; }
         public string Description { get; set; }
         public float Price { get; set; }
-        public bool IsRemoved { get; set; }
         public Status Status { get; set; }
         public Currency Currency { get; set; }
         public Type Type { get; set; }

@@ -6,7 +6,7 @@ namespace EducationApp.BusinessLogicLayer.Models.Authors
 {
     public class EditAuthorModelItem
     {
-        public string id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
     }
 }

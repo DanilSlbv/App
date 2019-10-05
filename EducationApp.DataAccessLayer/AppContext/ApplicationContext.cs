@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using EducationApp.DataAccessLayer.Entities;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EducationApp.DataAcessLayer.AppContext
 {
