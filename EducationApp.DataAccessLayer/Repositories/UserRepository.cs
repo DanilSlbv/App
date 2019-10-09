@@ -4,7 +4,9 @@ using EducationApp.DataAccessLayer.Entities;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using System;
+using EducationApp.DataAccessLayer.Models.Pagination;
+using System.Linq;
+using EducationApp.DataAccessLayer.Common;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {
@@ -20,9 +22,14 @@ namespace EducationApp.DataAccessLayer.Repositories
             _roleManager = roleManager;
         }
 
-        public async Task<List<ApplicationUser>> GetAllUsersAsync()
+        public async Task<PaginationModel<ApplicationUser>> GetAllUsersAsync(int page)
         {
-            return await _userManager.Users.ToListAsync();
+            var users = new PaginationModel<ApplicationUser>
+            {
+                Items = await _userManager.Users.Skip((page - 1) * Constants.Pagination.PageSize).Take(Constants.Pagination.PageSize).ToListAsync(),
+                ItemsCount = await _userManager.Users.CountAsync()
+            };
+            return users;
         }
 
         public async Task<ApplicationUser> GetUserByIdAsync(string id)
@@ -85,14 +92,17 @@ namespace EducationApp.DataAccessLayer.Repositories
             }
             return false;
         }
+
         public async Task<IList<string>> GetRoleAsync(ApplicationUser applicationUser)
         {
            return await _userManager.GetRolesAsync(applicationUser);
         }
+
         public async Task<bool> CheckIsInRoleAsync(ApplicationUser applicationUser,string roleName)
         {
             return await _userManager.IsInRoleAsync(applicationUser,roleName);
         }
+
         public async Task<bool> ConfrirmEmailAsync(string userid, string token)
         {
             ApplicationUser applicationUser = await GetUserByIdAsync(userid);
@@ -103,11 +113,13 @@ namespace EducationApp.DataAccessLayer.Repositories
             }
             return false;
         }
+
         public async Task<bool> CheckEmailConfirmAsync(ApplicationUser user)
         {
             var result = await _userManager.IsEmailConfirmedAsync(user);
             return result;
         }
+
         public async Task<string> GenerateEmailConfirmAsync(ApplicationUser user)
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

@@ -1,9 +1,12 @@
 ﻿using EducationApp.BusinessLogicLayer.Models.Authors;
+using EducationApp.BusinessLogicLayer.Models.Pagination;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Repositories.Interface;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AscendingDescending = EducationApp.BusinessLogicLayer.Models.Enums.Enums.AscendingDescending;
 
 namespace EducationApp.BusinessLogicLayer.Services
 {
@@ -47,7 +50,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             return true;
         }
 
-        public async Task<bool> EditAsync(EditAuthorModelItem editAuthorModelItem)
+        public async Task<bool> EditAsync(AuthorModelItem editAuthorModelItem)
         {
             var author = await _authorRepository.GetByIdAsync(editAuthorModelItem.Id);
             if (author != null)
@@ -58,53 +61,32 @@ namespace EducationApp.BusinessLogicLayer.Services
             }
             return false;
         }
-
-        public async Task<AuthorModel> GetAllAsync()
-        {
-            var authors = await _authorRepository.GetAllAsync();
-            var authorModel = new AuthorModel();
-            foreach(var author in authors)
-            {
-                authorModel.Items.Add(new AuthorModelItem(author));
-            }
-            return authorModel;
-        }
-
+        
         public async Task<AuthorModelItem> GetByIdAsync(int id)
         {
-            var item =new AuthorModelItem( await _authorRepository.GetByIdAsync(id));
-            return item;
-        }
-
-        public async Task<AuthorModelItem> GetByNameASync(string name)
-        {
-            if (name == null)
-            {
-                return null;
-            }
-            var author = new AuthorModelItem(await _authorRepository.GetByNameAsync(name));
+            var item= await _authorRepository.GetByIdAsync(id);
+            var author = new AuthorModelItem() { Id = item.Id, Name = item.Name };
             return author;
         }
 
-        public async Task<AuthorInPrintingEditionsModel> GetAuthorsWithPrintingEditions()
+        public async Task<PaginationModel<AuthorWithProductsModelItem>> GetAllSortedAsync(int page, AscendingDescending sortById)
         {
-            var authors = await _authorRepository.GetAllAsync();
-            AuthorInPrintingEditionsModel authorPrintingEditionsModel = new AuthorInPrintingEditionsModel();
-            foreach(var author in authors)
+            var result = new PaginationModel<AuthorWithProductsModelItem>();
+            var authors = await _authorRepository.GetAllWithProductsAsync(page);
+            foreach (var author in authors.Items)
             {
-                var authorInPrintingEditionItem = new AuthorInPrintingEditionsModelItem();
-                authorInPrintingEditionItem.AuthorId = author.Id;
-                authorInPrintingEditionItem.Name = author.Name;
-                var printingEditionsId = await _authorInPrintingEditionRepository.GetPrintingEditionsByAuthorIdAsync(author.Id);
-                foreach(var item in printingEditionsId)
-                {
-                    var printingEdition = await _printingEditionRepository.GetByIdAsync(item.PrintingEditionId);
-                    authorInPrintingEditionItem.Products.Add(printingEdition.Name);
-                }
-                authorPrintingEditionsModel.Items.Add(authorInPrintingEditionItem);
+                result.Items.Add(new AuthorWithProductsModelItem(author));
             }
-            return authorPrintingEditionsModel;
-        }
-
+            if (sortById==AscendingDescending.Ascending)
+            {
+                result.Items.OrderBy(x => x.AuthorId);
+            }
+            if (sortById==AscendingDescending.Descending)
+            {
+                result.Items.OrderByDescending(x => x.AuthorId);
+            }
+            result.TotalItems = authors.ItemsCount;
+            return result;
+        }  
     }
 }

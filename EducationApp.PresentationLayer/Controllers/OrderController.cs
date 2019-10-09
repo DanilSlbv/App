@@ -1,9 +1,9 @@
-﻿using EducationApp.BusinessLogicLayer.Common.Pagination;
-using EducationApp.BusinessLogicLayer.Models.Orders;
+﻿using EducationApp.BusinessLogicLayer.Models.Orders;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using AscendingDescending = EducationApp.BusinessLogicLayer.Models.Enums.Enums.AscendingDescending;
 
 namespace EducationApp.PresentationLayer.Controllers
 {
@@ -18,87 +18,35 @@ namespace EducationApp.PresentationLayer.Controllers
         {
             _orderService = orderService;
         }
-        
+
 
         [HttpGet("getalluserorders/{id}")]
         [Authorize(Roles = "user")]
-        public async Task<IActionResult> GetAllUserOrders(string id)
+        public async Task<IActionResult> GetAllUserOrders(int page,string id)
         {
-            var orders = await _orderService.GetUserOrdersAsync(id);
+            var orders = await _orderService.GetAllUserOrdersAsync(page,id);
             return Ok(orders);
         }
 
         [HttpGet("getallorders/{page}")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> GetAllOrder(int page)
+        public async Task<IActionResult> GetAllOrder(int page, AscendingDescending orderId, AscendingDescending date, AscendingDescending orderAmount)
         {
-            var orders = await _orderService.GetAllOrdersAsync();
-            var itemsWithPagination = new ItemsWithPagination<FullOrdersInfoModelItem>();
-            var resultItems = itemsWithPagination.GetItems(page, orders.Items);
-            return Ok(resultItems);
-        }
-        [HttpGet("sortbyidasc")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> SortOrdersByIdAscending()
-        {
-            var orders = await _orderService.SortByOrderIdAscendingAsync();
+            var orders = await _orderService.GetAllOrdersForAdminAsync(page, orderId, date, orderAmount);
             return Ok(orders);
         }
 
-        [HttpGet("sortbyiddesc")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> SortOrdersByIdDescending()
+        public async Task<IActionResult> RemoveOrder(int orderId)
         {
-            var orders = await _orderService.SortByOrderIdDescendingAsync();
-            return Ok(orders);
-        }
-
-        [HttpGet("sortbydateasc")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> SortOrdersByDateAscending()
-        {
-            var orders = await _orderService.SortByOrderIdAscendingAsync();
-            return Ok(orders);
-        }
-
-        [HttpGet("sortbydatedesc")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> SortOrdersByDateDescending()
-        {
-            var orders = await _orderService.SortByOrderDateAscendingAsync();
-            return Ok(orders);
-        }
-
-        [HttpGet("sortbyamountasc")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> SortOrdersByAmountAscending()
-        {
-            var orders = await _orderService.SortByOrderAmountAscendingAsync();
-            return Ok(orders);
-        }
-
-        [HttpGet("sortbyamountdesc")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> SortOrdersByAmountDescending()
-        {
-            var orders = await _orderService.SortByOrderAmountDescendingAsync();
-            return Ok(orders);
-        }
-
-        [HttpGet("buy")]
-        [Authorize(Roles = "admin,user")]
-        public IActionResult Buy()
-        {
-            return View();
+            await _orderService.RemoveOrderAsync(orderId);
+            return Ok(true);
         }
 
         [HttpPost("charge")]
-        [Authorize(Roles = "admin,user")]
-        public async Task<IActionResult> Charge(string stripeEmail, string stripeToken,long amount)
+        public async Task<IActionResult> Charge(ChargeModelItem chargeModelItem)
         {
-            await _orderService.ChargeAsync(stripeEmail, stripeToken,amount);
-            return View();
+            var result=await _orderService.ChargeAsync(chargeModelItem);
+            return Ok(result);
         }
-
     }
 }

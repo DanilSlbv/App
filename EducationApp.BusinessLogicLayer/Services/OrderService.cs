@@ -1,129 +1,70 @@
 ﻿using EducationApp.BusinessLogicLayer.Models.Orders;
-using EducationApp.BusinessLogicLayer.Models.Payments;
-using EducationApp.BusinessLogicLayer.Models.PrintingEdition;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Entities;
-using EducationApp.DataAccessLayer.Entities.Enums;
 using EducationApp.DataAccessLayer.Repositories.Interface;
 using Stripe;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Type = EducationApp.BusinessLogicLayer.Models.Enums.Enums.Type;
+using AscendingDescending = EducationApp.BusinessLogicLayer.Models.Enums.Enums.AscendingDescending;
+using CurrencyConvert = EducationApp.DataAccessLayer.Entities.Enums.Enums.Currency;
+using AscDescConvert = EducationApp.DataAccessLayer.Entities.Enums.Enums.AscendingDescending;
+using EducationApp.BusinessLogicLayer.Models.Pagination;
 
 namespace EducationApp.BusinessLogicLayer.Services
 {
     public class OrderService : IOrderService
     {
         private readonly IPaymentRepository _paymentRepository;
-        private readonly IOrderItemRepository _orderItemRepository;
         private readonly IOrderRepository _orderRepository;
         private readonly IUserRepository _userRepository;
-        private readonly IPrintingEditionRepository _printingEditionRepository;
-
-        public OrderService(IPaymentRepository paymentRepository, IOrderItemRepository orderItemRepository, IOrderRepository orderRepository, IUserRepository userRepository, IPrintingEditionRepository printing)
+        private readonly IOrderItemRepository _orderItemRepository;
+        public OrderService(IPaymentRepository paymentRepository, IOrderItemRepository orderItemRepository, IOrderRepository orderRepository, IUserRepository userRepository)
         {
             _paymentRepository = paymentRepository;
             _orderItemRepository = orderItemRepository;
             _orderRepository = orderRepository;
             _userRepository = userRepository;
-            _printingEditionRepository = printing;
         }
 
-        public async Task<UserOrdersInfoModel> GetUserOrdersAsync(string userId)
+        public async Task<PaginationModel<UserOrdersModelItem>> GetAllUserOrdersAsync(int page, string userId)
         {
-            var orders = await _orderRepository.GetOrdersByUserIdAsync(userId);
-            UserOrdersInfoModel userOrdersInfoModel = new UserOrdersInfoModel();
-            foreach(var order in orders)
+            if (await _userRepository.GetUserByIdAsync(userId) == null)
             {
-                double AmountCount = 0;
-                var orderItems = await _orderItemRepository.GetByOrderId(order.Id);
-                var userOrdersInfo = new UserOrdersInfoModelItem();
-                userOrdersInfo.OrderId = order.Id;
-                userOrdersInfo.OrderDate = order.Date;
-                foreach(var orderItem in orderItems)
-                {
-                    var printingEdition = await _printingEditionRepository.GetByIdAsync(orderItem.PrintingEditionId);
-                    userOrdersInfo.Type.Add((Type)printingEdition.Type);
-                    userOrdersInfo.Title.Add(printingEdition.Name);
-                    AmountCount += orderItem.Amount;
-                }
-                userOrdersInfo.OrderAmount = AmountCount;
-                userOrdersInfoModel.Items.Add(userOrdersInfo);
+                return null;
             }
-            return userOrdersInfoModel;
-        }
-
-        public async Task<FullOrdersInfoModel> GetAllOrdersAsync()
-        {
-            var orders = await _orderRepository.GetAllAsync();
-            FullOrdersInfoModel fullOrdersInfoModel= new FullOrdersInfoModel();
-            foreach (var order in orders)
+            var resultItems = new PaginationModel<UserOrdersModelItem>();
+            var orders = await _orderRepository.GetUserOrders(page,userId);
+            foreach (var order in orders.Items)
             {
-                double AmountCount = 0;
-                var orderItems = await _orderItemRepository.GetByOrderId(order.Id);
-                var applicationUser = await _userRepository.GetUserByIdAsync(order.UserId);
-                var fullOrdersInfoModelItem= new FullOrdersInfoModelItem();
-                fullOrdersInfoModelItem.OrderId = order.Id;
-                fullOrdersInfoModelItem.OrderDate = order.Date;
-                fullOrdersInfoModelItem.UserEmail = applicationUser.Email;
-                fullOrdersInfoModelItem.UserName = applicationUser.FirstName+applicationUser.LastName;
-                foreach (var orderItem in orderItems)
-                {
-                    var printingEdition = await _printingEditionRepository.GetByIdAsync(orderItem.PrintingEditionId);
-                    fullOrdersInfoModelItem.Type.Add((Type)printingEdition.Type);
-                    fullOrdersInfoModelItem.Title.Add(printingEdition.Name);
-                    AmountCount += orderItem.Amount;
-                }
-                fullOrdersInfoModelItem.OrderAmount = AmountCount;
-                fullOrdersInfoModel.Items.Add(fullOrdersInfoModelItem);
+                resultItems.Items.Add(new UserOrdersModelItem(order));
             }
-            return fullOrdersInfoModel;
+            resultItems.TotalItems = orders.ItemsCount;
+            return resultItems;
         }
 
-        
-
-        public async Task<IOrderedEnumerable<FullOrdersInfoModelItem>> SortByOrderIdAscendingAsync()
+        public async Task<PaginationModel<AdminOrdersModelItem>> GetAllOrdersForAdminAsync(int page, AscendingDescending sortByOrderId, AscendingDescending sortByDate, AscendingDescending sortByOrderAmount)
         {
-            var fullOrdersInfoModel = await GetAllOrdersAsync();
-            var sortOrders = fullOrdersInfoModel.Items.OrderBy(x => x.OrderId);
-            return sortOrders;
-        }
-        public async Task<IOrderedEnumerable<FullOrdersInfoModelItem>> SortByOrderIdDescendingAsync()
-        {
-            var fullOrdersInfoModel = await GetAllOrdersAsync();
-            var sortOrders = fullOrdersInfoModel.Items.OrderByDescending(x => x.OrderId);
-            return sortOrders;
+            var resultItems = new PaginationModel<AdminOrdersModelItem>();
+            var orders = await _orderRepository.GetOrdersForAdmin(page, (AscDescConvert)sortByOrderId, (AscDescConvert)sortByDate, (AscDescConvert)sortByOrderAmount);
+            foreach (var order in orders.Items)
+            {
+                resultItems.Items.Add(new AdminOrdersModelItem(order));
+            }
+            resultItems.TotalItems = orders.ItemsCount;
+            return resultItems;
         }
 
-        public async Task<IOrderedEnumerable<FullOrdersInfoModelItem>> SortByOrderDateAscendingAsync()
+        public async Task<bool> RemoveOrderAsync(int orderId)
         {
-            var fullOrdersInfoModel = await GetAllOrdersAsync();
-            var sortOrders = fullOrdersInfoModel.Items.OrderBy(x => x.OrderDate);
-            return sortOrders;
+            if (await _orderRepository.GetByIdAsync(orderId) != null)
+            {
+                await _orderRepository.RemoveAsync(orderId);
+                return true;
+            }
+            return false;
         }
 
-        public async Task<IOrderedEnumerable<FullOrdersInfoModelItem>> SortByOrderDateDescendingAsync()
-        {
-            var fullOrdersInfoModel = await GetAllOrdersAsync();
-            var sortOrders = fullOrdersInfoModel.Items.OrderByDescending(x => x.OrderDate);
-            return sortOrders;
-        }
-
-        public async Task<IOrderedEnumerable<FullOrdersInfoModelItem>> SortByOrderAmountAscendingAsync()
-        {
-            var fullOrdersInfoModel = await GetAllOrdersAsync();
-            var sortOrders = fullOrdersInfoModel.Items.OrderBy(x => x.OrderAmount);
-            return sortOrders;
-        }
-        public async Task<IOrderedEnumerable<FullOrdersInfoModelItem>> SortByOrderAmountDescendingAsync()
-        {
-            var fullOrdersInfoModel = await GetAllOrdersAsync();
-            var sortOrders = fullOrdersInfoModel.Items.OrderByDescending(x => x.OrderAmount);
-            return sortOrders;
-        }
-
-        public async Task<bool> RemoveTransaction(int paymentId)
+        public async Task<bool> RemoveTransactionAsync(int paymentId)
         {
             if (_paymentRepository.GetByIdAsync(paymentId) == null)
             {
@@ -132,8 +73,21 @@ namespace EducationApp.BusinessLogicLayer.Services
             await _paymentRepository.RemoveTransaction(paymentId);
             return true;
         }
-        
-        public async Task AddTrasaction(string transactionId)
+
+        public async Task AddOrderItemAsync(OrderItemModelItem order)
+        {
+            var orderItem = new DataAccessLayer.Entities.OrderItem()
+            {
+                Amount = order.Amount,
+                Currency = (CurrencyConvert)order.Currency,
+                PrintingEditionId = order.PrintingEditionId,
+                Count = order.Count,
+                OrderId = order.OrderId
+            };
+            await _orderItemRepository.AddAsync(orderItem);
+        }
+
+        public async Task AddTrasactionAsync(string transactionId)
         {
             var payment = new Payment()
             {
@@ -142,9 +96,9 @@ namespace EducationApp.BusinessLogicLayer.Services
             await _paymentRepository.AddAsync(payment);
         }
 
-        public async Task AddOrderAsync(string description,string transactionId,string userId)
+        public async Task AddOrderAsync(string description, string transactionId, string userId)
         {
-            var payment =  _paymentRepository.GetByTransactionIdAsync(transactionId);
+            var payment = _paymentRepository.GetByTransactionIdAsync(transactionId);
             var order = new DataAccessLayer.Entities.Order()
             {
                 Date = DateTime.UtcNow,
@@ -155,32 +109,32 @@ namespace EducationApp.BusinessLogicLayer.Services
             await _orderRepository.AddOrder(order);
         }
 
-        public async Task<bool> ChargeAsync(string stripeEmail, string token,long amount)
+        public async Task<bool> ChargeAsync(ChargeModelItem chargeModelItem)
         {
             var customers = new CustomerService();
             var charges = new ChargeService();
 
             var customer = customers.Create(new CustomerCreateOptions
             {
-                Email = stripeEmail,
-                Source = token
+                Email = chargeModelItem.StripeEmail,
+                Source = chargeModelItem.StripeToken
             });
 
             var charge = charges.Create(new ChargeCreateOptions
             {
-                Amount = amount*100,
+                Amount = chargeModelItem.Amount * 100,
                 Description = "BookStore",
                 Currency = "usd",
                 CustomerId = customer.Id
-            }) ;
+            });
 
-            if (!charge.Paid)
+            if (charge.Paid)
             {
-                return true;
+                return false;
             }
-            var user=await _userRepository.GetUserByEmailAsync(stripeEmail);
-            await AddTrasaction(charge.Id); 
-            await AddOrderAsync(charge.Description,charge.Id,user.Id);
+            var user = await _userRepository.GetUserByEmailAsync(chargeModelItem.StripeEmail);
+            await AddTrasactionAsync(charge.Id);
+            await AddOrderAsync(charge.Description, charge.Id, user.Id);
             return true;
         }
     }

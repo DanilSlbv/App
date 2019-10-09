@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using EducationApp.DataAccessLayer.Entities;
+using EducationApp.DataAccessLayer.Models.Pagination;
 
 namespace EducationApp.DataAccessLayer.Repositories.Interface
 {
     public interface IUserRepository
     {
-        Task<List<ApplicationUser>> GetAllUsersAsync();
+        Task<PaginationModel<ApplicationUser>> GetAllUsersAsync(int page);
         Task<ApplicationUser> GetUserByIdAsync(string id);
         Task<ApplicationUser> GetUserByEmailAsync(string userEmail);
         Task<bool> CreateAsync(ApplicationUser user, string password);

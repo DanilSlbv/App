@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using EducationApp.BusinessLogicLayer.Models.Pagination;
 using EducationApp.BusinessLogicLayer.Models.User;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Repositories.Interface;
@@ -14,14 +15,15 @@ namespace EducationApp.BusinessLogicLayer.Services
             _userRepository = userRepository;
         }
 
-        public async Task<UserModel> GetAllAsync()
+        public async Task<PaginationModel<UserModelItem>> GetAllAsync(int page)
         {
-            var applicationUsers = await _userRepository.GetAllUsersAsync();
-            var userModel = new UserModel();
-            foreach (var user in applicationUsers)
+            var applicationUsers = await _userRepository.GetAllUsersAsync(page);
+            var userModel = new PaginationModel<UserModelItem>();
+            foreach (var user in applicationUsers.Items)
             {
                 userModel.Items.Add(new UserModelItem(user));
             }
+            userModel.TotalItems = applicationUsers.ItemsCount;
             return userModel;
         }
         public async Task<UserModelItem> GetByIdAsync(string id)
@@ -50,7 +52,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             var result=await _userRepository.DeleteUserAsync(id);
             return result;
         }
-        public async Task<bool> EditAsync(UserEditModel userEditModel)
+        public async Task<bool> EditAsync(UserModelItem userEditModel)
         {
             var applicationUser = await _userRepository.GetUserByIdAsync(userEditModel.Id);
             if (applicationUser != null)

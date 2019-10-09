@@ -22,6 +22,14 @@ namespace EducationApp.BusinessLogicLayer.Common.Extensions
             public const string NameIdentifier = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
             public const string Jti = "jti";
         }
+        public partial class ExchangeRates
+        {
+            public const double EUR = 0.91;
+            public const double GBP = 0.81;
+            public const double CHF = 0.99;
+            public const double JPY = 106.79;
+            public const double UAH = 24.60;
+        }
     }
 }
 

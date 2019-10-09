@@ -1,9 +1,9 @@
-﻿using EducationApp.BusinessLogicLayer.Common.Pagination;
-using EducationApp.BusinessLogicLayer.Models.Authors;
+﻿using EducationApp.BusinessLogicLayer.Models.Authors;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using AscendingDescending = EducationApp.BusinessLogicLayer.Models.Enums.Enums.AscendingDescending;
 
 namespace EducationApp.PresentationLayer.Controllers
 {
@@ -18,22 +18,12 @@ namespace EducationApp.PresentationLayer.Controllers
         }
 
         [HttpGet("authorspage/{page}")]
-        public async Task<IActionResult> GetAllAuthorWithPrintingEdition(int page)
+        public async Task<IActionResult> GetAllAuthorWithPrintingEdition(int page,AscendingDescending sortBy)
         {
-            var items = await _authorService.GetAuthorsWithPrintingEditions();
-            var itemsWithPagination = new ItemsWithPagination<AuthorInPrintingEditionsModelItem>();
-            var resultItems=itemsWithPagination.GetItems(page,items.Items);
+            var resultItems = await _authorService.GetAllSortedAsync(page, sortBy);
             return Ok(resultItems);
         }
 
-        [HttpGet]
-        [Route("getbyname/{name}")]
-        [Authorize(Roles = "admin,user")]
-        public async Task<IActionResult> GetByName(string name)
-        {
-            var item = await _authorService.GetByNameASync(name);
-            return Ok(item);
-        }
         [HttpPost("addauthor/{authorname}")]
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> AddAuthor(string authorName)
@@ -49,7 +39,7 @@ namespace EducationApp.PresentationLayer.Controllers
             return Ok(true);
         }
         [HttpPost("editauthor")]
-        public async Task<IActionResult> EditAuthor(EditAuthorModelItem editAuthorModelItem)
+        public async Task<IActionResult> EditAuthor(AuthorModelItem editAuthorModelItem)
         {
             await _authorService.EditAsync(editAuthorModelItem);
             return Ok(true);

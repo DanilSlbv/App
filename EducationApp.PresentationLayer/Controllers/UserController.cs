@@ -3,7 +3,6 @@ using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
-using EducationApp.BusinessLogicLayer.Common.Pagination;
 
 namespace EducationApp.PresentationLayer.Controllers
 {
@@ -22,10 +21,8 @@ namespace EducationApp.PresentationLayer.Controllers
         
         public async Task<IActionResult> GetAllUsers(int page)
         {
-            var users = await _userService.GetAllAsync();
-            var itemsWithPagination = new ItemsWithPagination<UserModelItem>();
-            var resultItems = itemsWithPagination.GetItems(page, users.Items);
-            return Ok(resultItems);
+            var users = await _userService.GetAllAsync(page);
+            return Ok(users);
         }
 
         [HttpGet("getuserbyid/{id}")]
@@ -54,7 +51,7 @@ namespace EducationApp.PresentationLayer.Controllers
 
         [HttpPost("edituser")]
         [Authorize(Roles = "admin,user")]
-        public async Task<IActionResult> EditUser(UserEditModel userEditModel)
+        public async Task<IActionResult> EditUser(UserModelItem userEditModel)
         {
             var result = await _userService.EditAsync(userEditModel);
             if (result)

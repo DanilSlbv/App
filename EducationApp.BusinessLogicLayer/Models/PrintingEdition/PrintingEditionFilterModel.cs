@@ -1,8 +1,6 @@
-﻿
-
-using Type=EducationApp.BusinessLogicLayer.Models.Enums.Enums.Type;
+﻿using Type=EducationApp.BusinessLogicLayer.Models.Enums.Enums.Type;
 using Currency= EducationApp.BusinessLogicLayer.Models.Enums.Enums.Currency;
-using Price= EducationApp.BusinessLogicLayer.Models.Enums.Enums.Price;
+using Price= EducationApp.BusinessLogicLayer.Models.Enums.Enums.AscendingDescending;
 
 namespace EducationApp.BusinessLogicLayer.Models.PrintingEdition
 {

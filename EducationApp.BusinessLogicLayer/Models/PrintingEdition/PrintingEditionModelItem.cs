@@ -14,6 +14,7 @@ namespace EducationApp.BusinessLogicLayer.Models.PrintingEdition
         public Status Status { get; set; }
         public Currency Currency { get; set; }
         public Type Type { get; set; }
+        public PrintingEditionModelItem() { }
         public PrintingEditionModelItem(EducationApp.DataAccessLayer.Entities.PrintingEdition printingEdition)
         {
             Id = printingEdition.Id;

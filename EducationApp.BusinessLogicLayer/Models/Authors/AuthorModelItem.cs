@@ -10,10 +10,5 @@ namespace EducationApp.BusinessLogicLayer.Models.Authors
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public AuthorModelItem(Author author)
-        {
-            Id = author.Id;
-            Name = author.Name;
-        }
     }
 }

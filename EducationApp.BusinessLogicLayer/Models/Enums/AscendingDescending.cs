@@ -4,9 +4,9 @@ using System.Text;
 
 namespace EducationApp.BusinessLogicLayer.Models.Enums
 {
-    partial class Enums
+    public partial class Enums
     {
-        public enum Price
+        public enum AscendingDescending
         {
             None=0,
             Ascending=1,
