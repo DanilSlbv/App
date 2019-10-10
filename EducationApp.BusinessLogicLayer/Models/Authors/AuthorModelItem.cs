@@ -8,7 +8,7 @@ namespace EducationApp.BusinessLogicLayer.Models.Authors
 {
     public class AuthorModelItem:BaseModel
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public string Name { get; set; }
     }
 }

@@ -9,15 +9,12 @@ namespace EducationApp.BusinessLogicLayer.Models.Orders
     {
         public double Amount { get; set; }
         public Currency Currency { get; set; }
-        public int PrintingEditionId { get; set; }
+        public long PrintingEditionId { get; set; }
         public int Count { get; set; }
-        public int OrderId { get; set; }
-        public OrderItemModelItem(OrderItem order)
+        public long OrderId { get; set; }
+        public OrderItemModelItem()
         {
-            Amount = order.Amount;
-            Currency = (Currency)order.Currency;
-            PrintingEditionId = order.PrintingEditionId;
-            Count = order.Count;
+
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using EducationApp.BusinessLogicLayer.Models.Orders;
+﻿using EducationApp.BusinessLogicLayer.Models.Filters;
+using EducationApp.BusinessLogicLayer.Models.Orders;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
+using EducationApp.PresentationLayer.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -19,33 +21,26 @@ namespace EducationApp.PresentationLayer.Controllers
             _orderService = orderService;
         }
 
-
-        [HttpGet("getalluserorders/{id}")]
-        [Authorize(Roles = "user")]
-        public async Task<IActionResult> GetAllUserOrders(int page,string id)
+        [HttpPost("getallorders/{page}/{userId}")]
+        [Authorize(Roles = Constants.Roles.AdmimRole)]
+        public async Task<IActionResult> GetAllOrders(int page,string userId,OrderFilterModelItem filterModel)
         {
-            var orders = await _orderService.GetAllUserOrdersAsync(page,id);
+            var orders = await _orderService.GetAllOrdersAsync(page,userId,filterModel);
             return Ok(orders);
         }
-
-        [HttpGet("getallorders/{page}")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> GetAllOrder(int page, AscendingDescending orderId, AscendingDescending date, AscendingDescending orderAmount)
-        {
-            var orders = await _orderService.GetAllOrdersForAdminAsync(page, orderId, date, orderAmount);
-            return Ok(orders);
-        }
-
+        
+        [HttpGet("removeorder/{orderId}")]
+        [Authorize(Roles = Constants.Roles.AdmimRole)]
         public async Task<IActionResult> RemoveOrder(int orderId)
         {
-            await _orderService.RemoveOrderAsync(orderId);
-            return Ok(true);
+            var result = await _orderService.RemoveOrderAsync(orderId);
+            return Ok(result);
         }
 
         [HttpPost("charge")]
         public async Task<IActionResult> Charge(ChargeModelItem chargeModelItem)
         {
-            var result=await _orderService.ChargeAsync(chargeModelItem);
+            var result = await _orderService.ChargeAsync(chargeModelItem);
             return Ok(result);
         }
     }

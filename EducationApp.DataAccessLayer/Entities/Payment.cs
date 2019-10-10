@@ -2,7 +2,7 @@
 
 namespace EducationApp.DataAccessLayer.Entities
 {
-    public class Payment:BaseModel
+    public class Payment: BaseEntity
     {
         public string TransactionId { get; set; }
     }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using EducationApp.DataAccessLayer.Repositories.Base;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using EducationApp.DataAccessLayer.Models.Author;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {

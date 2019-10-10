@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 
 
-namespace EducationApp.BusinessLogicLayer.Models.Pagination
+namespace EducationApp.BusinessLogicLayer.Models.Response
 {
-    public class PaginationModel<T> : BaseModel
+    public class ResponseModel<T> : BaseModel
     {
         public List<T> Items { get; set; }
         public int TotalItems { get; set; }
-        public PaginationModel()
+        public ResponseModel()
         {
             Items = new List<T>();
         }

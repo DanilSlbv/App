@@ -10,13 +10,6 @@ namespace EducationApp.BusinessLogicLayer.Models.User
         public string LastName { get; set; }
         public string Email { get; set; }
         public UserModelItem() { }
-        public UserModelItem(ApplicationUser User)
-        {
-            Id = User.Id;
-            FirstName = User.FirstName;
-            LastName = User.LastName;
-            Email = User.Email;
-        }
     }
     
 }

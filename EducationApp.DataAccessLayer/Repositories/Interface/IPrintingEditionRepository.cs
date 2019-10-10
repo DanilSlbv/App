@@ -1,15 +1,13 @@
 ﻿using EducationApp.DataAccessLayer.Entities;
 using System.Threading.Tasks;
-using Type = EducationApp.DataAccessLayer.Entities.Enums.Enums.Type;
-using AscendingDescending = EducationApp.DataAccessLayer.Entities.Enums.Enums.AscendingDescending;
-using EducationApp.DataAccessLayer.Models.Pagination;
+using EducationApp.DataAccessLayer.Models.Response;
+using EducationApp.DataAccessLayer.Models.Filters;
 
 namespace EducationApp.DataAccessLayer.Repositories.Interface
 {
     public  interface IPrintingEditionRepository:IBaseEFRepository<PrintingEdition>
     {
-        Task RemoveAsync(int printingEditionId);
         Task<AuthorInPrintingEditons> GetWithAuthorsById(int id);
-        Task<PaginationModel<AuthorInPrintingEditons>> SortWithAuthorsAsync(int page, Type type, AscendingDescending price, float minPrice, float maxPrice);
+        Task<ResponseModel<AuthorInPrintingEditons>> SortWithAuthorsAsync(int page, PrintingEditionFilterModel filterModel);
     }
 }

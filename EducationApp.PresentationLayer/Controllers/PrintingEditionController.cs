@@ -1,11 +1,10 @@
-﻿using EducationApp.BusinessLogicLayer.Models.PrintingEdition;
+﻿using EducationApp.BusinessLogicLayer.Models.Filters;
+using EducationApp.BusinessLogicLayer.Models.PrintingEdition;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
+using EducationApp.PresentationLayer.Common.Constants;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Price = EducationApp.BusinessLogicLayer.Models.Enums.Enums.AscendingDescending;
-using Type = EducationApp.BusinessLogicLayer.Models.Enums.Enums.Type;
-using Currency = EducationApp.BusinessLogicLayer.Models.Enums.Enums.Currency;
 namespace EducationApp.PresentationLayer.Controllers
 {
     [ApiController]
@@ -17,43 +16,43 @@ namespace EducationApp.PresentationLayer.Controllers
         {
             _printingEditionService = printingEditionService;
         }
-
-        [HttpGet("getall/{page}")]
-        public async Task<IActionResult> GetAllItems(int page, Type type, Price price,Currency currency, float minPrice, float maxPrice)
+        
+        [HttpPost("getall/{page}")]
+        public async Task<IActionResult> GetAllItems(int page, PrintingEditionFilterModel filterModel)
         {
-            var items =await _printingEditionService.GetAllWithAuthorAsync(page,type, price,currency, minPrice, maxPrice);
+            var items =await _printingEditionService.GetAllWithAuthorAsync(page, filterModel);
             return Ok(items);
         }
 
         [HttpGet("getbyid/{id}")]
-        public async Task<IActionResult> GetWithAuthorById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
             var item = await _printingEditionService.GetByIdAsync(id);
             return Ok(item);
         }
 
-        [HttpPost("add")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> AddItem(PrintingEditionModelItem editPrintingEditionModelItem)
+        [HttpPost("create")]
+        [Authorize(Roles = Constants.Roles.AdmimRole)]
+        public async Task<IActionResult> CreateItem(PrintingEditionModelItem printingEdition)
         {
-            await _printingEditionService.AddAsync(editPrintingEditionModelItem);
-            return Ok(true);
+            var result = await _printingEditionService.CreateAsync(printingEdition);
+            return Ok(result);
         }
 
-        [HttpPost("remove/{id}")]
-        [Authorize(Roles = "admin,user")]
+        [HttpGet("remove/{id}")]
+        [Authorize(Roles = Constants.Roles.AdmimRole)]
         public async Task<IActionResult> RemoveItem(int id)
         {
-            await _printingEditionService.RemoveAsync(id);
-            return Ok(true);
+            var result = await _printingEditionService.RemoveAsync(id);
+            return Ok(result);
         }
 
         [HttpPost("edit")]
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = Constants.Roles.AdmimRole)]
         public async Task<IActionResult> EditItem(PrintingEditionModelItem editPrintingEditionModelItem)
         {
-            await _printingEditionService.EditAsync(editPrintingEditionModelItem);
-            return Ok(true);
+            var result = await _printingEditionService.EditAsync(editPrintingEditionModelItem);
+            return Ok(result);
         }
     }
 }

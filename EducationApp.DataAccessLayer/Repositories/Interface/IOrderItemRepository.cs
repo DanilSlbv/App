@@ -9,7 +9,6 @@ namespace EducationApp.DataAccessLayer.Repositories.Interface
     public interface IOrderItemRepository:IBaseEFRepository<OrderItem>
     {
         Task<List<OrderItem>> GetAllAsync();
-        Task RemoveAsync(int orderItemId);
         Task<List<OrderItem>> GetByOrderId(int orderId);
     }
 }

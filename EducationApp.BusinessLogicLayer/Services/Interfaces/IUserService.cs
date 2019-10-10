@@ -1,16 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using EducationApp.BusinessLogicLayer.Models.Pagination;
+﻿using System.Threading.Tasks;
+using EducationApp.BusinessLogicLayer.Models.Base;
+using EducationApp.BusinessLogicLayer.Models.Response;
 using EducationApp.BusinessLogicLayer.Models.User;
-using EducationApp.DataAccessLayer.Repositories.Interface;
 namespace EducationApp.BusinessLogicLayer.Services.Interfaces
 {
     public interface IUserService
     {
-        Task<PaginationModel<UserModelItem>> GetAllAsync(int page);
+        Task<ResponseModel<UserModelItem>> GetAllAsync(int page);
         Task<UserModelItem> GetByIdAsync(string id);
         Task<UserModelItem> GetByEmailAsync(string userEmail);
-        Task<bool> RemoveAsync(string id);
-        Task<bool> EditAsync(UserModelItem userEditModel);
+        Task<BaseModel> RemoveAsync(string id);
+        Task<BaseModel> EditAsync(UserModelItem userEditModel);
     }
 }

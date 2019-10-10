@@ -23,13 +23,5 @@ namespace EducationApp.DataAccessLayer.Repositories
         {
             return await _applicationContext.OrderItems.Where(x => x.OrderId == orderId && x.IsRemoved == false).ToListAsync();
         }
-
-        public async Task RemoveAsync(int orderItemId)
-        {
-            var author = await _applicationContext.Authors.FindAsync(orderItemId);
-            author.IsRemoved = true;
-            _applicationContext.Authors.Update(author);
-            await _applicationContext.SaveChangesAsync();
-        }
     }
 }

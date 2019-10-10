@@ -1,5 +1,7 @@
-﻿using EducationApp.BusinessLogicLayer.Models.Orders;
-using EducationApp.BusinessLogicLayer.Models.Pagination;
+﻿using EducationApp.BusinessLogicLayer.Models.Base;
+using EducationApp.BusinessLogicLayer.Models.Filters;
+using EducationApp.BusinessLogicLayer.Models.Orders;
+using EducationApp.BusinessLogicLayer.Models.Response;
 using System.Threading.Tasks;
 using AscendingDescending = EducationApp.BusinessLogicLayer.Models.Enums.Enums.AscendingDescending;
 
@@ -7,11 +9,10 @@ namespace EducationApp.BusinessLogicLayer.Services.Interfaces
 {
     public interface IOrderService
     {
-        Task<PaginationModel<UserOrdersModelItem>> GetAllUserOrdersAsync(int page,string userId);
-        Task<PaginationModel<AdminOrdersModelItem>> GetAllOrdersForAdminAsync(int page, AscendingDescending orderId, AscendingDescending date, AscendingDescending orderAmount);
-        Task<bool> RemoveTransactionAsync(int paymentId);
-        Task AddOrderAsync(string description, string transactionId, string userId);
+        Task<ResponseModel<OrdersWithOrderItemsModelItem>> GetAllOrdersAsync(int page, string userId, OrderFilterModelItem filterModel);
+        Task<BaseModel> RemoveTransactionAsync(int paymentId);
+        Task<BaseModel> CreateOrderAsync(string description, string transactionId, string userId);
         Task<bool> ChargeAsync(ChargeModelItem chargeModelItem);
-        Task<bool> RemoveOrderAsync(int orderId);
+        Task<BaseModel> RemoveOrderAsync(int orderId);
     }
 }

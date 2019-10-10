@@ -1,9 +1,13 @@
-﻿using EducationApp.BusinessLogicLayer.Models.User;
+﻿using EducationApp.BusinessLogicLayer.Common.Constants;
+using EducationApp.BusinessLogicLayer.Helpers;
+using EducationApp.BusinessLogicLayer.Models.Base;
+using EducationApp.BusinessLogicLayer.Models.User;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Repositories.Interface;
+using Microsoft.Extensions.Configuration;
 using PasswordGenerator;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace EducationApp.BusinessLogicLayer.Services
@@ -17,32 +21,18 @@ namespace EducationApp.BusinessLogicLayer.Services
             _userRepository = userRepository;
         }
 
-
-        public async Task<bool> SigUpAsync(AccountSigUpModel userRegisterModel)
+        public async Task<BaseModel> SigUpAsync(AccountSigUpModel userRegisterModel)
         {
-            if (userRegisterModel == null)
-            {
-                return false;
-            }
-            var applicationUser = new ApplicationUser
-            {
-                FirstName = userRegisterModel.FirstName,
-                LastName = userRegisterModel.LastName,
-                Email = userRegisterModel.Email,
-                UserName = userRegisterModel.Email
-            };
+            var baseModel = new BaseModel();
+            var applicationUser = Mapper.MapToUser.MapToApplicationUser(userRegisterModel);
             var result = await _userRepository.CreateAsync(applicationUser, userRegisterModel.Password);
-            if (result)
-            {
-                await _userRepository.AddtoRoleAsync(applicationUser);
-                return result;
-            }
-            return false;
+            baseModel.Errors = result;
+            return baseModel;
         }
 
         public async Task<bool> ConfirmEmailAsync(string id, string token)
         {
-            if (id == null || token == null)
+            if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(token))
             {
                 return false;
             }
@@ -52,21 +42,25 @@ namespace EducationApp.BusinessLogicLayer.Services
 
         public async Task<string> GenerateUserEmailConfrimTokenAsync(string id)
         {
-            if (id == null)
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return null;
             }
             var applicationUser = await _userRepository.GetUserByIdAsync(id);
+            if (applicationUser == null)
+            {
+                return Constants.Errors.NotFount;
+            }
             if (await _userRepository.CheckEmailConfirmAsync(applicationUser))
             {
                 return null;
             }
-            return await _userRepository.GenerateEmailConfirmAsync(applicationUser);
+            return await _userRepository.GenerateEmailConfirmTokenAsync(applicationUser);
         }
 
         public async Task<bool> CheckEmailConfirmAsync(string id)
         {
-            if (id == null)
+            if (string.IsNullOrWhiteSpace(id))
             {
                 return false;
             }
@@ -74,48 +68,47 @@ namespace EducationApp.BusinessLogicLayer.Services
             return await _userRepository.CheckEmailConfirmAsync(applicationUser); 
         }
 
-        public async Task<string> PasswordRecoveryAsync(string userEmail)
-        {   
-            var generage = new Password().IncludeLowercase().IncludeUppercase().IncludeSpecial().IncludeNumeric().LengthRequired(8);
-            var newPassword = generage.Next();
-            var applicationUser = await _userRepository.GetUserByEmailAsync(userEmail);
-            await _userRepository.PasswordRecoveryAsync(applicationUser, newPassword);
-            return newPassword;
-        }
-
-        public async Task<bool> SigInAsync(AccountSigInModel accountSigInModel)
+        public async Task<BaseModel> SigInAsync(AccountSigInModel accountSigInModel)
         {
-            if (accountSigInModel == null)
-            {
-                return false;
-            }
+            var baseModel = new BaseModel();
             var applicationUser = await _userRepository.GetUserByEmailAsync(accountSigInModel.Email);
+            if (applicationUser == null)
+            {
+                baseModel.Errors.Add(Constants.Errors.SigInWrongForm);
+                return baseModel;
+            }
             var checkConfirm = await CheckEmailConfirmAsync(applicationUser.Id);
-            if (checkConfirm)
+            if (!checkConfirm)
             {
-                var resultSigIn = await _userRepository.SignInAsync(accountSigInModel.Email, accountSigInModel.Password, accountSigInModel.isPersitent);
-                return resultSigIn;
+                baseModel.Errors.Add(Constants.Errors.ConfirmEmailError);
+                return baseModel;
             }
-            return checkConfirm;
+            if(await _userRepository.SignInAsync(accountSigInModel.Email, accountSigInModel.Password, accountSigInModel.isPersitent))
+            {
+                return null;
+            }
+            baseModel.Errors.Add(Constants.Errors.SigInError);
+            return baseModel;
         }
 
-        public async Task<bool> CanSigInAsync(string userId)
+        public async Task<BaseModel> CanSigInAsync(string userId)
         {
-            if (userId == null)
+            var baseModel = new BaseModel();
+            if (string.IsNullOrWhiteSpace(userId))
             {
-                return false;
+                baseModel.Errors.Add(Constants.Errors.NotFount);
+                return baseModel;
             }
             var applicationUser = await _userRepository.GetUserByIdAsync(userId);
-            return await _userRepository.CanUserSigInAsync(applicationUser);
+            if(await _userRepository.CanUserSigInAsync(applicationUser))
+            {
+                return baseModel;
+            }
+            baseModel.Errors.Add(Constants.Errors.SigInError);
+            return baseModel;
         }
 
-        public async Task ConfirmEmailAuthorizationAsync(string userId)
-        {
-            var applicationUser = await _userRepository.GetUserByIdAsync(userId);
-            await _userRepository.ConfirmEmailAuthorizationAsync(applicationUser, true);
-        }
-
-        public async Task<IList<string>> GetRoleAsync(string userEmail)
+        public async Task<string> GetRoleAsync(string userEmail)
         {
             var applicationUser = await _userRepository.GetUserByEmailAsync(userEmail);
             if (applicationUser == null)
@@ -128,6 +121,47 @@ namespace EducationApp.BusinessLogicLayer.Services
         public async Task SignOutUserAsycn()
         {
             await _userRepository.SignOutAsync();
+        }
+
+        public async Task<BaseModel> SendConfirmEmailAsync(string userEmail,string callbackUrl)
+        {
+            var baseModel = new BaseModel();
+            var emailHelpers = new EmailHelpers(userEmail);
+            var mail = emailHelpers.MailMessageForEmailConfirm(callbackUrl);
+            return await emailHelpers.SendEmailAsync(mail);
+        }
+        public async Task<BaseModel> SendEmailForPasswordRecoveryAsync(string userEmail)
+        {
+            var baseModel = new BaseModel();
+            var applicationUser = await _userRepository.GetUserByEmailAsync(userEmail);
+            if (applicationUser == null)
+            {
+                baseModel.Errors.Add(Constants.Errors.NotFount);
+                return baseModel;
+            }
+            string newPassword = GenerateNewPassword();
+            var recoveryResult = await RecoveryPassword(applicationUser, newPassword);
+            if (!recoveryResult.Errors.Count().Equals(0))
+            {
+                baseModel = recoveryResult;
+                return baseModel;
+            }
+            var emailHelpers = new EmailHelpers(userEmail);
+            var mail = emailHelpers.MailMessageForPasswordRecovery(newPassword);
+            return await emailHelpers.SendEmailAsync(mail);
+        }
+
+        private async Task<BaseModel> RecoveryPassword(ApplicationUser applicationUser,string newPassword)
+        {
+            var baseModel = new BaseModel();
+            baseModel.Errors=await _userRepository.PasswordRecoveryAsync(applicationUser, newPassword);
+            return baseModel;
+        }
+
+        private string GenerateNewPassword()
+        {
+            var generate = new Password().IncludeLowercase().IncludeUppercase().IncludeSpecial().IncludeNumeric().LengthRequired(8);
+            return generate.Next();
         }
     }
 }

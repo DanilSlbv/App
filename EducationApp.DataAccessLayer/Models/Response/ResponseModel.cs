@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace EducationApp.DataAccessLayer.Models.Pagination
+namespace EducationApp.DataAccessLayer.Models.Response
 {
-    public class PaginationModel<T>
+    public class ResponseModel<T>
     {
         public List<T> Items { get; set; }
         public int ItemsCount { get; set; }

@@ -3,6 +3,7 @@ using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
+using EducationApp.PresentationLayer.Common.Constants;
 
 namespace EducationApp.PresentationLayer.Controllers
 {
@@ -17,60 +18,44 @@ namespace EducationApp.PresentationLayer.Controllers
             _userService = userService;
         }
 
-        [HttpGet("getallusers/{page}")]
-        
+        [HttpGet("getall/{page}")]
+        [Authorize(Roles = Constants.Roles.AdmimRole)]
         public async Task<IActionResult> GetAllUsers(int page)
         {
             var users = await _userService.GetAllAsync(page);
             return Ok(users);
         }
 
-        [HttpGet("getuserbyid/{id}")]
-        [Authorize(Roles = "admin")]
-        public async Task<IActionResult> GetUserById(string id)
+        [HttpGet("getbyid/{id}")]
+        [Authorize(Roles = Constants.Roles.AdmimRole)]
+        public async Task<IActionResult> GetById(string id)
         {
-            var User = await _userService.GetByIdAsync(id);
-            return Ok(User);
+            var user = await _userService.GetByIdAsync(id);
+            return Ok(user);
         }
 
-        [HttpGet("getuserbyemail/{userEmail}")]
-        [Authorize(Roles = "user")]
-        public async Task<IActionResult> GetUserByEmail(string userEmail)
+        [HttpGet("getbyemail/{userEmail}")]
+        [Authorize(Roles = Constants.Roles.AdmimRole)]
+        public async Task<IActionResult> GetUserByName(string userName)
         {
-            var User = await _userService.GetByEmailAsync(userEmail); 
-            return Ok(User);
+            var user = await _userService.GetByEmailAsync(userName); 
+            return Ok(user);
         }
-
-        [HttpGet("edituser/{id}")]
-        [Authorize(Roles = "admin,user")]
-        public async Task<IActionResult> EditUser(string id)
-        {
-            
-            return Ok(await _userService.GetByIdAsync(id));
-        }
-
-        [HttpPost("edituser")]
-        [Authorize(Roles = "admin,user")]
+        
+        [HttpPost("edit")]
+        [Authorize(Roles = Constants.Roles.AllRoles)]
         public async Task<IActionResult> EditUser(UserModelItem userEditModel)
         {
             var result = await _userService.EditAsync(userEditModel);
-            if (result)
-            {
-                return Ok(true);
-            }
-            return Ok(false);
+            return Ok(result);
         }
 
-        [HttpPost("deleteuser")]
-        [Authorize(Roles = "admin")]
+        [HttpGet("remove/{userId}")]
+        [Authorize(Roles = Constants.Roles.AdmimRole)]
         public async Task<IActionResult>  RemoveUser(string id)
         {
             var result = await _userService.RemoveAsync(id);
-            if (result)
-            {
-                return Ok(true);
-            }
-            return Ok(false);
+            return Ok(result);
         }
     }
 }

@@ -24,12 +24,5 @@ namespace EducationApp.DataAccessLayer.Repositories
         {
             return  _applicationContext.Payments.FirstOrDefault(x=>x.TransactionId==transactionId && x.IsRemoved == false);
         }
-        public async Task RemoveTransaction(int paymentId)
-        {
-            var payment = await _applicationContext.Authors.FindAsync(paymentId);
-            payment.IsRemoved = true;
-            _applicationContext.Authors.Update(payment);
-            await _applicationContext.SaveChangesAsync();
-        }
     }
 }

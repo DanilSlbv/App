@@ -5,11 +5,11 @@ using EducationApp.DataAcessLayer.AppContext;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using EducationApp.DataAccessLayer.Common;
-using EducationApp.DataAccessLayer.Models.Pagination;
+using EducationApp.DataAccessLayer.Models.Response;
+using EducationApp.DataAccessLayer.Models.Filters;
 using Type = EducationApp.DataAccessLayer.Entities.Enums.Enums.Type;
 using AscendingDescending = EducationApp.DataAccessLayer.Entities.Enums.Enums.AscendingDescending;
-using System.Collections.Generic;
+using EducationApp.DataAccessLayer.Common.Constants;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {
@@ -20,45 +20,37 @@ namespace EducationApp.DataAccessLayer.Repositories
         {
             _applicationContext = applicationContext;
         }
-
-
-        public async Task RemoveAsync(int printingEditionId)
-        {
-            var printingEdition = _applicationContext.PrintingEditions.FirstOrDefault(x => x.Id == printingEditionId);
-            printingEdition.IsRemoved = true;
-            _applicationContext.PrintingEditions.Update(printingEdition);
-            await _applicationContext.SaveChangesAsync();
-        }
-
         public async Task<AuthorInPrintingEditons> GetWithAuthorsById(int id)
         {
-            var printingEdition =await _applicationContext.AuthorInPrintingEditons.Include(x => x.Author).Include(y => y.PrintingEdition).Where(x=>x.PrintingEdition.Id==id).FirstOrDefaultAsync();
+            var printingEdition =await _applicationContext.AuthorInPrintingEditons.Include(x => x.Author).Include(y => y.PrintingEdition).
+                Where(x=>x.PrintingEdition.Id==id).FirstOrDefaultAsync();
             return printingEdition;
         }
 
-        public async Task<PaginationModel<AuthorInPrintingEditons>> SortWithAuthorsAsync(int page, Type bookType, AscendingDescending priceSorting, float minPrice, float maxPrice)
+        public async Task<ResponseModel<AuthorInPrintingEditons>> SortWithAuthorsAsync(int page, PrintingEditionFilterModel filterModel)
         {
-            var resultItems = new PaginationModel<AuthorInPrintingEditons>();
+            var resultItems = new ResponseModel<AuthorInPrintingEditons>();
             IQueryable<AuthorInPrintingEditons> printingEditions=null;
-            if (bookType == Type.None)
+            if (filterModel.SortByPrintingType== Type.None)
             {
                 printingEditions = _applicationContext.AuthorInPrintingEditons.Include(x => x.Author).Include(y => y.PrintingEdition).AsQueryable();
               
             }
-            if (bookType != Type.None)
+            if (filterModel.SortByPrintingType != Type.None)
             {
-                printingEditions =  _applicationContext.AuthorInPrintingEditons.Include(x => x.Author).Include(y => y.PrintingEdition).Where(x=>x.PrintingEdition.Type==bookType).AsQueryable();
+                printingEditions =  _applicationContext.AuthorInPrintingEditons.Include(x => x.Author).Include(y => y.PrintingEdition)
+                    .Where(x=>x.PrintingEdition.Type== filterModel.SortByPrintingType).AsQueryable();
 
             }
-            if (minPrice>=0 || maxPrice<=10000)
+            if (filterModel.minPrice >= Constants.Price.MinPriceValue || filterModel.maxPrice<=Constants.Price.MaxPriceValue)
             {
-                printingEditions = printingEditions.Where(x => x.PrintingEdition.Price >= minPrice && x.PrintingEdition.Price <= maxPrice);
+                printingEditions = printingEditions.Where(x => x.PrintingEdition.Price >= filterModel.minPrice && x.PrintingEdition.Price <= filterModel.maxPrice);
             }
-            if (priceSorting == AscendingDescending.Ascending)
+            if (filterModel.SortByPrice == AscendingDescending.Ascending)
             {
                 printingEditions = printingEditions.OrderBy(x => x.PrintingEdition.Price);
             }
-            if (priceSorting == AscendingDescending.Descending)
+            if (filterModel.SortByPrice == AscendingDescending.Descending)
             {
                 printingEditions = printingEditions.OrderByDescending(x => x.PrintingEdition.Price);
             }

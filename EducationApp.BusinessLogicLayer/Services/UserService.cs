@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using EducationApp.BusinessLogicLayer.Models.Pagination;
+using EducationApp.BusinessLogicLayer.Common.Constants;
+using EducationApp.BusinessLogicLayer.Common.Extensions;
+using EducationApp.BusinessLogicLayer.Models.Base;
+using EducationApp.BusinessLogicLayer.Models.Response;
 using EducationApp.BusinessLogicLayer.Models.User;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Repositories.Interface;
@@ -15,54 +18,55 @@ namespace EducationApp.BusinessLogicLayer.Services
             _userRepository = userRepository;
         }
 
-        public async Task<PaginationModel<UserModelItem>> GetAllAsync(int page)
+        public async Task<ResponseModel<UserModelItem>> GetAllAsync(int page)
         {
             var applicationUsers = await _userRepository.GetAllUsersAsync(page);
-            var userModel = new PaginationModel<UserModelItem>();
+            var userModel = new ResponseModel<UserModelItem>();
             foreach (var user in applicationUsers.Items)
             {
-                userModel.Items.Add(new UserModelItem(user));
+                userModel.Items.Add(Mapper.MapToUser.MapToUserModelItem(user));
             }
             userModel.TotalItems = applicationUsers.ItemsCount;
             return userModel;
         }
         public async Task<UserModelItem> GetByIdAsync(string id)
         {
-            if(id==null)
+            if(string.IsNullOrWhiteSpace(id))
             {
                 return null;
             }
-           var userModel = new UserModelItem(await _userRepository.GetUserByIdAsync(id));
-           return userModel;
+           return Mapper.MapToUser.MapToUserModelItem(await _userRepository.GetUserByIdAsync(id));
         }
         public async Task<UserModelItem> GetByEmailAsync(string userEmail)
         {
-            if (userEmail == null)
+            if (string.IsNullOrWhiteSpace(userEmail))
             {
                 return null;
             }
-            return new UserModelItem(await _userRepository.GetUserByEmailAsync(userEmail));
+            return Mapper.MapToUser.MapToUserModelItem(await _userRepository.GetUserByEmailAsync(userEmail));
         }
-        public async Task<bool> RemoveAsync(string id)
+        public async Task<BaseModel> RemoveAsync(string id)
         {
+            var baseModel = new BaseModel();
             if(await _userRepository.GetUserByIdAsync(id)==null)
             {
-                return false;
+                baseModel.Errors.Add(Constants.Errors.NotFount);
+                return baseModel;
             }
-            var result=await _userRepository.DeleteUserAsync(id);
-            return result;
+            baseModel.Errors=await _userRepository.DeleteUserAsync(id);
+            return baseModel;
         }
-        public async Task<bool> EditAsync(UserModelItem userEditModel)
+        public async Task<BaseModel> EditAsync(UserModelItem userEditModel)
         {
+            var baseModel = new BaseModel();
             var applicationUser = await _userRepository.GetUserByIdAsync(userEditModel.Id);
             if (applicationUser != null)
             {
-                applicationUser.FirstName = userEditModel.FirstName;
-                applicationUser.LastName = userEditModel.LastName;
-                applicationUser.Email = userEditModel.Email;
-                return await _userRepository.EditUserAsync(applicationUser);
+                baseModel.Errors.Add(Constants.Errors.NotFount);
+                return baseModel;
             }
-            return false;
+            baseModel.Errors = await _userRepository.EditUserAsync(Mapper.MapToUser.MapToApplicationUser(userEditModel));
+            return baseModel;
         }
     }
 }

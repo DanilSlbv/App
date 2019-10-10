@@ -8,16 +8,11 @@ namespace EducationApp.BusinessLogicLayer.Models.Orders
     {
         public string Description { get; set; }
         public string UserId { get; set; }
-        public string userId{ get; set; }
         public DateTime Date { get; set; }
-        public int PaymentId { get; set; }
-        public OrderModelItem() { }
-        public OrderModelItem(Order order)
+        public long PaymentId { get; set; }
+        public OrderModelItem()
         {
-            Description = order.Description;
-            UserId = order.UserId;
-            Date = order.Date;
-            PaymentId = order.PaymentId;
+
         }
     }
 }

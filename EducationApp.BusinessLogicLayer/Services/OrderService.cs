@@ -3,12 +3,11 @@ using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Repositories.Interface;
 using Stripe;
-using System;
 using System.Threading.Tasks;
-using AscendingDescending = EducationApp.BusinessLogicLayer.Models.Enums.Enums.AscendingDescending;
-using CurrencyConvert = EducationApp.DataAccessLayer.Entities.Enums.Enums.Currency;
-using AscDescConvert = EducationApp.DataAccessLayer.Entities.Enums.Enums.AscendingDescending;
-using EducationApp.BusinessLogicLayer.Models.Pagination;
+using EducationApp.BusinessLogicLayer.Models.Response;
+using EducationApp.BusinessLogicLayer.Models.Filters;
+using EducationApp.BusinessLogicLayer.Models.Base;
+using EducationApp.BusinessLogicLayer.Common.Constants;
 
 namespace EducationApp.BusinessLogicLayer.Services
 {
@@ -26,87 +25,92 @@ namespace EducationApp.BusinessLogicLayer.Services
             _userRepository = userRepository;
         }
 
-        public async Task<PaginationModel<UserOrdersModelItem>> GetAllUserOrdersAsync(int page, string userId)
+        public async Task<ResponseModel<OrdersWithOrderItemsModelItem>> GetAllOrdersAsync(int page, string userId, OrderFilterModelItem filterModel)
         {
+            var resultItems = new ResponseModel<OrdersWithOrderItemsModelItem>();
             if (await _userRepository.GetUserByIdAsync(userId) == null)
             {
                 return null;
             }
-            var resultItems = new PaginationModel<UserOrdersModelItem>();
-            var orders = await _orderRepository.GetUserOrders(page,userId);
-            foreach (var order in orders.Items)
+            var ordersForUser = await _orderRepository.GetUserOrders(page, userId, Mapper.MapToOrderItems.MapToOrderFilter(filterModel));
+            foreach (var order in ordersForUser.Items)
             {
-                resultItems.Items.Add(new UserOrdersModelItem(order));
+                resultItems.Items.Add(Mapper.MapToOrders.MapToOrdersWithOrderItemsModelItem(order));
             }
-            resultItems.TotalItems = orders.ItemsCount;
+            resultItems.TotalItems = ordersForUser.ItemsCount;
             return resultItems;
         }
 
-        public async Task<PaginationModel<AdminOrdersModelItem>> GetAllOrdersForAdminAsync(int page, AscendingDescending sortByOrderId, AscendingDescending sortByDate, AscendingDescending sortByOrderAmount)
+        public async Task<BaseModel> RemoveOrderAsync(int orderId)
         {
-            var resultItems = new PaginationModel<AdminOrdersModelItem>();
-            var orders = await _orderRepository.GetOrdersForAdmin(page, (AscDescConvert)sortByOrderId, (AscDescConvert)sortByDate, (AscDescConvert)sortByOrderAmount);
-            foreach (var order in orders.Items)
-            {
-                resultItems.Items.Add(new AdminOrdersModelItem(order));
-            }
-            resultItems.TotalItems = orders.ItemsCount;
-            return resultItems;
-        }
-
-        public async Task<bool> RemoveOrderAsync(int orderId)
-        {
+            var baseModel = new BaseModel();
             if (await _orderRepository.GetByIdAsync(orderId) != null)
             {
-                await _orderRepository.RemoveAsync(orderId);
-                return true;
+                baseModel.Errors.Add(Constants.Errors.NotFount);
+                return baseModel;
             }
-            return false;
+            if(await _orderRepository.RemoveAsync(orderId))
+            {
+                return baseModel;
+            }
+            baseModel.Errors.Add(Constants.Errors.ErrorToUpdate);
+            return baseModel;
         }
 
-        public async Task<bool> RemoveTransactionAsync(int paymentId)
+        public async Task<BaseModel> RemoveTransactionAsync(int paymentId)
         {
+            var baseModel = new BaseModel();
             if (_paymentRepository.GetByIdAsync(paymentId) == null)
             {
-                return false;
+                baseModel.Errors.Add(Constants.Errors.NotFount);
+                return baseModel;
             }
-            await _paymentRepository.RemoveTransaction(paymentId);
-            return true;
-        }
-
-        public async Task AddOrderItemAsync(OrderItemModelItem order)
-        {
-            var orderItem = new DataAccessLayer.Entities.OrderItem()
+            if(await _paymentRepository.RemoveAsync(paymentId))
             {
-                Amount = order.Amount,
-                Currency = (CurrencyConvert)order.Currency,
-                PrintingEditionId = order.PrintingEditionId,
-                Count = order.Count,
-                OrderId = order.OrderId
-            };
-            await _orderItemRepository.AddAsync(orderItem);
+                return baseModel;
+            }
+            baseModel.Errors.Add(Constants.Errors.ErrorToUpdate);
+            return baseModel;
         }
 
-        public async Task AddTrasactionAsync(string transactionId)
+        public async Task<BaseModel> CreateOrderItemAsync(OrderItemModelItem order)
         {
-            var payment = new Payment()
+            var baseModel = new BaseModel();
+            if(await _orderItemRepository.CreateAsync(Mapper.MapToOrderItems.MapToOrderItem(order)))
             {
-                TransactionId = transactionId
-            };
-            await _paymentRepository.AddAsync(payment);
+                return baseModel;
+            }
+            baseModel.Errors.Add(Constants.Errors.ErrorToUpdate);
+            return baseModel;
         }
 
-        public async Task AddOrderAsync(string description, string transactionId, string userId)
+        public async Task<BaseModel> CreateTrasactionAsync(string transactionId)
         {
+            var baseModel = new BaseModel();
+            if( await _paymentRepository.CreateAsync(Mapper.MapToPayments.MapToPayment(transactionId)))
+            {
+                return baseModel;
+            }
+            baseModel.Errors.Add(Constants.Errors.ErrorToUpdate);
+            return baseModel;
+        }
+
+        public async Task<BaseModel> CreateOrderAsync(string description, string transactionId, string userId)
+        {
+            var baseModel = new BaseModel();
             var payment = _paymentRepository.GetByTransactionIdAsync(transactionId);
-            var order = new DataAccessLayer.Entities.Order()
+            if (payment == null)
             {
-                Date = DateTime.UtcNow,
-                Description = description,
-                PaymentId = payment.Id,
-                UserId = userId
-            };
-            await _orderRepository.AddOrder(order);
+                baseModel.Errors.Add(Constants.Errors.NotFount);
+                return baseModel;
+            }
+            if(await _orderRepository.CreateAsync(Mapper.MapToOrders.MapToOrder(description,payment.Id,userId)))
+            {
+                return null;
+            }
+
+            baseModel.Errors.Add(Constants.Errors.ErrorToUpdate);
+            return baseModel;
         }
 
         public async Task<bool> ChargeAsync(ChargeModelItem chargeModelItem)
@@ -119,7 +123,6 @@ namespace EducationApp.BusinessLogicLayer.Services
                 Email = chargeModelItem.StripeEmail,
                 Source = chargeModelItem.StripeToken
             });
-
             var charge = charges.Create(new ChargeCreateOptions
             {
                 Amount = chargeModelItem.Amount * 100,
@@ -127,14 +130,13 @@ namespace EducationApp.BusinessLogicLayer.Services
                 Currency = "usd",
                 CustomerId = customer.Id
             });
-
-            if (charge.Paid)
+            if (!charge.Paid)
             {
                 return false;
             }
             var user = await _userRepository.GetUserByEmailAsync(chargeModelItem.StripeEmail);
-            await AddTrasactionAsync(charge.Id);
-            await AddOrderAsync(charge.Description, charge.Id, user.Id);
+            await CreateTrasactionAsync(charge.Id);
+            await CreateOrderAsync(charge.Description, charge.Id, user.Id);
             return true;
         }
     }

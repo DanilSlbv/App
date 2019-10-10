@@ -1,18 +1,17 @@
 ﻿using EducationApp.BusinessLogicLayer.Models.PrintingEdition;
 using System.Threading.Tasks;
-using Type = EducationApp.BusinessLogicLayer.Models.Enums.Enums.Type;
-using AscendingDescending = EducationApp.BusinessLogicLayer.Models.Enums.Enums.AscendingDescending;
-using Currency = EducationApp.BusinessLogicLayer.Models.Enums.Enums.Currency;
-using EducationApp.BusinessLogicLayer.Models.Pagination;
+using EducationApp.BusinessLogicLayer.Models.Response;
+using EducationApp.BusinessLogicLayer.Models.Base;
+using EducationApp.BusinessLogicLayer.Models.Filters;
 
 namespace EducationApp.BusinessLogicLayer.Services.Interfaces
 {
     public interface IPrintingEditionService
     {
-        Task<PaginationModel<PrintingEditionsWithAuthor>> GetAllWithAuthorAsync(int page, Type type, AscendingDescending price, Currency currency, float minPrice, float maxPrice);
+        Task<ResponseModel<PrintingEditionsWithAuthor>> GetAllWithAuthorAsync(int page, PrintingEditionFilterModel filterModel);
         Task<PrintingEditionsWithAuthor> GetByIdAsync(int id);
-        Task<bool> AddAsync(PrintingEditionModelItem editPrintingEditionModelItem);
-        Task<bool> RemoveAsync(int id);
-        Task<bool> EditAsync(PrintingEditionModelItem editPrintingEditionModelItem);
+        Task<BaseModel> CreateAsync(PrintingEditionModelItem editPrintingEditionModelItem);
+        Task<BaseModel> RemoveAsync(int id);
+        Task<BaseModel> EditAsync(PrintingEditionModelItem editPrintingEditionModelItem);
     }
 }

@@ -1,4 +1,3 @@
-
 using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -7,20 +6,15 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using EducationApp.BusinessLogicLayer.Services.Interfaces;
-using EducationApp.BusinessLogicLayer.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Stripe;
 using EducationApp.BusinessLogicLayer.Models.Payments;
-using EducationApp.DataAccessLayer.Initialization;
 using EducationApp.BusinessLogicLayer.Models.Authorization;
-using OrderService = EducationApp.BusinessLogicLayer.Services.OrderService;
 using Swashbuckle.AspNetCore.Swagger;
-using EducationApp.BusinessLogicLayer.Common;
 using System.IO;
-using EducationApp.BusinessLogicLayer.Common.Extensions;
+using EducationApp.BusinessLogicLayer.Initialization;
 
 namespace EducationApp.PresentationLayer
 {
@@ -35,9 +29,9 @@ namespace EducationApp.PresentationLayer
              
         public void ConfigureServices(IServiceCollection services)
         {
-            DbInitialize dbInitialize = new DbInitialize(Configuration,services);
-            RepositoryInit repositoryInit = new RepositoryInit(services);
-            ServicesInit servicesInit = new ServicesInit(services);
+            RepositoryAndServicesInitialize.DbInitialize(services,Configuration);
+            RepositoryAndServicesInitialize.ServicesInitialize(services);
+            RepositoryAndServicesInitialize.RepositoryInitialize(services);
 
             services.Configure<AuthTokenProviderOptionsModel>(option=> 
             {
@@ -127,13 +121,6 @@ namespace EducationApp.PresentationLayer
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyAPI V1");
-            });
-
-            loggerFactory.AddFile(Path.Combine("C:\\Users\\Anuitex-78\\source\\repos\\EducationApp", "LoggerFile.txt"));
-            var logger = loggerFactory.CreateLogger("Error");
-            app.Run(async (context) =>
-            {
-                logger.LogInformation("Processing request{0}", context.Request.Path);
             });
         }
     }

@@ -5,6 +5,8 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using EducationApp.BusinessLogicLayer.Common;
+using EducationApp.BusinessLogicLayer.Common.Constants;
+using EducationApp.BusinessLogicLayer.Models.Base;
 using Microsoft.Extensions.Configuration;
 
 namespace EducationApp.BusinessLogicLayer.Helpers
@@ -13,20 +15,18 @@ namespace EducationApp.BusinessLogicLayer.Helpers
     public class EmailHelpers
     {
         private readonly string _userEmail;
-        private readonly IConfiguration _configuration;
-        public EmailHelpers(string userEmail,IConfiguration configuration)
+        public EmailHelpers(string userEmail)
         {
             _userEmail = userEmail;
-            _configuration = configuration;
         }
 
         public MailMessage MailMessageForPasswordRecovery(string newPassword)
         {
             var mail = new MailMessage()
             {
-                From = new MailAddress(EducationApp.BusinessLogicLayer.Common.Extensions.Constants.EmailHelper.MailAddress),
-                Subject = EducationApp.BusinessLogicLayer.Common.Extensions.Constants.EmailHelper.EmailSubject,
-                Body = EducationApp.BusinessLogicLayer.Common.Extensions.Constants.EmailHelper.PasswordRecoveryEmailBody + newPassword
+                From = new MailAddress(Constants.EmailHelper.MailAddress),
+                Subject = Constants.EmailHelper.EmailSubject,
+                Body = Constants.EmailHelper.PasswordRecoveryEmailBody + newPassword
             };
             mail.IsBodyHtml = true;
             mail.To.Add(new MailAddress(_userEmail));
@@ -35,17 +35,18 @@ namespace EducationApp.BusinessLogicLayer.Helpers
         public MailMessage MailMessageForEmailConfirm(string link) { 
             var mail = new MailMessage()
             {
-                From = new MailAddress(EducationApp.BusinessLogicLayer.Common.Extensions.Constants.EmailHelper.MailAddress),
-                Subject = EducationApp.BusinessLogicLayer.Common.Extensions.Constants.EmailHelper.EmailSubject,
-                Body = EducationApp.BusinessLogicLayer.Common.Extensions.Constants.EmailHelper.ConfirmEmailLink + link
+                From = new MailAddress(Constants.EmailHelper.MailAddress),
+                Subject = Constants.EmailHelper.EmailSubject,
+                Body = Constants.EmailHelper.ConfirmEmailLink + link
             };
             mail.IsBodyHtml = true;
             mail.To.Add(new MailAddress(_userEmail));
             return mail;
         }
 
-        public async Task<bool> SendEmailAsync(MailMessage mail)
+        public async Task<BaseModel> SendEmailAsync(MailMessage mail)
         {
+            var baseModel=new BaseModel();
             var credentials = new NetworkCredential("storebooksender@gmail.com","Qwerty987456");
             try
             {
@@ -59,12 +60,12 @@ namespace EducationApp.BusinessLogicLayer.Helpers
                     Credentials = credentials
                 };
                 await Clien.SendMailAsync(mail);
-                return true;
+                return baseModel;
             }
             catch (Exception ex)
             {
-                var exp = ex;
-                return false;
+                baseModel.Errors.Add(ex.Message);
+                return baseModel;
 
             }
         }

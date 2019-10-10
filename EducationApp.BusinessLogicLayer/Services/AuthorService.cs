@@ -1,89 +1,97 @@
 ﻿using EducationApp.BusinessLogicLayer.Models.Authors;
-using EducationApp.BusinessLogicLayer.Models.Pagination;
+using EducationApp.BusinessLogicLayer.Models.Response;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Repositories.Interface;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using AscendingDescending = EducationApp.BusinessLogicLayer.Models.Enums.Enums.AscendingDescending;
+using AscDescConvert = EducationApp.DataAccessLayer.Entities.Enums.Enums.AscendingDescending;
+using EducationApp.BusinessLogicLayer.Models.Base;
+using EducationApp.BusinessLogicLayer.Common.Constants;
 
 namespace EducationApp.BusinessLogicLayer.Services
 {
     public class AuthorService : IAuthorService
     {
-
         private readonly IAuthorRepository _authorRepository;
-        private readonly IAuthorInPrintingEditionRepository _authorInPrintingEditionRepository;
-        private readonly IPrintingEditionRepository _printingEditionRepository;
 
-        public AuthorService(IAuthorRepository authorRepository,IAuthorInPrintingEditionRepository authorInPrintingEditionRepository,IPrintingEditionRepository printingEditionRepository)
+        public AuthorService(IAuthorRepository authorRepository)
         {
-            _authorInPrintingEditionRepository = authorInPrintingEditionRepository;
-             _authorRepository = authorRepository;
-            _printingEditionRepository = printingEditionRepository;
+           _authorRepository = authorRepository;
         }
 
- 
-
-        public async Task<bool> AddAsync(string authorName)
+        public async Task<BaseModel> CreateAsync(string authorName)
         {
-            if (authorName== null)
+            var baseModel = new BaseModel();
+            if (string.IsNullOrWhiteSpace(authorName))
             {
-                return false;
+                baseModel.Errors.Add(Constants.Errors.NotFount);
+                return baseModel;
             }
             var author = new Author()
             {
                 Name = authorName
             };
-            await _authorRepository.AddAsync(author);
-            return true;
+            if(await _authorRepository.CreateAsync(author))
+            {
+                return baseModel;
+            }
+            baseModel.Errors.Add(Constants.Errors.ErrorToUpdate);
+            return baseModel; 
         }
 
-        public async Task<bool> RemoveAsync(int id)
+        public async Task<BaseModel> RemoveAsync(int id)
         {
+            var baseModel = new BaseModel();
             if (_authorRepository.GetByIdAsync(id) == null)
             {
-                return false;
+                baseModel.Errors.Add(Constants.Errors.NotFount);
+                return baseModel;
             }
-            await _authorRepository.RemoveAsync(id);
-            return true;
+            if(await _authorRepository.RemoveAsync(id))
+            {
+                return baseModel;
+            }
+            baseModel.Errors.Add(Constants.Errors.ErrorToUpdate);
+            return baseModel;
         }
 
-        public async Task<bool> EditAsync(AuthorModelItem editAuthorModelItem)
+        public async Task<BaseModel> EditAsync(AuthorModelItem editAuthorModelItem)
         {
+            var baseModel = new BaseModel();
             var author = await _authorRepository.GetByIdAsync(editAuthorModelItem.Id);
-            if (author != null)
+            if (author == null)
             {
-                author.Name = editAuthorModelItem.Name;
-                await _authorRepository.EditAsync(author);
-                return true;
+                baseModel.Errors.Add(Constants.Errors.NotFount);
+                return baseModel;
             }
-            return false;
+            author.Name = editAuthorModelItem.Name;
+            if(await _authorRepository.EditAsync(author))
+            {
+                return baseModel;
+            }
+            baseModel.Errors.Add(Constants.Errors.ErrorToUpdate);
+            return baseModel;
         }
         
         public async Task<AuthorModelItem> GetByIdAsync(int id)
         {
             var item= await _authorRepository.GetByIdAsync(id);
-            var author = new AuthorModelItem() { Id = item.Id, Name = item.Name };
+            var author = new AuthorModelItem()
+            {
+                Id = item.Id,
+                Name = item.Name
+            };
             return author;
         }
 
-        public async Task<PaginationModel<AuthorWithProductsModelItem>> GetAllSortedAsync(int page, AscendingDescending sortById)
+        public async Task<ResponseModel<AuthorWithProductsModelItem>> GetAllSortedAsync(int page, AscendingDescending sortById)
         {
-            var result = new PaginationModel<AuthorWithProductsModelItem>();
-            var authors = await _authorRepository.GetAllWithProductsAsync(page);
+            var authors = await _authorRepository.GetAllWithProductsAsync(page,(AscDescConvert)sortById);
+            var result = new ResponseModel<AuthorWithProductsModelItem>();
             foreach (var author in authors.Items)
             {
-                result.Items.Add(new AuthorWithProductsModelItem(author));
-            }
-            if (sortById==AscendingDescending.Ascending)
-            {
-                result.Items.OrderBy(x => x.AuthorId);
-            }
-            if (sortById==AscendingDescending.Descending)
-            {
-                result.Items.OrderByDescending(x => x.AuthorId);
+                result.Items.Add(Mapper.MapToAuthor.MapToAuthorWithProductsModelItem(author));
             }
             result.TotalItems = authors.ItemsCount;
             return result;

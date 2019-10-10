@@ -1,6 +1,6 @@
 ﻿using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Models.Order;
-using EducationApp.DataAccessLayer.Models.Pagination;
+using EducationApp.DataAccessLayer.Models.Response;
 using EducationApp.DataAccessLayer.Repositories.Base;
 using EducationApp.DataAccessLayer.Repositories.Interface;
 using EducationApp.DataAcessLayer.AppContext;
@@ -8,87 +8,76 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
+using EducationApp.DataAccessLayer.Models.Filters;
 using AscendingDescending = EducationApp.DataAccessLayer.Entities.Enums.Enums.AscendingDescending;
+using Type = EducationApp.DataAccessLayer.Entities.Enums.Enums.Type;
 using EducationApp.DataAccessLayer.Common;
+using Microsoft.AspNetCore.Identity;
+using EducationApp.DataAccessLayer.Common.Constants;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {
     public class OrderRepository : BaseEFRepository<Order>, IOrderRepository
     {
         private readonly ApplicationContext _applicationContext;
-        public OrderRepository(ApplicationContext applicationContext) : base(applicationContext)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public OrderRepository(ApplicationContext applicationContext, UserManager<ApplicationUser> userManager) : base(applicationContext)
         {
             _applicationContext = applicationContext;
+            _userManager = userManager;
         }
 
         public async Task<List<Order>> GetAllAsync() => await _applicationContext.Orders.Where(x => x.IsRemoved == false).ToListAsync();
 
-        public async Task AddOrder(Order order)
-        {
-            _applicationContext.Orders.Add(order);
-            await _applicationContext.SaveChangesAsync();
-        }
 
-        public async Task RemoveAsync(int orderId)
+        public async Task<ResponseModel<OrdersWithOrderItemsModel>> GetUserOrders(int page, string userId, OrderFilterModel filterModel)
         {
-            var order = await _applicationContext.Authors.FindAsync(orderId);
-            order.IsRemoved = true;
-            _applicationContext.Authors.Update(order);
-            await _applicationContext.SaveChangesAsync();
-        }
-
-        public async Task<PaginationModel<OrdersForUserModel>> GetUserOrders(int page,string userId)
-        {
-            var itemsCount = _applicationContext.Orders.Count();
-            var items = await (from order in _applicationContext.Orders
-                               where order.UserId==userId
-                               select new OrdersForUserModel
-                               {
-                                   OrderId = order.Id,
-                                   OrderDate = order.Date,
-                                   PrintingType = (from orderItem in _applicationContext.OrderItems
-                                                   join printingEdition in _applicationContext.PrintingEditions on orderItem.PrintingEditionId equals printingEdition.Id
-                                                   select printingEdition.Type.ToString()
-                                          ).ToList(),
-                                   PrintingTitle = (from orderItem in _applicationContext.OrderItems
-                                                  join printingEdition in _applicationContext.PrintingEditions on orderItem.PrintingEditionId equals printingEdition.Id
-                                                  select printingEdition.Type.ToString()
-                                          ).ToList(),
-                                   OrderAmount = _applicationContext.OrderItems.Where(x => x.OrderId == order.Id).Select(x => x.Amount).Sum()
-                               }).Skip((page - 1) * Constants.Pagination.PageSize).Take(Constants.Pagination.PageSize).ToListAsync();
-            var result = new PaginationModel<OrdersForUserModel>
+            var orders = _applicationContext.OrderItems.Include(x => x.Order).Include(x => x.PrintingEdition).AsQueryable();
+            if (!string.IsNullOrWhiteSpace(userId))
             {
-                Items = items,
-                ItemsCount = itemsCount,
-            };
-            return result;
-        }
-
-
-        public async Task<PaginationModel<OrdersForAdminModel>> GetOrdersForAdmin(int page, AscendingDescending sortByOrderId, AscendingDescending sortByDate, AscendingDescending sortByOrderAmount)
-        {
-            var itemsCount = _applicationContext.Orders.Count();
-            var items = await (from order in _applicationContext.Orders
-                               select new OrdersForAdminModel
-                               {
-                                   OrderId = order.Id,
-                                   OrderDate = order.Date,
-                                   UserEmail = _applicationContext.Users.Where(x => x.Id == order.UserId).Select(x => x.Email).ToString(),
-                                   PrintingType = (from orderItem in _applicationContext.OrderItems
-                                               join printingEdition in _applicationContext.PrintingEditions on orderItem.PrintingEditionId equals printingEdition.Id
-                                               select printingEdition.Type.ToString()
-                                          ).ToList(),
-                                   PrintingTitle = (from orderItem in _applicationContext.OrderItems
-                                                  join printingEdition in _applicationContext.PrintingEditions on orderItem.PrintingEditionId equals printingEdition.Id
-                                                  select printingEdition.Type.ToString()
-                                          ).ToList(),
-                                   OrderAmount = _applicationContext.OrderItems.Where(x => x.OrderId == order.Id).Select(x => x.Amount).Sum()
-                               }).Skip((page - 1) * Constants.Pagination.PageSize).Take(Constants.Pagination.PageSize).ToListAsync();
-            var result = new PaginationModel<OrdersForAdminModel>
+                orders = orders.Where(x => (x.IsRemoved == false) && x.Order.UserId == userId);
+            }
+            if (string.IsNullOrWhiteSpace(userId))
             {
-                Items = items,
-                ItemsCount = itemsCount,
+                orders = orders.Where(x => x.IsRemoved == false);
+            }
+            if (filterModel.SortByOrderId == AscendingDescending.Ascending)
+            {
+                orders = orders.OrderBy(x => x.OrderId);
+            }
+            if (filterModel.SortByOrderId == AscendingDescending.Descending)
+            {
+                orders = orders.OrderByDescending(x => x.OrderId);
+            }
+            if (filterModel.SortByDate == AscendingDescending.Ascending)
+            {
+                orders = orders.OrderBy(x => x.Order.Date);
+            }
+            if (filterModel.SortByDate == AscendingDescending.Descending)
+            {
+                orders = orders.OrderByDescending(x => x.Order.Date);
+            }
+            if (filterModel.SortByOrderAmount == AscendingDescending.Ascending)
+            {
+                orders = orders.OrderBy(x => x.Amount);
+            }
+            if (filterModel.SortByOrderAmount == AscendingDescending.Descending)
+            {
+                orders = orders.OrderByDescending(x => x.Amount);
+            }
+            var userOrders = await orders.GroupBy(x => x.OrderId).Select(orderItem => new OrdersWithOrderItemsModel
+            {
+                OrderId = orderItem.Key,
+                UserEmail = orderItem.Select(x => x.Order.User.UserName).FirstOrDefault(),
+                OrderDate = orderItem.Select(x => x.Order.Date).FirstOrDefault(),
+                PrintingType = orderItem.Select(x => x.PrintingEdition.Type).ToList(),
+                PrintingEditions = orderItem.Select(x=>x.PrintingEdition).ToList(),
+                OrderAmount = orderItem.Select(x => x.Amount).FirstOrDefault()
+            }).Skip((page - 1) * Constants.Pagination.PageSize).Take(Constants.Pagination.PageSize).ToListAsync();
+            var result = new ResponseModel<OrdersWithOrderItemsModel>
+            {
+                Items = userOrders,
+                ItemsCount = _applicationContext.Orders.Count()
             };
             return result;
         }

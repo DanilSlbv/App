@@ -8,6 +8,5 @@ namespace EducationApp.DataAccessLayer.Repositories.Interface
     {
         Task<List<Payment>> GetAllAsync();
         Payment GetByTransactionIdAsync(string transactionId);
-        Task RemoveTransaction(int paymentId);
     }
 }
