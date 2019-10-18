@@ -1,6 +1,5 @@
 ﻿using EducationApp.BusinessLogicLayer.Models.Orders;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
-using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Repositories.Interface;
 using Stripe;
 using System.Threading.Tasks;
@@ -8,7 +7,7 @@ using EducationApp.BusinessLogicLayer.Models.Response;
 using EducationApp.BusinessLogicLayer.Models.Filters;
 using EducationApp.BusinessLogicLayer.Models.Base;
 using EducationApp.BusinessLogicLayer.Common.Constants;
-
+using EducationApp.DataAccessLayer.Models.Orders;
 namespace EducationApp.BusinessLogicLayer.Services
 {
     public class OrderService : IOrderService
@@ -28,28 +27,26 @@ namespace EducationApp.BusinessLogicLayer.Services
         public async Task<ResponseModel<OrdersWithOrderItemsModelItem>> GetAllOrdersAsync(int page, string userId, OrderFilterModelItem filterModel)
         {
             var resultItems = new ResponseModel<OrdersWithOrderItemsModelItem>();
-            if (await _userRepository.GetUserByIdAsync(userId) == null)
+            var orders = await _orderRepository.GetUserOrders(page, userId, Mapper.OrderItemMapper.MapToOrderFilter(filterModel));
+            foreach (var order in orders.Items)
             {
-                return null;
+                resultItems.Items.Add(Mapper.OrderMapper.MapToOrdersWithOrderItemsModelItem(order));
             }
-            var ordersForUser = await _orderRepository.GetUserOrders(page, userId, Mapper.MapToOrderItems.MapToOrderFilter(filterModel));
-            foreach (var order in ordersForUser.Items)
-            {
-                resultItems.Items.Add(Mapper.MapToOrders.MapToOrdersWithOrderItemsModelItem(order));
-            }
-            resultItems.TotalItems = ordersForUser.ItemsCount;
+            resultItems.TotalItems = orders.ItemsCount;
             return resultItems;
         }
 
         public async Task<BaseModel> RemoveOrderAsync(int orderId)
         {
             var baseModel = new BaseModel();
-            if (await _orderRepository.GetByIdAsync(orderId) != null)
+            var order = await _orderRepository.GetByIdAsync(orderId);
+            if (order != null)
             {
                 baseModel.Errors.Add(Constants.Errors.NotFount);
                 return baseModel;
             }
-            if(await _orderRepository.RemoveAsync(orderId))
+            order.IsRemoved = true;
+            if (await _orderRepository.EditAsync(order))
             {
                 return baseModel;
             }
@@ -60,12 +57,14 @@ namespace EducationApp.BusinessLogicLayer.Services
         public async Task<BaseModel> RemoveTransactionAsync(int paymentId)
         {
             var baseModel = new BaseModel();
-            if (_paymentRepository.GetByIdAsync(paymentId) == null)
+            var payment = await _paymentRepository.GetByIdAsync(paymentId);
+            if (payment == null)
             {
                 baseModel.Errors.Add(Constants.Errors.NotFount);
                 return baseModel;
             }
-            if(await _paymentRepository.RemoveAsync(paymentId))
+            payment.IsRemoved = true;
+            if (await _paymentRepository.EditAsync(payment))
             {
                 return baseModel;
             }
@@ -76,7 +75,7 @@ namespace EducationApp.BusinessLogicLayer.Services
         public async Task<BaseModel> CreateOrderItemAsync(OrderItemModelItem order)
         {
             var baseModel = new BaseModel();
-            if(await _orderItemRepository.CreateAsync(Mapper.MapToOrderItems.MapToOrderItem(order)))
+            if (await _orderItemRepository.CreateAsync(Mapper.OrderItemMapper.MapToOrderItem(order)))
             {
                 return baseModel;
             }
@@ -87,7 +86,7 @@ namespace EducationApp.BusinessLogicLayer.Services
         public async Task<BaseModel> CreateTrasactionAsync(string transactionId)
         {
             var baseModel = new BaseModel();
-            if( await _paymentRepository.CreateAsync(Mapper.MapToPayments.MapToPayment(transactionId)))
+            if (await _paymentRepository.CreateAsync(Mapper.PaymentMapper.MapToPayment(transactionId)))
             {
                 return baseModel;
             }
@@ -104,9 +103,9 @@ namespace EducationApp.BusinessLogicLayer.Services
                 baseModel.Errors.Add(Constants.Errors.NotFount);
                 return baseModel;
             }
-            if(await _orderRepository.CreateAsync(Mapper.MapToOrders.MapToOrder(description,payment.Id,userId)))
+            if (await _orderRepository.CreateAsync(Mapper.OrderMapper.MapToOrder(description, payment.Id, userId)))
             {
-                return null;
+                return baseModel;
             }
 
             baseModel.Errors.Add(Constants.Errors.ErrorToUpdate);
@@ -125,9 +124,9 @@ namespace EducationApp.BusinessLogicLayer.Services
             });
             var charge = charges.Create(new ChargeCreateOptions
             {
-                Amount = chargeModelItem.Amount * 100,
-                Description = "BookStore",
-                Currency = "usd",
+                Amount = chargeModelItem.Amount * Constants.Stripe.NormalAmount,
+                Description = Constants.Stripe.Description,
+                Currency = Constants.Stripe.Currency,
                 CustomerId = customer.Id
             });
             if (!charge.Paid)

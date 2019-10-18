@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace EducationApp.BusinessLogicLayer.Initialization
 {
-    public static class RepositoryAndServicesInitialize
+    public class RepositoryAndServicesInitialize
     {        
         public static void DbInitialize(IServiceCollection service,IConfiguration _configuration)
         {

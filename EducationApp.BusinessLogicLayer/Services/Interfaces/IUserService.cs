@@ -10,6 +10,6 @@ namespace EducationApp.BusinessLogicLayer.Services.Interfaces
         Task<UserModelItem> GetByIdAsync(string id);
         Task<UserModelItem> GetByEmailAsync(string userEmail);
         Task<BaseModel> RemoveAsync(string id);
-        Task<BaseModel> EditAsync(UserModelItem userEditModel);
+        Task<BaseModel> EditAsync(AccountSigUpModel userEditModel);
     }
 }

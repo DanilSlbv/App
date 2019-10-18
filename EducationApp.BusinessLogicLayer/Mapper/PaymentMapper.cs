@@ -5,7 +5,7 @@ using System.Text;
 
 namespace EducationApp.BusinessLogicLayer.Mapper
 {
-    public static class MapToPayments
+    public static class PaymentMapper
     {
         public static Payment MapToPayment(string transactionId)
         {

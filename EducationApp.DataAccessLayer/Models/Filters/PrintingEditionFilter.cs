@@ -11,5 +11,6 @@ namespace EducationApp.DataAccessLayer.Models.Filters
         public SortByPrice SortByPrice { get; set; }
         public float minPrice { get; set; }
         public float maxPrice { get; set; }
+        public string SearchName { get; set; }
     }
 }

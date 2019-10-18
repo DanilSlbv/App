@@ -76,7 +76,7 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Author", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -93,11 +93,11 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.AuthorInPrintingEditons", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AuthorId");
+                    b.Property<long>("AuthorId");
 
                     b.Property<DateTime>("CreationDate");
 
@@ -105,7 +105,7 @@ namespace EducationApp.DataAccessLayer.Migrations
 
                     b.Property<bool>("IsRemoved");
 
-                    b.Property<int>("PrintingEditionId");
+                    b.Property<long>("PrintingEditionId");
 
                     b.HasKey("Id");
 
@@ -118,7 +118,7 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Order", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -130,7 +130,7 @@ namespace EducationApp.DataAccessLayer.Migrations
 
                     b.Property<bool>("IsRemoved");
 
-                    b.Property<int>("PaymentId");
+                    b.Property<long>("PaymentId");
 
                     b.Property<string>("UserId");
 
@@ -145,7 +145,7 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.OrderItem", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -159,9 +159,9 @@ namespace EducationApp.DataAccessLayer.Migrations
 
                     b.Property<bool>("IsRemoved");
 
-                    b.Property<int>("OrderId");
+                    b.Property<long>("OrderId");
 
-                    b.Property<int>("PrintingEditionId");
+                    b.Property<long>("PrintingEditionId");
 
                     b.HasKey("Id");
 
@@ -174,7 +174,7 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.Payment", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -191,7 +191,7 @@ namespace EducationApp.DataAccessLayer.Migrations
 
             modelBuilder.Entity("EducationApp.DataAccessLayer.Entities.PrintingEdition", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 

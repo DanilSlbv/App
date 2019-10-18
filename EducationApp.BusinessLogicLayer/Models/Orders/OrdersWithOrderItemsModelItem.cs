@@ -10,13 +10,13 @@ namespace EducationApp.BusinessLogicLayer.Models.Orders
         public long OrderId { get; set; }
         public DateTime OrderDate { get; set; }
         public string UserEmail { get; set; }
-        public List<PrintingType> PrintingType { get; set; }
-        public List<PrintingEditionModelItem> PrintingEditions { get; set; } 
+        public List<PrintingType> PrintingTypes { get; set; }
+        public List<PrintingEditionsWithAuthor> PrintingEditions { get; set; } 
         public double OrderAmount { get; set; }
         public OrdersWithOrderItemsModelItem()
         {
-            PrintingType = new List<PrintingType>();
-            PrintingEditions = new List<PrintingEditionModelItem>();
+            PrintingTypes = new List<PrintingType>();
+            PrintingEditions = new List<PrintingEditionsWithAuthor>();
         }
     }
 }

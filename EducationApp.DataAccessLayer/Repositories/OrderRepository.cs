@@ -1,5 +1,5 @@
 ﻿using EducationApp.DataAccessLayer.Entities;
-using EducationApp.DataAccessLayer.Models.Order;
+using EducationApp.DataAccessLayer.Models.Orders;
 using EducationApp.DataAccessLayer.Models.Response;
 using EducationApp.DataAccessLayer.Repositories.Base;
 using EducationApp.DataAccessLayer.Repositories.Interface;
@@ -70,14 +70,14 @@ namespace EducationApp.DataAccessLayer.Repositories
                 OrderId = orderItem.Key,
                 UserEmail = orderItem.Select(x => x.Order.User.UserName).FirstOrDefault(),
                 OrderDate = orderItem.Select(x => x.Order.Date).FirstOrDefault(),
-                PrintingType = orderItem.Select(x => x.PrintingEdition.Type).ToList(),
+                PrintingTypes = orderItem.Select(x => x.PrintingEdition.Type).ToList(),
                 PrintingEditions = orderItem.Select(x=>x.PrintingEdition).ToList(),
                 OrderAmount = orderItem.Select(x => x.Amount).FirstOrDefault()
             }).Skip((page - 1) * Constants.Pagination.PageSize).Take(Constants.Pagination.PageSize).ToListAsync();
             var result = new ResponseModel<OrdersWithOrderItemsModel>
             {
                 Items = userOrders,
-                ItemsCount = _applicationContext.Orders.Count()
+                ItemsCount = _applicationContext.Orders.Where(x=>x.IsRemoved==false).Count()
             };
             return result;
         }

@@ -10,8 +10,8 @@ namespace EducationApp.BusinessLogicLayer.Services.Interfaces
     {
         Task<ResponseModel<PrintingEditionsWithAuthor>> GetAllWithAuthorAsync(int page, PrintingEditionFilterModel filterModel);
         Task<PrintingEditionsWithAuthor> GetByIdAsync(int id);
-        Task<BaseModel> CreateAsync(PrintingEditionModelItem editPrintingEditionModelItem);
+        Task<BaseModel> CreateAsync(PrintingEditionsWithAuthor printingEditionsWithAuthor);
         Task<BaseModel> RemoveAsync(int id);
-        Task<BaseModel> EditAsync(PrintingEditionModelItem editPrintingEditionModelItem);
+        Task<BaseModel> EditAsync(PrintingEditionsWithAuthor editPrintingEditionModelItem);
     }
 }

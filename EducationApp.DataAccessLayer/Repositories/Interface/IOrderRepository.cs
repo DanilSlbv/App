@@ -1,6 +1,6 @@
 ﻿using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Models.Filters;
-using EducationApp.DataAccessLayer.Models.Order;
+using EducationApp.DataAccessLayer.Models.Orders;
 using EducationApp.DataAccessLayer.Models.Response;
 using System;
 using System.Collections.Generic;

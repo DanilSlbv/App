@@ -7,6 +7,8 @@ using EducationApp.DataAccessLayer.Models.Response;
 using System.Linq;
 using EducationApp.DataAccessLayer.Common.Constants;
 using System.Collections.Generic;
+using EducationApp.DataAccessLayer.Initialization;
+using System;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {
@@ -41,52 +43,33 @@ namespace EducationApp.DataAccessLayer.Repositories
         public async Task<List<string>> CreateAsync(ApplicationUser user, string password)
         {
             var result = await _userManager.CreateAsync(user, password);
-            if (result.Succeeded)
-            {
-                return null;
-            }
+            await AddtoRoleAsync(user);
             return result.Errors.Select(x=>x.Description).ToList();
         }
 
         public async Task<List<string>> DeleteUserAsync(string id)
         {
-            ApplicationUser applicationUser = await GetUserByIdAsync(id);
+            var applicationUser = await GetUserByIdAsync(id);
             var result = await _userManager.DeleteAsync(applicationUser);
-            if (result.Succeeded)
-            {
-                return null;
-            }
             return result.Errors.Select(x => x.Description).ToList();
         }
 
         public async Task<List<string>> EditUserAsync(ApplicationUser editUser)
         {
             var result = await _userManager.UpdateAsync(editUser);
-            if (result.Succeeded)
-            {
-                return null;
-            }
-            return result.Errors.Select(x => x.Description).ToList();
+             return result.Errors.Select(x => x.Description).ToList();
         }
 
         public async Task<List<string>> PasswordRecoveryAsync(ApplicationUser applicationUser, string newPassword)
         {
             var token = await _userManager.GeneratePasswordResetTokenAsync(applicationUser);
             var result = await _userManager.ResetPasswordAsync(applicationUser, token, newPassword);
-            if (result.Succeeded)
-            {
-                return null;
-            }
             return result.Errors.Select(x => x.Description).ToList();
         }
 
-        public async Task<List<string>> AddtoRoleAsync(ApplicationUser applicationUser)
+        private async Task<List<string>> AddtoRoleAsync(ApplicationUser applicationUser)
         {
             var result = await _userManager.AddToRoleAsync(applicationUser, "user");
-            if (result.Succeeded)
-            {
-                return null;
-            }
             return result.Errors.Select(x => x.Description).ToList();
         }
 
@@ -105,11 +88,7 @@ namespace EducationApp.DataAccessLayer.Repositories
         {
             var applicationUser = await GetUserByIdAsync(userid);
             var result = await _userManager.ConfirmEmailAsync(applicationUser, token);
-            if (result.Succeeded)
-            {
-                return true;
-            }
-            return false;
+            return result.Succeeded;
         }
 
         public async Task<bool> CheckEmailConfirmAsync(ApplicationUser user)

@@ -8,7 +8,7 @@ using AscendingDescending = EducationApp.BusinessLogicLayer.Models.Enums.Enums.A
 
 namespace EducationApp.PresentationLayer.Controllers
 {
-    [Authorize]
+
     [Route("author")]
     [ApiController]
     public class AuthorController : ControllerBase
@@ -19,23 +19,29 @@ namespace EducationApp.PresentationLayer.Controllers
             _authorService = authorService;
         }
 
-        [HttpGet("getall/{page}")]
-        public async Task<IActionResult> GetAll(int page, AscendingDescending sortBy)
+        [HttpGet("getall")]
+        public async Task<IActionResult> GetAll()
+        {
+            var result= await _authorService.GetAll();
+            return Ok(result);
+        }
+
+        [HttpGet("getallsorted/{page}")]
+        public async Task<IActionResult> GetAllSorted(int page, AscendingDescending sortBy)
         {
             var resultItems = await _authorService.GetAllSortedAsync(page, sortBy);
             return Ok(resultItems);
         }
 
-        [HttpGet("createauthor/{author}")]
-        [Authorize(Roles = Constants.Roles.AdmimRole)]
+
+        [HttpPost("createauthor/{authorname}")]
         public async Task<IActionResult> CreateAuthor(string authorName)
         {
             var result = await _authorService.CreateAsync(authorName);
             return Ok(result);
         }
 
-        [HttpGet("removeauthor/{id}")]
-        [Authorize(Roles = Constants.Roles.AdmimRole)]
+        [HttpPost("removeauthor/{id}")]
         public async Task<IActionResult> RemoveAuthor(int id)
         {
             var result = await _authorService.RemoveAsync(id);

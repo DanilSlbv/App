@@ -4,6 +4,7 @@ using EducationApp.DataAccessLayer.Entities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace EducationApp.DataAcessLayer.AppContext
 {

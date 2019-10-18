@@ -8,7 +8,7 @@ using EducationApp.BusinessLogicLayer.Models.Filters;
 
 namespace EducationApp.BusinessLogicLayer.Mapper
 {
-    public static class MapToOrderItems
+    public static class OrderItemMapper
     {
         public static OrderItem MapToOrderItem(OrderItemModelItem orderItem)
         {

@@ -9,12 +9,13 @@ using Currency = EducationApp.BusinessLogicLayer.Models.Enums.Enums.Currency;
 using Status = EducationApp.BusinessLogicLayer.Models.Enums.Enums.Status;
 using PrintingEditionFilter = EducationApp.DataAccessLayer.Models.Filters.PrintingEditionFilterModel;
 using PrintingEditionFilterModel = EducationApp.BusinessLogicLayer.Models.Filters.PrintingEditionFilterModel;
+using EducationApp.DataAccessLayer.Models.PrintingEditions;
 
 namespace EducationApp.BusinessLogicLayer.Mapper
 {
-    public static class MapToPrintingEditions
+    public static class PrintingEditionMapper
     {
-        public static PrintingEdition MapToPrintingEdition(PrintingEditionModelItem printingEditionModelItem)
+        public static PrintingEdition MapToPrintingEdition(PrintingEditionsWithAuthor printingEditionModelItem)
         {
             return new PrintingEdition
             {
@@ -34,12 +35,13 @@ namespace EducationApp.BusinessLogicLayer.Mapper
                 minPrice = filterModel.MinPrice,
                 SortByCurrency = (CurrencyConvert)filterModel.Currency,
                 SortByPrice = (AscDescConvert)filterModel.Price,
-                SortByPrintingType = (PrintingTypeConvert)filterModel.Type
+                SortByPrintingType = (PrintingTypeConvert)filterModel.Type,
+                SearchName=filterModel.SearchName
             };
         }
-        public static PrintingEditionModelItem MapToPrintingEditionModelItem(PrintingEdition printingEdition)
+        public static PrintingEditionsWithAuthor MapToPrintingEditionModelItem(PrintingEdition printingEdition)
         {
-            return new PrintingEditionModelItem
+            return new PrintingEditionsWithAuthor
             {
                 Id = printingEdition.Id,
                 Name = printingEdition.Name,
@@ -50,18 +52,22 @@ namespace EducationApp.BusinessLogicLayer.Mapper
             };
         }
 
-        public static PrintingEditionsWithAuthor MapToPrintingEditionsWithAuthor(AuthorInPrintingEditons printingEditions)
+        public static PrintingEditionsWithAuthor MapToPrintingEditionsWithAuthor(PrintingEditionWithAuthorsModel printingEditions)
         {
-            return new PrintingEditionsWithAuthor
+            var result = new PrintingEditionsWithAuthor
             {
-                Id = printingEditions.PrintingEdition.Id,
-                Name = printingEditions.PrintingEdition.Name,
-                AuthorName = printingEditions.Author.Name,
-                Currency = (Currency)printingEditions.PrintingEdition.Currency,
-                Type = (PrintingType)printingEditions.PrintingEdition.Type,
-                Price = printingEditions.PrintingEdition.Price,
-                Description = printingEditions.PrintingEdition.Description
+                Id = printingEditions.Id,
+                Name = printingEditions.Name,
+                Currency = (Currency)printingEditions.Currency,
+                Type = (PrintingType)printingEditions.Type,
+                Price = printingEditions.Price,
+                Description = printingEditions.Description
             };
+            foreach(var author in printingEditions.Authors)
+            {
+                result.Authors.Add(AuthorMapper.MapToAuthorModelItem(author));
+            }
+            return result;
         }
 
     }

@@ -15,7 +15,6 @@ namespace EducationApp.DataAccessLayer.Repositories.Interface
         Task<List<string>> DeleteUserAsync(string id);
         Task<List<string>> EditUserAsync(ApplicationUser user);
         Task<List<string>> PasswordRecoveryAsync(ApplicationUser applicationUser,  string newPassword);
-        Task<List<string>> AddtoRoleAsync(ApplicationUser applicationUser);
         Task<string> GetRoleAsync(ApplicationUser applicationUser);
         Task<bool> CheckIsInRoleAsync(ApplicationUser applicationUser, string roleName);
         Task<bool> ConfrirmEmailAsync(string userid, string token);

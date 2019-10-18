@@ -1,6 +1,7 @@
 ﻿using EducationApp.BusinessLogicLayer.Models.Authors;
 using EducationApp.BusinessLogicLayer.Models.Base;
 using EducationApp.BusinessLogicLayer.Models.Response;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using AscendingDescending = EducationApp.BusinessLogicLayer.Models.Enums.Enums.AscendingDescending;
 
@@ -13,5 +14,6 @@ namespace EducationApp.BusinessLogicLayer.Services.Interfaces
         Task<BaseModel> RemoveAsync(int id);
         Task<BaseModel> EditAsync(AuthorModelItem editAuthorModelItem);
         Task<ResponseModel<AuthorWithProductsModelItem>> GetAllSortedAsync(int page, AscendingDescending ascendingDescending);
+        Task<List<AuthorModelItem>> GetAll();
     }
 }

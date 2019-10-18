@@ -13,6 +13,9 @@ namespace EducationApp.BusinessLogicLayer.Common.Constants
             public const string ErrorToUpdate = "Update database-Error";
             public const string SigInError = "Sign in error";
             public const string ConfirmEmailError = "Please confirm email";
+            public const string IdIsNull = "Id can't be null";
+            public const string UserEmailIsNull = "Email can not be null";
+            public const string TokenError = "Unable to get the token";
         }
     }
 }

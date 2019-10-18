@@ -1,7 +1,7 @@
 ﻿using EducationApp.DataAccessLayer.Entities;
 using System.Collections.Generic;
 
-namespace EducationApp.DataAccessLayer.Models.Author    
+namespace EducationApp.DataAccessLayer.Models.Authors  
 {
     public class AuthorWithProductsModel
     {

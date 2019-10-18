@@ -10,6 +10,5 @@ namespace EducationApp.DataAccessLayer.Repositories.Interface
         Task<TEntity> GetByIdAsync(long id);
         Task<bool> CreateAsync(TEntity entity);
         Task<bool> EditAsync(TEntity entity);
-        Task<bool> RemoveAsync(long id);
     }
 }

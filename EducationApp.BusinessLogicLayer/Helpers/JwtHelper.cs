@@ -9,17 +9,12 @@ using System.Security.Claims;
 using System.Text;
 using EducationApp.BusinessLogicLayer.Models.User;
 
-namespace EducationApp.PresentationLayer.Helpers
+namespace EducationApp.BusinessLogicLayer.Helpers
 {
     public class JwtHelper
     {
-        private readonly AuthTokenProviderOptionsModel _options;
-        public JwtHelper(IOptionsMonitor<AuthTokenProviderOptionsModel> options)
-        {
-            _options = options.CurrentValue;
-        }
-
-        public string GenerateAccessToken(UserModelItem user ,string role)
+       
+        public string GenerateAccessToken(UserModelItem user ,string role,IOptionsMonitor<AuthTokenProviderOptionsModel> options)
         {
             var claims = new List<Claim>
             {
@@ -30,28 +25,28 @@ namespace EducationApp.PresentationLayer.Helpers
                 new Claim(ClaimTypes.Role, role)
             };
 
-            var token = GenerateToken(claims, _options.AccessTokenExpiration);
+            var token = GenerateToken(claims, options.CurrentValue.AccessTokenExpiration, options);
             return token;
         }
-        public string GenerateRefreshToken(string userId)
+        public string GenerateRefreshToken(string userId, IOptionsMonitor<AuthTokenProviderOptionsModel> options)
         {
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, userId)
             };
-            var token = GenerateToken(claims, _options.RefreshTokenExpiration);            
+            var token = GenerateToken(claims, options.CurrentValue.RefreshTokenExpiration, options);            
             return token;
         }
 
-        public string GenerateToken(List<Claim> claims,TimeSpan expirationTime)
+        public string GenerateToken(List<Claim> claims,TimeSpan expirationTime, IOptionsMonitor<AuthTokenProviderOptionsModel> options)
         {
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.JwtKey));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.CurrentValue.JwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                _options.JwtIssuer,
-                _options.JwtIssuer,
+                options.CurrentValue.JwtIssuer,
+                options.CurrentValue.JwtIssuer,
                 claims,
                 expires: DateTime.UtcNow + expirationTime,
                 signingCredentials: creds
@@ -70,7 +65,7 @@ namespace EducationApp.PresentationLayer.Helpers
             return false;
         }
         
-        public JwtTokensModel Refresh(string refreshToken,string userRole,UserModelItem user)
+        public JwtTokensModel Refresh(string refreshToken,string userRole,UserModelItem user, IOptionsMonitor<AuthTokenProviderOptionsModel> options)
         {
             var readRefreshToken= new JwtSecurityTokenHandler().ReadJwtToken(refreshToken);
             var userId = readRefreshToken.Claims.Where(x => x.Type.Equals(ClaimTypes.NameIdentifier)).FirstOrDefault().Value;
@@ -86,8 +81,8 @@ namespace EducationApp.PresentationLayer.Helpers
             {
                 return null;
             }
-            var newAccessToken = GenerateAccessToken(user,userRole);
-            var newRefreshToken = GenerateRefreshToken(userId);
+            var newAccessToken = GenerateAccessToken(user,userRole,options);
+            var newRefreshToken = GenerateRefreshToken(userId,options);
             if (string.IsNullOrWhiteSpace(newAccessToken) || string.IsNullOrWhiteSpace(newRefreshToken))
             {
                 return null;

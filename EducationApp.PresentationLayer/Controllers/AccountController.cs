@@ -1,17 +1,16 @@
 ﻿using EducationApp.BusinessLogicLayer.Models.Authorization;
 using EducationApp.BusinessLogicLayer.Models.User;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
-using EducationApp.PresentationLayer.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using EducationApp.BusinessLogicLayer.Common.Constants;
+using EducationApp.BusinessLogicLayer.Helpers;
 
 namespace EducationApp.PresentationLayer.Controllers
 {
@@ -24,13 +23,12 @@ namespace EducationApp.PresentationLayer.Controllers
         private readonly IUserService _userService;
         private readonly IOptionsMonitor<AuthTokenProviderOptionsModel> _options;
         private readonly JwtHelper _jwtHelper;
-
-        public AccountController(IUserService userService, IAccountService accountService,JwtHelper jwtHelper, IOptionsMonitor<AuthTokenProviderOptionsModel> options)
+        public AccountController(IUserService userService, IAccountService accountService, IOptionsMonitor<AuthTokenProviderOptionsModel> options,JwtHelper jwtHelper)
         {
             _userService = userService;
             _accountService = accountService;
+           _options = options;
             _jwtHelper = jwtHelper;
-            _options = options;
         }
 
 
@@ -38,25 +36,18 @@ namespace EducationApp.PresentationLayer.Controllers
         public async Task<IActionResult> SigIn(AccountSigInModel accountSigInModel)
         {
             var result = await _accountService.SigInAsync(accountSigInModel);
-            if (!result.Errors.Count().Equals(0))
-            {
-                return Ok(result);
-            }
-            var applicationUser = await _userService.GetByEmailAsync(accountSigInModel.Email);
-            var userRole = await _accountService.GetRoleAsync(applicationUser.Email);
-            var tokens = _jwtHelper.Refresh(null, userRole, applicationUser);
-            return Ok(tokens);
+            return Ok(result);
         }
 
         [HttpPost("sigup")]
-        public async Task<IActionResult> SigUp(AccountSigUpModel accountSigInModel)
+        public async Task<IActionResult> SigUp(AccountSigUpModel accountSigUpModel)
         {
-            var result = await _accountService.SigUpAsync(accountSigInModel);
-            if (!result.Errors.Count().Equals(0))
+            var result = await _accountService.SigUpAsync(accountSigUpModel);
+            if (!result.Errors.Any())
             {
                 return Ok(result);
             }
-            var applicationUser = await _userService.GetByEmailAsync(accountSigInModel.Email);
+            var applicationUser = await _userService.GetByEmailAsync(accountSigUpModel.Email);
             var code = await _accountService.GenerateUserEmailConfrimTokenAsync(applicationUser.Id);
             var callbackUrl = Url.Action(
                     nameof(AccountController.ConfirmEmail),
@@ -103,28 +94,16 @@ namespace EducationApp.PresentationLayer.Controllers
         [HttpPost("refreshtoken")]
         public async Task<JwtTokensModel> RefreshToken(JwtTokensModel jwtTokensModel)
         {
-            var newJwtTokenModel = new JwtTokensModel();
-            JwtHelper jwtHelper = new JwtHelper(_options);
-            if (!jwtHelper.CheckExpiration(jwtTokensModel.RefreshToken))
+            if (!_jwtHelper.CheckExpiration(jwtTokensModel.RefreshToken))
             {
-                var readRefreshToken = new JwtSecurityTokenHandler().ReadJwtToken(jwtTokensModel.RefreshToken);
-                var userId = readRefreshToken.Claims.Where(x => x.Type.Equals(ClaimTypes.NameIdentifier)).FirstOrDefault().Value;
-                var userModelItem = await _userService.GetByIdAsync(userId);
-                var userRole = await _accountService.GetRoleAsync(userModelItem.Email);
-                newJwtTokenModel.AccessToken = jwtHelper.GenerateAccessToken(userModelItem,userRole);
-                newJwtTokenModel.RefreshToken = jwtHelper.GenerateRefreshToken(userModelItem.Id);
-                return newJwtTokenModel;
+                return null;
             }
-            if (string.IsNullOrWhiteSpace(jwtTokensModel.AccessToken)|| !jwtHelper.CheckExpiration(jwtTokensModel.AccessToken))
-            {
-                var readRefreshToken = new JwtSecurityTokenHandler().ReadJwtToken(jwtTokensModel.RefreshToken);
-                var userId = readRefreshToken.Claims.Where(x => x.Type.Equals(ClaimTypes.NameIdentifier)).FirstOrDefault().Value;
-                var userModelItem = await _userService.GetByIdAsync(userId);
-                var userRole = await _accountService.GetRoleAsync(userModelItem.Email);
-                var tokens = jwtHelper.Refresh(jwtTokensModel.RefreshToken,userRole,userModelItem);
-                return tokens;
-            }
-            return null;
+            var readRefreshToken = new JwtSecurityTokenHandler().ReadJwtToken(jwtTokensModel.RefreshToken);
+            var userId = readRefreshToken.Claims.Where(x => x.Type.Equals(ClaimTypes.NameIdentifier)).FirstOrDefault().Value;
+            var userModelItem = await _userService.GetByIdAsync(userId);
+            var userRole = await _accountService.GetRoleAsync(userModelItem.Email);
+            var jwtTokens = _jwtHelper.Refresh(jwtTokensModel.RefreshToken, userRole, userModelItem, _options);
+            return jwtTokens;
         }
     }
 }

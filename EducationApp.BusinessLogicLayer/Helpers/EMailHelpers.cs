@@ -32,7 +32,9 @@ namespace EducationApp.BusinessLogicLayer.Helpers
             mail.To.Add(new MailAddress(_userEmail));
             return mail;
         }
-        public MailMessage MailMessageForEmailConfirm(string link) { 
+
+        public MailMessage MailMessageForEmailConfirm(string link)
+        {
             var mail = new MailMessage()
             {
                 From = new MailAddress(Constants.EmailHelper.MailAddress),
@@ -46,8 +48,8 @@ namespace EducationApp.BusinessLogicLayer.Helpers
 
         public async Task<BaseModel> SendEmailAsync(MailMessage mail)
         {
-            var baseModel=new BaseModel();
-            var credentials = new NetworkCredential("storebooksender@gmail.com","Qwerty987456");
+            var baseModel = new BaseModel();
+            var credentials = new NetworkCredential("storebooksender@gmail.com", "Qwerty987456");
             try
             {
                 var Clien = new SmtpClient()

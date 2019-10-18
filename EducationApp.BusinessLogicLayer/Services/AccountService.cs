@@ -1,11 +1,12 @@
 ﻿using EducationApp.BusinessLogicLayer.Common.Constants;
 using EducationApp.BusinessLogicLayer.Helpers;
+using EducationApp.BusinessLogicLayer.Models.Authorization;
 using EducationApp.BusinessLogicLayer.Models.Base;
 using EducationApp.BusinessLogicLayer.Models.User;
 using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using EducationApp.DataAccessLayer.Entities;
 using EducationApp.DataAccessLayer.Repositories.Interface;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using PasswordGenerator;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,16 +16,20 @@ namespace EducationApp.BusinessLogicLayer.Services
     public class AccountService:IAccountService
     {
         private readonly IUserRepository _userRepository;
+        private readonly JwtHelper _jwtHelper;
+        private readonly IOptionsMonitor<AuthTokenProviderOptionsModel> _options;
 
-        public AccountService(IUserRepository userRepository)
+        public AccountService(IUserRepository userRepository,JwtHelper jwtHelper, IOptionsMonitor<AuthTokenProviderOptionsModel> options)
         {
             _userRepository = userRepository;
+            _jwtHelper = jwtHelper;
+            _options = options;
         }
 
         public async Task<BaseModel> SigUpAsync(AccountSigUpModel userRegisterModel)
         {
             var baseModel = new BaseModel();
-            var applicationUser = Mapper.MapToUser.MapToApplicationUser(userRegisterModel);
+            var applicationUser = Mapper.UserMapper.MapToApplicationUser(userRegisterModel);
             var result = await _userRepository.CreateAsync(applicationUser, userRegisterModel.Password);
             baseModel.Errors = result;
             return baseModel;
@@ -44,7 +49,7 @@ namespace EducationApp.BusinessLogicLayer.Services
         {
             if (string.IsNullOrWhiteSpace(id))
             {
-                return null;
+                return Constants.Errors.IdIsNull;
             }
             var applicationUser = await _userRepository.GetUserByIdAsync(id);
             if (applicationUser == null)
@@ -53,7 +58,7 @@ namespace EducationApp.BusinessLogicLayer.Services
             }
             if (await _userRepository.CheckEmailConfirmAsync(applicationUser))
             {
-                return null;
+                return Constants.Errors.TokenError;
             }
             return await _userRepository.GenerateEmailConfirmTokenAsync(applicationUser);
         }
@@ -68,27 +73,25 @@ namespace EducationApp.BusinessLogicLayer.Services
             return await _userRepository.CheckEmailConfirmAsync(applicationUser); 
         }
 
-        public async Task<BaseModel> SigInAsync(AccountSigInModel accountSigInModel)
+        public async Task<JwtTokensModel> SigInAsync(AccountSigInModel accountSigInModel)
         {
-            var baseModel = new BaseModel();
             var applicationUser = await _userRepository.GetUserByEmailAsync(accountSigInModel.Email);
-            if (applicationUser == null)
-            {
-                baseModel.Errors.Add(Constants.Errors.SigInWrongForm);
-                return baseModel;
-            }
             var checkConfirm = await CheckEmailConfirmAsync(applicationUser.Id);
             if (!checkConfirm)
             {
-                baseModel.Errors.Add(Constants.Errors.ConfirmEmailError);
-                return baseModel;
+                return null;
             }
-            if(await _userRepository.SignInAsync(accountSigInModel.Email, accountSigInModel.Password, accountSigInModel.isPersitent))
+            if(!await _userRepository.SignInAsync(accountSigInModel.Email, accountSigInModel.Password, accountSigInModel.isPersitent))
             {
                 return null;
             }
-            baseModel.Errors.Add(Constants.Errors.SigInError);
-            return baseModel;
+            var userRole = await GetRoleAsync(applicationUser.Email);
+            var tokens = new JwtTokensModel()
+            {
+                AccessToken = _jwtHelper.GenerateAccessToken(Mapper.UserMapper.MapToUserModelItem(applicationUser), userRole, _options),
+                RefreshToken = _jwtHelper.GenerateRefreshToken(applicationUser.Id, _options)
+            };
+            return tokens;
         }
 
         public async Task<BaseModel> CanSigInAsync(string userId)
@@ -125,7 +128,6 @@ namespace EducationApp.BusinessLogicLayer.Services
 
         public async Task<BaseModel> SendConfirmEmailAsync(string userEmail,string callbackUrl)
         {
-            var baseModel = new BaseModel();
             var emailHelpers = new EmailHelpers(userEmail);
             var mail = emailHelpers.MailMessageForEmailConfirm(callbackUrl);
             return await emailHelpers.SendEmailAsync(mail);

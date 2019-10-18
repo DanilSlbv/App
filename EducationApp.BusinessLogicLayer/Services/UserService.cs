@@ -24,48 +24,55 @@ namespace EducationApp.BusinessLogicLayer.Services
             var userModel = new ResponseModel<UserModelItem>();
             foreach (var user in applicationUsers.Items)
             {
-                userModel.Items.Add(Mapper.MapToUser.MapToUserModelItem(user));
+                userModel.Items.Add(Mapper.UserMapper.MapToUserModelItem(user));
             }
             userModel.TotalItems = applicationUsers.ItemsCount;
             return userModel;
         }
         public async Task<UserModelItem> GetByIdAsync(string id)
         {
-            if(string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id))
             {
-                return null;
+                return new UserModelItem { Errors = new List<string> { Constants.Errors.IdIsNull } };
             }
-           return Mapper.MapToUser.MapToUserModelItem(await _userRepository.GetUserByIdAsync(id));
+            return Mapper.UserMapper.MapToUserModelItem(await _userRepository.GetUserByIdAsync(id));
         }
+
         public async Task<UserModelItem> GetByEmailAsync(string userEmail)
         {
             if (string.IsNullOrWhiteSpace(userEmail))
             {
-                return null;
+                return new UserModelItem { Errors = new List<string> { Constants.Errors.UserEmailIsNull } };
             }
-            return Mapper.MapToUser.MapToUserModelItem(await _userRepository.GetUserByEmailAsync(userEmail));
+            return Mapper.UserMapper.MapToUserModelItem(await _userRepository.GetUserByEmailAsync(userEmail));
         }
+
         public async Task<BaseModel> RemoveAsync(string id)
         {
             var baseModel = new BaseModel();
-            if(await _userRepository.GetUserByIdAsync(id)==null)
+            if (await _userRepository.GetUserByIdAsync(id) == null)
             {
                 baseModel.Errors.Add(Constants.Errors.NotFount);
                 return baseModel;
             }
-            baseModel.Errors=await _userRepository.DeleteUserAsync(id);
+            baseModel.Errors = await _userRepository.DeleteUserAsync(id);
             return baseModel;
         }
-        public async Task<BaseModel> EditAsync(UserModelItem userEditModel)
+
+        public async Task<BaseModel> EditAsync(AccountSigUpModel userEditModel)
         {
             var baseModel = new BaseModel();
             var applicationUser = await _userRepository.GetUserByIdAsync(userEditModel.Id);
-            if (applicationUser != null)
+            if (applicationUser == null)
             {
                 baseModel.Errors.Add(Constants.Errors.NotFount);
                 return baseModel;
             }
-            baseModel.Errors = await _userRepository.EditUserAsync(Mapper.MapToUser.MapToApplicationUser(userEditModel));
+            baseModel.Errors = await _userRepository.EditUserAsync(Mapper.UserMapper.MapToEditApplicationUser(userEditModel, applicationUser));
+            if (!string.IsNullOrWhiteSpace(userEditModel.Password))
+            {
+                baseModel.Errors = await _userRepository.PasswordRecoveryAsync(Mapper.UserMapper.MapToApplicationUser(userEditModel), userEditModel.Password);
+            }
             return baseModel;
         }
     }

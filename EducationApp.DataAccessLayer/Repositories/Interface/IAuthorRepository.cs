@@ -1,5 +1,5 @@
 ﻿using EducationApp.DataAccessLayer.Entities;
-using EducationApp.DataAccessLayer.Models.Author;
+using EducationApp.DataAccessLayer.Models.Authors;
 using EducationApp.DataAccessLayer.Models.Response;
 using System.Collections.Generic;
 using System.Linq;

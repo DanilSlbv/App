@@ -31,15 +31,16 @@ namespace EducationApp.PresentationLayer.Controllers
             return Ok(item);
         }
 
+
         [HttpPost("create")]
         [Authorize(Roles = Constants.Roles.AdmimRole)]
-        public async Task<IActionResult> CreateItem(PrintingEditionModelItem printingEdition)
+        public async Task<IActionResult> CreateItem(PrintingEditionsWithAuthor printingEdition)
         {
             var result = await _printingEditionService.CreateAsync(printingEdition);
             return Ok(result);
         }
 
-        [HttpGet("remove/{id}")]
+        [HttpPost("remove/{id}")]
         [Authorize(Roles = Constants.Roles.AdmimRole)]
         public async Task<IActionResult> RemoveItem(int id)
         {
@@ -49,7 +50,7 @@ namespace EducationApp.PresentationLayer.Controllers
 
         [HttpPost("edit")]
         [Authorize(Roles = Constants.Roles.AdmimRole)]
-        public async Task<IActionResult> EditItem(PrintingEditionModelItem editPrintingEditionModelItem)
+        public async Task<IActionResult> EditItem(PrintingEditionsWithAuthor editPrintingEditionModelItem)
         {
             var result = await _printingEditionService.EditAsync(editPrintingEditionModelItem);
             return Ok(result);

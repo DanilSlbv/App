@@ -1,12 +1,12 @@
 ﻿using EducationApp.BusinessLogicLayer.Models.Orders;
 using EducationApp.DataAccessLayer.Entities;
-using EducationApp.DataAccessLayer.Models.Order;
+using EducationApp.DataAccessLayer.Models.Orders;
 using System;
 using PrintingType = EducationApp.BusinessLogicLayer.Models.Enums.Enums.Type;
 
 namespace EducationApp.BusinessLogicLayer.Mapper
 {
-    public static class MapToOrders
+    public static class OrderMapper
     {
         public static Order MapToOrder(string description, long paymentId, string userId)
         {
@@ -40,11 +40,11 @@ namespace EducationApp.BusinessLogicLayer.Mapper
             };
             foreach(var printingEdition in orders.PrintingEditions)
             {
-                resultOrders.PrintingEditions.Add(MapToPrintingEditions.MapToPrintingEditionModelItem(printingEdition));
+                resultOrders.PrintingEditions.Add(PrintingEditionMapper.MapToPrintingEditionModelItem(printingEdition));
             }
-            foreach(var printingType in orders.PrintingType)
+            foreach(var printingType in orders.PrintingTypes)
             {
-                resultOrders.PrintingType.Add((PrintingType)printingType);
+                resultOrders.PrintingTypes.Add((PrintingType)printingType);
             }
             return resultOrders;
         }

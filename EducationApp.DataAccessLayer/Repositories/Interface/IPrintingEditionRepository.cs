@@ -2,12 +2,14 @@
 using System.Threading.Tasks;
 using EducationApp.DataAccessLayer.Models.Response;
 using EducationApp.DataAccessLayer.Models.Filters;
+using EducationApp.DataAccessLayer.Models.PrintingEditions;
 
 namespace EducationApp.DataAccessLayer.Repositories.Interface
 {
-    public  interface IPrintingEditionRepository:IBaseEFRepository<PrintingEdition>
+    public interface IPrintingEditionRepository : IBaseEFRepository<PrintingEdition>
     {
-        Task<AuthorInPrintingEditons> GetWithAuthorsById(int id);
-        Task<ResponseModel<AuthorInPrintingEditons>> SortWithAuthorsAsync(int page, PrintingEditionFilterModel filterModel);
+        Task<long> GetIdByNameAsync(string name);
+        Task<PrintingEditionWithAuthorsModel> GetWithAuthorsById(int id);
+        Task<ResponseModel<PrintingEditionWithAuthorsModel>> SortWithAuthorsAsync(int page, PrintingEditionFilterModel filterModel);
     }
 }

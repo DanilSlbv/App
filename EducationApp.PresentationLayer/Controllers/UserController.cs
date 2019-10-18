@@ -1,9 +1,9 @@
-﻿using EducationApp.BusinessLogicLayer.Models.User;
-using EducationApp.BusinessLogicLayer.Services.Interfaces;
+﻿using EducationApp.BusinessLogicLayer.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Threading.Tasks;
 using EducationApp.PresentationLayer.Common.Constants;
+using EducationApp.BusinessLogicLayer.Models.User;
 
 namespace EducationApp.PresentationLayer.Controllers
 {
@@ -36,25 +36,25 @@ namespace EducationApp.PresentationLayer.Controllers
 
         [HttpGet("getbyemail/{userEmail}")]
         [Authorize(Roles = Constants.Roles.AdmimRole)]
-        public async Task<IActionResult> GetUserByName(string userName)
+        public async Task<IActionResult> GetUserByEmail(string userEmail)
         {
-            var user = await _userService.GetByEmailAsync(userName); 
+            var user = await _userService.GetByEmailAsync(userEmail); 
             return Ok(user);
         }
         
         [HttpPost("edit")]
         [Authorize(Roles = Constants.Roles.AllRoles)]
-        public async Task<IActionResult> EditUser(UserModelItem userEditModel)
+        public async Task<IActionResult> EditUser(AccountSigUpModel userEditModel)
         {
             var result = await _userService.EditAsync(userEditModel);
             return Ok(result);
         }
 
-        [HttpGet("remove/{userId}")]
+        [HttpPost("remove/{userId}")]
         [Authorize(Roles = Constants.Roles.AdmimRole)]
-        public async Task<IActionResult>  RemoveUser(string id)
+        public async Task<IActionResult>  RemoveUser(string userId)
         {
-            var result = await _userService.RemoveAsync(id);
+            var result = await _userService.RemoveAsync(userId);
             return Ok(result);
         }
     }

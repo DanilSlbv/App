@@ -1,5 +1,5 @@
 ﻿using EducationApp.BusinessLogicLayer.Models.PrintingEdition;
-using EducationApp.DataAccessLayer.Models.Author;
+using EducationApp.DataAccessLayer.Models.Authors;
 using System.Collections.Generic;
 
 namespace EducationApp.BusinessLogicLayer.Models.Authors
@@ -8,10 +8,10 @@ namespace EducationApp.BusinessLogicLayer.Models.Authors
     {
         public long AuthorId { get; set; }
         public string Name { get; set; }
-        public List<PrintingEditionModelItem> Products;
+        public List<PrintingEditionsWithAuthor> Products;
         public AuthorWithProductsModelItem()
         {
-            Products = new List<PrintingEditionModelItem>();
+            Products = new List<PrintingEditionsWithAuthor>();
         }
     }
 }

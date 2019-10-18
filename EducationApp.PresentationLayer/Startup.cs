@@ -13,8 +13,8 @@ using Stripe;
 using EducationApp.BusinessLogicLayer.Models.Payments;
 using EducationApp.BusinessLogicLayer.Models.Authorization;
 using Swashbuckle.AspNetCore.Swagger;
-using System.IO;
 using EducationApp.BusinessLogicLayer.Initialization;
+using EducationApp.BusinessLogicLayer.Helpers;
 
 namespace EducationApp.PresentationLayer
 {
@@ -32,6 +32,7 @@ namespace EducationApp.PresentationLayer
             RepositoryAndServicesInitialize.DbInitialize(services,Configuration);
             RepositoryAndServicesInitialize.ServicesInitialize(services);
             RepositoryAndServicesInitialize.RepositoryInitialize(services);
+            services.AddTransient<JwtHelper>();
 
             services.Configure<AuthTokenProviderOptionsModel>(option=> 
             {
