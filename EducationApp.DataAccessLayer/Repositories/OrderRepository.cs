@@ -68,6 +68,7 @@ namespace EducationApp.DataAccessLayer.Repositories
             {
                 orders = orders.OrderByDescending(x => x.Order.Date);
             }
+            ///////
             if (filterModel.SortByOrderAmount == AscendingDescending.Ascending)
             {
                 orders = orders.OrderBy(x => x.Amount);
