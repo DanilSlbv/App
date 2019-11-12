@@ -9,7 +9,7 @@ using AscendingDescending = EducationApp.BusinessLogicLayer.Models.Enums.Enums.A
 
 namespace EducationApp.PresentationLayer.Controllers
 {
-    [Authorize]
+   // [Authorize]
     [Controller]
     [Route("order")]
     public class OrderController : Controller
@@ -22,7 +22,7 @@ namespace EducationApp.PresentationLayer.Controllers
         }
 
         [HttpPost("getallorders/{page}/{userId}")]
-        [Authorize(Roles = Constants.Roles.AdmimRole)]
+       // [Authorize(Roles = Constants.Roles.AdmimRole)]
         public async Task<IActionResult> GetAllOrders(int page,string userId,OrderFilterModelItem filterModel)
         {
             var orders = await _orderService.GetAllOrdersAsync(page,userId,filterModel);

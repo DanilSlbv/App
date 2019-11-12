@@ -9,7 +9,7 @@ namespace EducationApp.BusinessLogicLayer.Services.Interfaces
     public interface IPrintingEditionService
     {
         Task<ResponseModel<PrintingEditionsWithAuthor>> GetAllWithAuthorAsync(int page, PrintingEditionFilterModel filterModel);
-        Task<PrintingEditionsWithAuthor> GetByIdAsync(int id);
+        Task<PrintingEditionsWithAuthor> GetByIdAsync(long id);
         Task<BaseModel> CreateAsync(PrintingEditionsWithAuthor printingEditionsWithAuthor);
         Task<BaseModel> RemoveAsync(int id);
         Task<BaseModel> EditAsync(PrintingEditionsWithAuthor editPrintingEditionModelItem);

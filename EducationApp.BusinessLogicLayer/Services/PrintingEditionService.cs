@@ -90,9 +90,9 @@ namespace EducationApp.BusinessLogicLayer.Services
             return printingEditionsWithAuthor;
         }
 
-        public async Task<PrintingEditionsWithAuthor> GetByIdAsync(int id)
+        public async Task<PrintingEditionsWithAuthor> GetByIdAsync(long id)
         {
-            return Mapper.PrintingEditionMapper.MapToPrintingEditionsWithAuthor(await _printingEditionRepository.GetWithAuthorsById(id));
+            return Mapper.PrintingEditionMapper.MapToPrintingEditionsWithAuthor(await _printingEditionRepository.GetWithAuthorsByIdAsync(id));
         }
 
     }

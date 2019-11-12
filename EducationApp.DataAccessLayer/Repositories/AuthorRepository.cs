@@ -9,7 +9,6 @@ using EducationApp.DataAcessLayer.AppContext;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,7 +27,7 @@ namespace EducationApp.DataAccessLayer.Repositories
 
         public async Task<List<Author>> GetAllAsync()
         {
-            await GetAllWithProductsAsyncDapper();
+            var i = await GetAllWithProductsAsyncDapper(1, 6);
             return await _applicationContext.Authors.Where(x => x.IsRemoved == false).ToListAsync();
         }
 
@@ -80,39 +79,37 @@ namespace EducationApp.DataAccessLayer.Repositories
             allItems.ItemsCount = _applicationContext.Authors.Where(x => x.IsRemoved == false).Count();
             return allItems;
         }
-        public async Task<AuthorWithProductsModel> GetAllWithProductsAsyncDapper()
+        public async Task<List<AuthorWithProductsModel>> GetAllWithProductsAsyncDapper(int page, int count)
         {
-            string sql = $@"SELECT A.*,PE.*
-                         From [EducationStoreDb].[dbo].[AuthorInPrintingEditons] AS AIPE
-                         INNER JOIN [EducationStoreDb].[dbo].[Authors] AS A ON AIPE.AuthorId=A.Id
-                         INNER JOIN [EducationStoreDb].[dbo].[PrintingEditions] AS PE ON AIPE.AuthorId=A.Id
-                         WHERE A.Id=AIPE.AuthorId";
+            string sql = $@"SELECT A.*
+                            FROM [EducationStoreDb].[dbo].[PrintingEditions];
+            
+                            SELECT A
+.*
+                            FROM [EducationStoreDb].[dbo].[AuthorInPrintingEditons]
+                            INNER JOIN [EducationStoreDb].[dbo].[Authors] AS aipe.AuthorId=@authorId
+                            WHERE AuthorId=@authorId;";
             using (var db = new SqlConnection(_connectionString))
             {
-                try
+                using (var multi = await db.QueryMultipleAsync(sql))
                 {
-                    var resultItems = new Dictionary<long, AuthorWithProductsModel>();
-                    await db.QueryAsync<Author, PrintingEdition, AuthorWithProductsModel>(sql,
-                        (A, PE) =>
+                    var items = new List<AuthorWithProductsModel>();
+                    await db.OpenAsync();
+                    using (var results = await db.QueryMultipleAsync(sql))
+                    {
+                        var printings =await multi.ReadAsync<PrintingEdition>();
+                        foreach (var item in printings)
                         {
-                            if (!resultItems.TryGetValue(A.Id, out AuthorWithProductsModel authorWithProductsModel))
+                            var authors = await multi.ReadAsync<Author>();
+                            items.Add(new AuthorWithProductsModel()
                             {
-                                authorWithProductsModel = new AuthorWithProductsModel();
-                                authorWithProductsModel.AuthorId = A.Id;
-                                authorWithProductsModel.AuthorName = A.Name;
-                                authorWithProductsModel.PrintingEditions = new List<PrintingEdition>();
-                                resultItems.Add(A.Id, authorWithProductsModel);
-                            }
-                            authorWithProductsModel.PrintingEditions.Add(PE);
-                            return authorWithProductsModel;
-                        });
-                }catch(Exception ex)
-                {
-                    var e = ex;
-                    return null;
+
+                            });
+                        }
+                    }
+                    return items;
                 }
             }
-            return null;
         }
     }
 }

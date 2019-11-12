@@ -10,15 +10,17 @@ using System.Linq;
 using System.Threading.Tasks;
 using EducationApp.DataAccessLayer.Models.Filters;
 using AscendingDescending = EducationApp.DataAccessLayer.Entities.Enums.Enums.AscendingDescending;
-using Type = EducationApp.DataAccessLayer.Entities.Enums.Enums.Type;
-using EducationApp.DataAccessLayer.Common;
 using Microsoft.AspNetCore.Identity;
 using EducationApp.DataAccessLayer.Common.Constants;
+using System.Data.SqlClient;
+using Dapper;
+using System;
 
 namespace EducationApp.DataAccessLayer.Repositories
 {
     public class OrderRepository : BaseEFRepository<Order>, IOrderRepository
     {
+        private string _connectionString = "Server=(localdb)\\MSSQLLocalDB;Database=EducationStoreDb;Trusted_Connection=True;MultipleActiveResultSets=True";
         private readonly ApplicationContext _applicationContext;
         private readonly UserManager<ApplicationUser> _userManager;
         public OrderRepository(ApplicationContext applicationContext, UserManager<ApplicationUser> userManager) : base(applicationContext)
@@ -29,6 +31,15 @@ namespace EducationApp.DataAccessLayer.Repositories
 
         public async Task<List<Order>> GetAllAsync() => await _applicationContext.Orders.Where(x => x.IsRemoved == false).ToListAsync();
 
+        public async Task<List<Order>> GetAllAsyncDapper()
+        {
+            string sql = "SELECT * FROM [EducationStoreDb].[dbo].[Orders]";
+            using (var db = new SqlConnection(_connectionString))
+            {
+                var result = db.Query<Order>(sql).ToList();
+                return result;
+            }
+        }
 
         public async Task<ResponseModel<OrdersWithOrderItemsModel>> GetUserOrders(int page, string userId, OrderFilterModel filterModel)
         {
@@ -71,15 +82,50 @@ namespace EducationApp.DataAccessLayer.Repositories
                 UserEmail = orderItem.Select(x => x.Order.User.UserName).FirstOrDefault(),
                 OrderDate = orderItem.Select(x => x.Order.Date).FirstOrDefault(),
                 PrintingTypes = orderItem.Select(x => x.PrintingEdition.Type).ToList(),
-                PrintingEditions = orderItem.Select(x=>x.PrintingEdition).ToList(),
+                PrintingEditions = orderItem.Select(x => x.PrintingEdition).ToList(),
                 OrderAmount = orderItem.Select(x => x.Amount).FirstOrDefault()
             }).Skip((page - 1) * Constants.Pagination.PageSize).Take(Constants.Pagination.PageSize).ToListAsync();
             var result = new ResponseModel<OrdersWithOrderItemsModel>
             {
                 Items = userOrders,
-                ItemsCount = _applicationContext.Orders.Where(x=>x.IsRemoved==false).Count()
+                ItemsCount = _applicationContext.Orders.Where(x => x.IsRemoved == false).Count()
             };
             return result;
         }
+
+        /*public async Task<OrdersWithOrderItemsModel> GetUserOrdersAsyncDapper()
+        {
+            string sql = @"SELECT O.*,OI.*,U.Id,PE.*
+                          FROM [EducationStoreDb].[dbo].[OrderItems] AS OI
+                          INNER JOIN [EducationStoreDb].[dbo].[Orders] AS O ON OI.OrderId=O.Id
+                          INNER JOIN [EducationStoreDb].[dbo].[AspNetUsers] AS U ON O.UserId=U.Id
+                          INNER JOIN [EducationStoreDb].[dbo].[PrintingEditions] AS PE ON OI.Id=PE.Id";
+            var response = new ResponseModel<OrdersWithOrderItemsModel>();
+            using (var db = new SqlConnection(_connectionString))
+            {
+                try
+                {
+                    var resultItems = new Dictionary<long, OrdersWithOrderItemsModel>();
+                    await db.QueryAsync<Order, OrderItem, ApplicationUser, PrintingEdition, OrdersWithOrderItemsModel>(sql,
+                        (order, orderItem, applicationUser, printingEdition) =>
+                        {
+                            var orderWithOrderItemsModel = new OrdersWithOrderItemsModel();
+                            orderWithOrderItemsModel.OrderId = order.Id;
+                            orderWithOrderItemsModel.OrderDate = order.Date;
+                            orderWithOrderItemsModel.OrderAmount = orderItem.Amount;
+                            resultItems.Add(orderWithOrderItemsModel.OrderId, orderWithOrderItemsModel);
+                            return orderWithOrderItemsModel;
+                        }                            
+                         orderWithOrderItemsModel.PrintingEditions.Add(orderItem.PrintingEdition);
+                         orderWithOrderItemsModel.PrintingTypes.Add(orderItem.PrintingEdition.Type);
+                        );
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+        }*/
     }
 }
